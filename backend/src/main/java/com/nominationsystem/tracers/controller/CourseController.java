@@ -15,10 +15,21 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+    @GetMapping("/{name}")
+    public ResponseEntity<Course> getCourse(@PathVariable("name") String courseName) {
+        Course res = this.courseService.getCourse(courseName);
+        return ResponseEntity.ok(res);
+    }
+
     @GetMapping("")
     public ResponseEntity<List<Course>> getCourses() {
         List<Course> res = this.courseService.getAllCourses();
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/add")
+    public void addCourseForm() {
+        this.courseService.renderAddCourseForm();
     }
 
     @PostMapping("")
@@ -26,11 +37,9 @@ public class CourseController {
         return (this.courseService.addCourse(course));
     }
 
-    @GetMapping("/{id}")
-    public String updateCourseForm(@PathVariable("id") String courseId) {
-        System.out.println("Update");
-        this.courseService.updateCourseForm(courseId);
-        return "Edit route form";
+    @GetMapping("/edit/{id}")
+    public void updateCourseForm(@PathVariable("id") String courseId) {
+        this.courseService.renderUpdateCourseForm(courseId);
     }
 
     @PutMapping("/{id}")

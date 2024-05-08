@@ -29,5 +29,5 @@ public class Course {
 
     private Boolean isApprovalReq;
 
-    private String publishedDate=new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+    private String publishedDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 }

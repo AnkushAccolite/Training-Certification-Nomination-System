@@ -13,21 +13,28 @@ public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
+    public Course getCourse(String courseName) {
+        return courseRepository.findByName(courseName);
+    }
+
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
+    }
+
+    public void renderAddCourseForm() {
+        //redirect to add form
     }
 
     public Course addCourse(Course course) {
         return (this.courseRepository.save(course));
     }
 
-    public void updateCourseForm(String courseId) {
+    public void renderUpdateCourseForm(String courseId) {
         //redirect to update form
     }
 
     public void updateCourse(String courseId, Course updatedCourse) {
-        Course existingCourse = courseRepository.findById(courseId)
-                .orElseThrow(() -> new IllegalArgumentException("Course not found"));
+        Course existingCourse = getCourse(courseId);
 
         if(updatedCourse.getName() != null) {
             existingCourse.setName(updatedCourse.getName());
@@ -50,4 +57,3 @@ public class CourseService {
     }
 
 }
-
