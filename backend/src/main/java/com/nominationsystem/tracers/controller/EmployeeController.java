@@ -3,6 +3,7 @@ package com.nominationsystem.tracers.controller;
 import com.nominationsystem.tracers.models.Course;
 import com.nominationsystem.tracers.models.Employee;
 import com.nominationsystem.tracers.repository.EmployeeRepository;
+import com.nominationsystem.tracers.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,16 +13,16 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 
     @Autowired
-    private EmployeeRepository employeeRepository;
+    private EmployeeService employeeService;
 
-    @PostMapping("/")
-    public ResponseEntity<?> addEmployee(@RequestBody Employee employee) {
-        Employee save = this.employeeRepository.save(employee);
-        return ResponseEntity.ok(save);
-    }
+//    @PostMapping("")
+//    public ResponseEntity<?> addEmployee(@RequestBody Employee employee) {
+//        Employee save=this.employeeService.addEmployee(employee);
+//        return ResponseEntity.ok(save);
+//    }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<?> getEmployees() {
-        return ResponseEntity.ok(this.employeeRepository.findAll());
+        return ResponseEntity.ok(this.employeeService.getAllEmployees());
     }
 }

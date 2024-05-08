@@ -15,13 +15,13 @@ public class CourseController {
     @Autowired
     private CourseRepository courseRepository;
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<?> addCourse(@RequestBody Course course) {
         Course save = this.courseRepository.save(course);
         return ResponseEntity.ok(save);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<?> getCourses() {
         List<Course> res = this.courseRepository.findAll();
         return ResponseEntity.ok(res);
