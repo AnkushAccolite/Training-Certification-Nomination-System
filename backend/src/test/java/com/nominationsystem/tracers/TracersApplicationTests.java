@@ -1,10 +1,10 @@
-package com.accolite.teknow;
+package com.nominationsystem.tracers;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TeknowApplicationTests {
+class TracersApplicationTests {
 
 	@Test
 	void contextLoads() {
