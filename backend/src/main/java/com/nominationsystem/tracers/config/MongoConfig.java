@@ -11,6 +11,9 @@ public class MongoConfig {
     @Value("${spring.data.mongodb.uri}")
     private String mongoUri;
 
+//    @Value("${spring.data.mongodb.password}")
+//    private String mongoPassword;
+
     @Bean
     public MongoTemplate mongoTemplate() throws Exception {
         return new MongoTemplate(new SimpleMongoClientDatabaseFactory(mongoUri));

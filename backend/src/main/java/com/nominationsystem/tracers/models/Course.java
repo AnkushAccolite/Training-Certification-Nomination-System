@@ -2,13 +2,11 @@ package com.nominationsystem.tracers.models;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
