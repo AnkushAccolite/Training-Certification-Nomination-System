@@ -59,17 +59,30 @@ const items = {
       breadcrumbs: false
     },
     {
+      id: 'pending-requests',
+      title: 'Requests',
+      type: 'item',
+      url: '/pending-requests'
+    },
+    {
       id: 'monthly-courses',
       title: 'MonthlyCourses',
       type: 'item',
-      url: '/monthly-courses',
-
+      url: '/monthly-courses'
+    },
+    {
       id: 'employee-report',
       title: 'Employee Report',
       type: 'item',
       url: '/employee-report',
       icon: icons.IconBrandChrome,
       breadcrumbs: false
+    },
+    {
+      id: 'all-courses',
+      title: 'AllCourses',
+      type: 'item',
+      url: '/all-courses'
     },
     {
       id: 'course-report',
