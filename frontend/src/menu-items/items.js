@@ -57,6 +57,14 @@ const items = {
       url: '/certifications-completed',
       icon: icons.IconBrandChrome,
       breadcrumbs: false
+    },
+    {
+      id: 'monthly-courses',
+      title: 'MonthlyCourses',
+      type: 'item',
+      url: '/monthly-courses',
+      icon: icons.IconBrandChrome,
+      breadcrumbs: false
     }
     // {
     //   id: 'documentation',
