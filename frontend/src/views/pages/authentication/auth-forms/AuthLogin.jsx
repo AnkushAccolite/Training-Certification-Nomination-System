@@ -18,6 +18,7 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
+import EmailIcon from '@mui/icons-material/Email';
 
 // third party
 import * as Yup from 'yup';
@@ -70,7 +71,7 @@ const AuthLogin = ({ ...others }) => {
                 borderColor: theme.palette.grey[100]
               }}
             >
-              <Box sx={{ mr: { xs: 1, sm: 2, width: 20 } }}>
+              <Box sx={{ mr: { xs: 1, sm: 2, width: 20 }, pt: '1.5%' }}>
                 <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
               </Box>
               Sign in with Google
@@ -108,8 +109,11 @@ const AuthLogin = ({ ...others }) => {
           </Box>
         </Grid>
         <Grid item xs={12} container alignItems="center" justifyContent="center">
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle1">Sign in with Email address</Typography>
+          <Box sx={{ mb: 2, pt: '1.5%', display: 'flex', alignItems: 'center' }}>
+            <EmailIcon />
+            <Typography variant="subtitle1" sx={{ ml: 1 }}>
+              Sign in with Email address
+            </Typography>
           </Box>
         </Grid>
       </Grid>
