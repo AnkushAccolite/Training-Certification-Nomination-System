@@ -64,6 +64,9 @@ const EmployeeReport = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div>
+      <Typography variant="h2" gutterBottom style={{ display: 'flex', marginBottom: '30px' }}>
+          Employee Report
+        </Typography>
         <Typography variant="h3" gutterBottom>
           Filter by:
         </Typography>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
@@ -7,7 +6,6 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import Autocomplete from '@mui/material/Autocomplete';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable'; 
-
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'; 
 
 const CourseReport = () => {
@@ -15,19 +13,21 @@ const CourseReport = () => {
   const [selectedDomain, setSelectedDomain] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [courses, setCourses] = useState([
-    { courseId: 'C001', name: 'Course 1', domain: 'Web Development', employeesEnrolled: 10, completionDate: '2024-04-15', attendance: 80 },
-    { courseId: 'C002', name: 'Course 2', domain: 'Data Science', employeesEnrolled: 15, completionDate: '2024-05-01', attendance: 90 },
-
+    { courseId: 'C001', name: 'Course 1', domain: 'Web Development', employeesEnrolled: 10, completionDate: '2024-04-15', employeesCompleted: 6 },
+    { courseId: 'C002', name: 'Course 2', domain: 'Data Science', employeesEnrolled: 15, completionDate: '2024-05-01', employeesCompleted: 12 },
   ]);
 
+  const calculateAttendance = (completed, enrolled) => {
+    return Math.round((completed / enrolled) * 100);
+  };
 
   const handleGenerateReport = () => {
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text('Course Report', 10, 10);
     doc.autoTable({
-      head: [['Course ID', 'Name', 'Domain', 'Employees Enrolled', ' Date', 'Attendance']],
-      body: courses.map(course => [course.courseId, course.name, course.domain, course.employeesEnrolled, course.completionDate, `${course.attendance}%`]),
+      head: [['Course ID', 'Name', 'Domain', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Date']],
+      body: courses.map(course => [course.courseId, course.name, course.domain, course.employeesEnrolled, course.employeesCompleted, `${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`, course.completionDate]),
       startY: 20 
     });
     doc.save('course_report.pdf');
@@ -35,7 +35,6 @@ const CourseReport = () => {
 
   const handleSearch = () => {
     const filteredCourses = courses.filter(course => {
-
       const completionDateMonth = new Date(course.completionDate);
       return (!selectedMonth || completionDateMonth === selectedMonthIndex) &&
         (!selectedDomain || course.domain.toLowerCase().includes(selectedDomain.toLowerCase())) &&
@@ -47,11 +46,14 @@ const CourseReport = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h2" gutterBottom style={{ display: 'flex', marginBottom: '30px' }}>
+          Course Report
+        </Typography>
+        <Typography variant="h3" gutterBottom>
           Filter by:
         </Typography>
-        <div style={{ display: 'flex', marginBottom: '20px' }}>
-        <DatePicker
+        <div style={{ display: 'flex', marginBottom: '30px' }}>
+          <DatePicker
             label="Month"
             value={selectedMonth}
             onChange={(date) => setSelectedMonth(date)}
@@ -86,8 +88,9 @@ const CourseReport = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Domain</TableCell>
                 <TableCell>Employees Enrolled</TableCell>
-                <TableCell> Date</TableCell>
+                <TableCell>Employees Completed</TableCell>
                 <TableCell>Attendance</TableCell>
+                <TableCell>Date</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -97,8 +100,9 @@ const CourseReport = () => {
                   <TableCell>{course.name}</TableCell>
                   <TableCell>{course.domain}</TableCell>
                   <TableCell>{course.employeesEnrolled}</TableCell>
+                  <TableCell>{course.employeesCompleted}</TableCell>
+                  <TableCell>{`${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`}</TableCell>
                   <TableCell>{course.completionDate}</TableCell>
-                  <TableCell>{`${course.attendance}%`}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

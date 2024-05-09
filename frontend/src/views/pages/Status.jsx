@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -23,11 +23,18 @@ const pendingRows = [
 ];
 
 const Status = () => {
+  const [pendingCourses, setPendingCourses] = useState(pendingRows);
+
+  const handleCancel = (courseID) => {
+    const updatedCourses = pendingCourses.filter(course => course.CourseID !== courseID);
+    setPendingCourses(updatedCourses);
+  };
+
   return (
     <div>
       <h2>Approved Courses</h2>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="approved courses table">
+      <Table sx={{ minWidth: 650 }} aria-label="approved courses table">
           <TableHead>
             <TableRow>
               <TableCell>Course ID</TableCell>
@@ -58,14 +65,20 @@ const Status = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {pendingRows.map((row) => (
+            {pendingCourses.map((row) => (
               <TableRow key={row.CourseID}>
                 <TableCell component="th" scope="row">
                   {row.CourseID}
                 </TableCell>
                 <TableCell>{row.CourseName}</TableCell>
                 <TableCell>
-                  <Button variant="contained" color="error">Cancel</Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleCancel(row.CourseID)}
+                  >
+                    Cancel
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
