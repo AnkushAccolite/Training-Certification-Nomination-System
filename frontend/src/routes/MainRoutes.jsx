@@ -2,6 +2,8 @@ import { lazy } from 'react';
 
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import EmployeeReport from 'views/pages/EmployeeReport';
+import CourseReport from 'views/pages/CourseReport';
 
 
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
@@ -12,6 +14,12 @@ const Status = Loadable(lazy(() => import('views/pages/Status')));
 const CoursesCompleted = Loadable(lazy(() => import('views/pages/CoursesCompleted')));
 const CertificationsCompleted = Loadable(lazy(() => import('views/pages/CertificationsCompleted')));
 
+const Requests = Loadable(lazy(() => import('views/pages/Requests')));
+const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
+const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
+const Nominate = Loadable(lazy(() => import('views/pages/Nominate')));
+const NominationForm = Loadable(lazy(() => import('views/pages/NominationForm')));
+const MonthlyCourses = Loadable(lazy(() => import('views/pages/MonthlyCourses')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -59,9 +67,44 @@ const MainRoutes = {
           path: 'certifications-completed',
           element: <CertificationsCompleted />
         },
+        {
+          path: 'pending-requests',
+          element: <Requests />
+        },
+        {
+          path: 'all-courses',
+          element: <AllCourses />
+        },
+        {
+          path:'/AllCourses/add-course',
+          element: <AddCourse />
+        },
+        {
+          path:'/Courses/nominate',
+          element: <Nominate />
+        },
+        {
+          path: '/courses/nomination-form',
+          element: <NominationForm />,
+        },
+        {
+          path: '/monthly-courses',
+          element: <MonthlyCourses />,
+        }
+        // {
+        //   path: '/MonthlyCourses/add-course',
+        //   element: <AddCourse />,
+        // }
+          path: 'employee-report',
+          element: <EmployeeReport />
+        },
+        {
+          path: 'course-report',
+          element: <CourseReport />
+        }
       ]
-    },
-    
+    }
+
   ]
 };
 

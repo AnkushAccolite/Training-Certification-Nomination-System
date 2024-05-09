@@ -19,9 +19,18 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
+<<<<<<< HEAD
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
+=======
+import { useNavigate } from "react-router-dom";
+import Nominate from './Nominate';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+
+>>>>>>> 9c066688b8b7fabeeea6d6fc0b5c21fbbe776df2
 const MenuProps = {
   PaperProps: {
     style: {
@@ -30,19 +39,29 @@ const MenuProps = {
     }
   }
 };
+<<<<<<< HEAD
 
 const names = ['technical', 'domain', 'power'];
 
+=======
+const names = ['technical', 'domain', 'power'];
+>>>>>>> 9c066688b8b7fabeeea6d6fc0b5c21fbbe776df2
 function getStyles(name, personName, theme) {
   return {
     fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
   };
 }
+<<<<<<< HEAD
 
 function createData(name, category, duration) {
   return { name, category, duration };
 }
 
+=======
+function createData(name, category, duration) {
+  return { name, category, duration };
+}
+>>>>>>> 9c066688b8b7fabeeea6d6fc0b5c21fbbe776df2
 const rows = [
   createData('Web development with Python (e.g., Django, Flask)', 'Technical', 4),
   createData('Become an iOS Developer from Scratch', 'Technical', 8),
@@ -56,11 +75,16 @@ const rows = [
   createData('MEAN/MERN stack development (MongoDB, Express.js, Angular/React.js, Node.js)', 'Technical', 8),
   createData('Product Lifecycle Management (PLM)', 'Domain', 3),
   createData('React JS For Beginners', 'Technical', 2),
+<<<<<<< HEAD
   createData('Data Visualization using Python	', 'Technical', 2.5),
+=======
+  createData('Data Visualization using Python ', 'Technical', 2.5),
+>>>>>>> 9c066688b8b7fabeeea6d6fc0b5c21fbbe776df2
   createData('Microsoft Azure Application', 'Technical', 2),
   createData('Google Cloud Platform for Beginners', 'Technical', 1),
   createData('Writing Powerful Business Reports', 'Power', 1.5),
   createData('Emotional Intelligence in the workplace', 'Power', 1),
+<<<<<<< HEAD
   createData('Spring Framework for Java development', 'Technical', 6), 
   
 ];
@@ -69,6 +93,14 @@ function Courses() {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
 
+=======
+  createData('Spring Framework for Java development', 'Technical', 6),
+];
+function Courses() {
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const [personName, setPersonName] = React.useState([]);
+>>>>>>> 9c066688b8b7fabeeea6d6fc0b5c21fbbe776df2
   const handleChange = (event) => {
     const {
       target: { value },
@@ -78,7 +110,10 @@ function Courses() {
       typeof value === 'string' ? value.split(',') : value,
     );
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9c066688b8b7fabeeea6d6fc0b5c21fbbe776df2
   return (
     <div>
       {/* Dropdown(multiple select) */}
@@ -112,19 +147,29 @@ function Courses() {
           </Select>
         </FormControl>
       </div>
+<<<<<<< HEAD
 
 
       {/* Nominate Btn */}
       <div>
         <Stack style={{ float: 'right', width: '20%', fontSize:'larger', paddingTop:'0%' }} direction="row" spacing={2}>
           <Button className="nominateBtn" variant="outlined" startIcon={<LocalLibraryIcon />}>
+=======
+      {/* Nominate Btn */}
+      <div>
+        <Stack style={{ float: 'right', width: '20%', fontSize:'larger', paddingTop:'0%' }} direction="row" spacing={2}>
+          <Button className="nominateBtn" variant="outlined" startIcon={<LocalLibraryIcon />} onClick={() => navigate('/courses/nominate ')}>
+>>>>>>> 9c066688b8b7fabeeea6d6fc0b5c21fbbe776df2
             Nominate
           </Button>
         </Stack>
       </div>
       <br />
       <br />
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9c066688b8b7fabeeea6d6fc0b5c21fbbe776df2
       {/* monthly available courses table  */}
       <div style={{ paddingTop: '2%' }}>
         <TableContainer component={Paper}>
@@ -156,5 +201,9 @@ function Courses() {
     </div>
   );
 }
+<<<<<<< HEAD
 
 export default Courses;
+=======
+export default Courses;
+>>>>>>> 9c066688b8b7fabeeea6d6fc0b5c21fbbe776df2

@@ -57,6 +57,40 @@ const items = {
       url: '/certifications-completed',
       icon: icons.IconBrandChrome,
       breadcrumbs: false
+    },
+    {
+      id: 'pending-requests',
+      title: 'Requests',
+      type: 'item',
+      url: '/pending-requests'
+    },
+    {
+      id: 'monthly-courses',
+      title: 'MonthlyCourses',
+      type: 'item',
+      url: '/monthly-courses'
+    },
+    {
+      id: 'employee-report',
+      title: 'Employee Report',
+      type: 'item',
+      url: '/employee-report',
+      icon: icons.IconBrandChrome,
+      breadcrumbs: false
+    },
+    {
+      id: 'all-courses',
+      title: 'AllCourses',
+      type: 'item',
+      url: '/all-courses'
+    },
+    {
+      id: 'course-report',
+      title: 'Course Report',
+      type: 'item',
+      url: '/course-report',
+      icon: icons.IconBrandChrome,
+      breadcrumbs: false
     }
     // {
     //   id: 'documentation',
