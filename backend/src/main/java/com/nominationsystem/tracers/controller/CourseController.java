@@ -1,30 +1,60 @@
-package com.nominationsystem.tracers.controller;
+~package com.nominationsystem.tracers.controller;
 
 import com.nominationsystem.tracers.models.Course;
-import com.nominationsystem.tracers.repository.CourseRepository;
+import com.nominationsystem.tracers.service.CourseService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Validated
 @RequestMapping("/course")
 public class CourseController {
 
     @Autowired
-    private CourseRepository courseRepository;
+    private CourseService courseService;
 
-    @PostMapping("")
-    public ResponseEntity<?> addCourse(@RequestBody Course course) {
-        Course save = this.courseRepository.save(course);
-        return ResponseEntity.ok(save);
+    @GetMapping("/{name}")
+    public ResponseEntity<Course> getCourse(@PathVariable("name") String courseName) {
+        Course res = this.courseService.getCourse(courseName);
+        return ResponseEntity.ok(res);
     }
 
-    @GetMapping("")
-    public ResponseEntity<?> getCourses() {
-        List<Course> res = this.courseRepository.findAll();
+    @GetMapping
+    public ResponseEntity<List<Course>> getCourses() {
+        List<Course> res = this.courseService.getAllCourses();
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/add")
+    public void addCourseForm() {
+        this.courseService.renderAddCourseForm();
+    }
+
+    @PostMapping
+    public Course addCourse(@Valid @RequestBody Course course) {
+        return (this.courseService.addCourse(course));
+    }
+
+    @GetMapping("/edit/{id}")
+    public void updateCourseForm(@PathVariable("id") String courseId) {
+        this.courseService.renderUpdateCourseForm(courseId);
+    }
+
+    @PutMapping("/{id}")
+    public String updateCourse(@PathVariable("id") String courseId,
+                               @RequestBody Course course) {
+        this.courseService.updateCourse(courseId, course);
+        return "Course edited";
+    }
+
+    @DeleteMapping("")
+    public void deleteCourse(@RequestParam("id") String courseId) {
+        this.courseService.deleteCourse(courseId);
     }
 
 }
