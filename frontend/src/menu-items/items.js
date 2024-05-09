@@ -63,6 +63,19 @@ const items = {
       title: 'MonthlyCourses',
       type: 'item',
       url: '/monthly-courses',
+
+      id: 'employee-report',
+      title: 'Employee Report',
+      type: 'item',
+      url: '/employee-report',
+      icon: icons.IconBrandChrome,
+      breadcrumbs: false
+    },
+    {
+      id: 'course-report',
+      title: 'Course Report',
+      type: 'item',
+      url: '/course-report',
       icon: icons.IconBrandChrome,
       breadcrumbs: false
     }

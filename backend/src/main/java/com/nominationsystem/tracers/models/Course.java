@@ -22,7 +22,7 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String courseId;
 
-    @Indexed(unique = true)
+
     private String name;
 
     private Integer duration;

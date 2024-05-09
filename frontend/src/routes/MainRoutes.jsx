@@ -2,6 +2,8 @@ import { lazy } from 'react';
 
 import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
+import EmployeeReport from 'views/pages/EmployeeReport';
+import CourseReport from 'views/pages/CourseReport';
 
 
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
@@ -73,6 +75,13 @@ const MainRoutes = {
         //   path: '/MonthlyCourses/add-course',
         //   element: <AddCourse />,
         // }
+          path: 'employee-report',
+          element: <EmployeeReport />
+        },
+        {
+          path: 'course-report',
+          element: <CourseReport />
+        },
       ]
     }
 
