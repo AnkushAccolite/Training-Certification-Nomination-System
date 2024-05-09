@@ -14,7 +14,7 @@ public class CourseService {
     private CourseRepository courseRepository;
 
     public Course getCourse(String courseName) {
-        return courseRepository.findByName(courseName);
+        return courseRepository.findByCourseName(courseName);
     }
 
     public List<Course> getAllCourses() {
@@ -36,8 +36,8 @@ public class CourseService {
     public void updateCourse(String courseId, Course updatedCourse) {
         Course existingCourse = getCourse(courseId);
 
-        if(updatedCourse.getName() != null) {
-            existingCourse.setName(updatedCourse.getName());
+        if(updatedCourse.getCourseName() != null) {
+            existingCourse.setCourseName(updatedCourse.getCourseName());
         }
         if(updatedCourse.getDuration() != null) {
             existingCourse.setDuration(updatedCourse.getDuration());
@@ -45,8 +45,14 @@ public class CourseService {
         if(updatedCourse.getCategory() != null) {
             existingCourse.setCategory(updatedCourse.getCategory());
         }
+        if(updatedCourse.getDescription() != null) {
+            existingCourse.setDescription(updatedCourse.getDescription());
+        }
         if(updatedCourse.getIsApprovalReq() != null) {
             existingCourse.setIsApprovalReq(updatedCourse.getIsApprovalReq());
+        }
+        if(updatedCourse.getIsActive() != null) {
+            existingCourse.setIsActive(updatedCourse.getIsActive());
         }
 
         courseRepository.save(existingCourse);

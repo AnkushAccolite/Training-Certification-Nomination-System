@@ -2,13 +2,16 @@ package com.nominationsystem.tracers.controller;
 
 import com.nominationsystem.tracers.models.Course;
 import com.nominationsystem.tracers.service.CourseService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@Validated
 @RequestMapping("/course")
 public class CourseController {
 
@@ -21,7 +24,7 @@ public class CourseController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<Course>> getCourses() {
         List<Course> res = this.courseService.getAllCourses();
         return ResponseEntity.ok(res);
@@ -32,8 +35,8 @@ public class CourseController {
         this.courseService.renderAddCourseForm();
     }
 
-    @PostMapping("")
-    public Course addCourse(@RequestBody Course course) {
+    @PostMapping
+    public Course addCourse(@Valid @RequestBody Course course) {
         return (this.courseService.addCourse(course));
     }
 

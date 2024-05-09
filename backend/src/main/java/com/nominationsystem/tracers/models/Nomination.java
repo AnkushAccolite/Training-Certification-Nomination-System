@@ -20,11 +20,11 @@ public class Nomination {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String nominationId;
 
-    private String approvalStatus = "pending";
+    private String approvalStatus;
 
     private String empId;
 
-    private List<String>  courses;
+    private List<String> courses;
 
     private List<String> certifId;
 
@@ -33,4 +33,12 @@ public class Nomination {
     private String nominationDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
     private String courseSuggestions;
+
+    public ApprovalStatus getApprovalStatus() {
+        return ApprovalStatus.valueOf(approvalStatus);
+    }
+
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus.name();
+    }
 }

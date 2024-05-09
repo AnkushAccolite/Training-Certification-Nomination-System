@@ -2,6 +2,9 @@ package com.nominationsystem.tracers.models;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -21,13 +24,21 @@ public class Course {
     private String courseId;
 
     @Indexed(unique = true)
-    private String name;
+    @NotBlank
+    @Size(min = 2, max = 50)
+    private String courseName;
 
     private Integer duration;
 
+    @NotBlank
     private String category;
 
+    @NotBlank
+    private String description;
+
     private Boolean isApprovalReq;
+
+    private Boolean isActive;
 
     private String publishedDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 }
