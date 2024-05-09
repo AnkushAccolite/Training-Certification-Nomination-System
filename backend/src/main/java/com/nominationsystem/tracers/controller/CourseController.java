@@ -1,4 +1,4 @@
-~package com.nominationsystem.tracers.controller;
+package com.nominationsystem.tracers.controller;
 
 import com.nominationsystem.tracers.models.Course;
 import com.nominationsystem.tracers.service.CourseService;

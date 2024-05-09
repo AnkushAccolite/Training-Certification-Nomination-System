@@ -90,11 +90,12 @@ const MainRoutes = {
         {
           path: '/monthly-courses',
           element: <MonthlyCourses />,
-        }
+        },
         // {
         //   path: '/MonthlyCourses/add-course',
         //   element: <AddCourse />,
         // }
+        {
           path: 'employee-report',
           element: <EmployeeReport />
         },
