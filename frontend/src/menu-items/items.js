@@ -57,6 +57,22 @@ const items = {
       url: '/certifications-completed',
       icon: icons.IconBrandChrome,
       breadcrumbs: false
+    },
+    {
+      id: 'employee-report',
+      title: 'Employee Report',
+      type: 'item',
+      url: '/employee-report',
+      icon: icons.IconBrandChrome,
+      breadcrumbs: false
+    },
+    {
+      id: 'course-report',
+      title: 'Course Report',
+      type: 'item',
+      url: '/course-report',
+      icon: icons.IconBrandChrome,
+      breadcrumbs: false
     }
     // {
     //   id: 'documentation',

@@ -68,19 +68,22 @@ const CertificationsCompleted = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.filter((row) => {
-              if (!startDate || !endDate) return true;
-              const completionDate = dayjs(row.DateOfCompletion);
-              return completionDate.isAfter(startDate, 'day') && completionDate.isBefore(endDate, 'day');
-            }).map((row) => (
-              <TableRow key={row.SNo}>
-                <TableCell>{row.SNo}</TableCell>
-                <TableCell>{row.CertificationName}</TableCell>
-                <TableCell>{row.Duration}</TableCell>
-                <TableCell>{row.DateOfCompletion}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+  {rows.filter((row) => {
+    if (!startDate && !endDate) return true;
+    const completionDate = dayjs(row.DateOfCompletion);
+    const afterStartDate = !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
+    const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
+    return afterStartDate && beforeEndDate;
+  }).map((row) => (
+    <TableRow key={row.SNo}>
+      <TableCell>{row.SNo}</TableCell>
+      <TableCell>{row.CertificationName}</TableCell>
+      <TableCell>{row.Duration}</TableCell>
+      <TableCell>{row.DateOfCompletion}</TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
         </Table>
       </TableContainer>
     </div>
