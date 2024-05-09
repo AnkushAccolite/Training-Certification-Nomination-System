@@ -1,0 +1,85 @@
+/* RequestCard.css */
+.request-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.request-card h3 {
+    margin-top: 0;
+}
+
+.course-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.course-details {
+    flex-grow: 1;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.accept-button,
+.reject-button,
+.submit-button {
+    border: none;
+    border-radius: 3px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.accept-button {
+    background-color: #4CAF50;
+    color: white;
+    margin-right: 8px;
+}
+
+.reject-button {
+    background-color: #f44336;
+    color: white;
+    margin-right: 8px;
+}
+
+.submit-button {
+    background-color: #2196F3;
+    color: white;
+}
+
+.accept-button:hover {
+    background-color: #388e3c; /* Darker shade of green */
+}
+
+.reject-button:hover {
+    background-color: #d32f2f; /* Darker shade of red */
+}
+
+.submit-button:hover {
+    background-color: #0c7bb3; /* Darker shade of blue */
+}
+
+.submit-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.status {
+    font-weight: bold;
+    margin: 0;
+}
+
+.accepted {
+    color: #4CAF50;
+}
+
+.rejected {
+    color: #f44336;
+}

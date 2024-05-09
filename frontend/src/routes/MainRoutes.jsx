@@ -11,6 +11,10 @@ const AssignedCourses = Loadable(lazy(() => import('views/pages/AssignedCourses'
 const Status = Loadable(lazy(() => import('views/pages/Status')));
 const CoursesCompleted = Loadable(lazy(() => import('views/pages/CoursesCompleted')));
 const CertificationsCompleted = Loadable(lazy(() => import('views/pages/CertificationsCompleted')));
+const Requests = Loadable(lazy(() => import('views/pages/Requests')));
+const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
+const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
+const Nominate = Loadable(lazy(() => import('views/pages/Nominate')));
 
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -59,6 +63,22 @@ const MainRoutes = {
           path: 'certifications-completed',
           element: <CertificationsCompleted />
         },
+        {
+          path: 'pending-requests',
+          element: <Requests />
+        },
+        {
+          path: 'all-courses',
+          element: <AllCourses />
+        },
+        {
+          path:'/AllCourses/add-course',
+          element: <AddCourse />
+        },
+        {
+          path:'/Courses/nominate',
+          element: <Nominate />
+        }
       ]
     },
     
