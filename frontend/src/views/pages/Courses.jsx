@@ -1,9 +1,18 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from "react-router-dom";
 
-const Courses = () => {
+ const Courses = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/courses/nomination-form")
+  };
+
   return (
-    <div>Courses</div>
-  )
-}
+    <button onClick={handleClick}>
+      Go to Form Page
+    </button>
+  );
+};
 
 export default Courses

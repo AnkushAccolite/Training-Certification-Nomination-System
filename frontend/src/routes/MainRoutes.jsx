@@ -13,7 +13,9 @@ const AssignedCourses = Loadable(lazy(() => import('views/pages/AssignedCourses'
 const Status = Loadable(lazy(() => import('views/pages/Status')));
 const CoursesCompleted = Loadable(lazy(() => import('views/pages/CoursesCompleted')));
 const CertificationsCompleted = Loadable(lazy(() => import('views/pages/CertificationsCompleted')));
-
+const NominationForm = Loadable(lazy(() => import('views/pages/NominationForm')));
+const MonthlyCourses = Loadable(lazy(() => import('views/pages/MonthlyCourses')));
+// const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -62,6 +64,17 @@ const MainRoutes = {
           element: <CertificationsCompleted />
         },
         {
+          path: '/courses/nomination-form',
+          element: <NominationForm />,
+        },
+        {
+          path: '/monthly-courses',
+          element: <MonthlyCourses />,
+        }
+        // {
+        //   path: '/MonthlyCourses/add-course',
+        //   element: <AddCourse />,
+        // }
           path: 'employee-report',
           element: <EmployeeReport />
         },
@@ -70,8 +83,8 @@ const MainRoutes = {
           element: <CourseReport />
         },
       ]
-    },
-    
+    }
+
   ]
 };
 

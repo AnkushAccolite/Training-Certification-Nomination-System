@@ -59,6 +59,11 @@ const items = {
       breadcrumbs: false
     },
     {
+      id: 'monthly-courses',
+      title: 'MonthlyCourses',
+      type: 'item',
+      url: '/monthly-courses',
+
       id: 'employee-report',
       title: 'Employee Report',
       type: 'item',
