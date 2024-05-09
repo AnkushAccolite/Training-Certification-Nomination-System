@@ -36,16 +36,11 @@ public class Employee {
 
     private String role;
 
-    private Boolean isAdmin;
-
     private List<String> courseIds;
 
     private List<String> certificationIds;
 
-    private Boolean eligibleForPromotions;
-
     private String managerId;
-
 
     public String getId() {
         return id;
@@ -88,5 +83,19 @@ public class Employee {
         this.role = role;
     }
 
+    public String getEmpId() {
+        return empId;
+    }
 
+    public void setEmpId(String empId) {
+        this.empId = empId;
+    }
+
+    public List<String> getCourseIds() {
+        return courseIds;
+    }
+
+    public void setCourseIds(List<String> courseIds) {
+        this.courseIds = courseIds;
+    }
 }
