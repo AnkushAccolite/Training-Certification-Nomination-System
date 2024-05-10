@@ -100,7 +100,7 @@ function Courses() {
       }
     }
     getData();
-  })
+  },[])
 
   const filteredRows = personName === 'All' ? data : data?.filter(row => row.category === personName);
 
