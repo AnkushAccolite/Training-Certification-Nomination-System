@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, MenuItem } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import SearchIcon from '@mui/icons-material/Search';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -9,12 +9,14 @@ import 'jspdf-autotable';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'; 
 
 const CourseReport = () => {
-  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedQuarter, setSelectedQuarter] = useState('');
   const [selectedDomain, setSelectedDomain] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [courses, setCourses] = useState([
-    { courseId: 'C001', name: 'Course 1', domain: 'Web Development', employeesEnrolled: 10, completionDate: '2024-04-15', employeesCompleted: 6 },
-    { courseId: 'C002', name: 'Course 2', domain: 'Data Science', employeesEnrolled: 15, completionDate: '2024-05-01', employeesCompleted: 12 },
+    { courseId: 'C001', name: 'Course 1', domain: 'Web Development', employeesEnrolled: 10, completionMonth: 4, employeesCompleted: 6 },
+    { courseId: 'C002', name: 'Course 2', domain: 'Data Science', employeesEnrolled: 15, completionMonth: 5, employeesCompleted: 12 },
   ]);
 
   const calculateAttendance = (completed, enrolled) => {
@@ -25,22 +27,43 @@ const CourseReport = () => {
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text('Course Report', 10, 10);
+  
+    const tableData = courses.map(course => [
+      course.courseId,
+      course.name,
+      course.domain,
+      course.employeesEnrolled,
+      course.employeesCompleted,
+      `${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`,
+      new Date(0, course.completionMonth - 1).toLocaleString('default', { month: 'long' })
+    ]);
+  
     doc.autoTable({
-      head: [['Course ID', 'Name', 'Domain', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Date']],
-      body: courses.map(course => [course.courseId, course.name, course.domain, course.employeesEnrolled, course.employeesCompleted, `${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`, course.completionDate]),
+      head: [['Course ID', 'Name', 'Domain', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Month']],
+      body: tableData,
       startY: 20 
     });
     doc.save('course_report.pdf');
   };
+  
 
   const handleSearch = () => {
     const filteredCourses = courses.filter(course => {
-      const completionDateMonth = new Date(course.completionDate);
-      return (!selectedMonth || completionDateMonth === selectedMonthIndex) &&
+      return (!selectedMonth || course.completionMonth === parseInt(selectedMonth)) &&
         (!selectedDomain || course.domain.toLowerCase().includes(selectedDomain.toLowerCase())) &&
-        (!searchQuery || course.courseId.toLowerCase().includes(searchQuery.toLowerCase()));
+        (!searchQuery || course.courseId.toLowerCase().includes(searchQuery.toLowerCase())) &&
+        (selectedQuarter === '' || (selectedQuarter === 'Q1' && course.completionMonth >= 1 && course.completionMonth <= 3) ||
+        (selectedQuarter === 'Q2' && course.completionMonth >= 4 && course.completionMonth <= 6) ||
+        (selectedQuarter === 'Q3' && course.completionMonth >= 7 && course.completionMonth <= 9) ||
+        (selectedQuarter === 'Q4' && course.completionMonth >= 10 && course.completionMonth <= 12) ||
+        (selectedQuarter === 'H1' && course.completionMonth >= 1 && course.completionMonth <= 6) ||
+        (selectedQuarter === 'H2' && course.completionMonth >= 7 && course.completionMonth <= 12));
     });
     setCourses(filteredCourses);
+  };
+
+  const handleFilterChange = (event) => {
+    setSelectedFilter(event.target.value);
   };
 
   return (
@@ -53,13 +76,59 @@ const CourseReport = () => {
           Filter by:
         </Typography>
         <div style={{ display: 'flex', marginBottom: '30px' }}>
-          <DatePicker
-            label="Month"
-            value={selectedMonth}
-            onChange={(date) => setSelectedMonth(date)}
-            views={['year', 'month']}
-            style={{ marginRight: '10px' }}
-          />
+          <TextField
+            select
+            label="Filter"
+            value={selectedFilter}
+            onChange={handleFilterChange}
+            style={{ width: '200px', marginRight: '10px' }}
+          >
+            <MenuItem value="Monthly">Monthly</MenuItem>
+            <MenuItem value="Quarterly">Quarterly</MenuItem>
+            <MenuItem value="HalfYearly">Half Yearly</MenuItem>
+            <MenuItem value="Yearly">Yearly</MenuItem>
+          </TextField>
+          {selectedFilter === 'Monthly' && (
+            <TextField
+              select
+              label="Month"
+              value={selectedMonth}
+              onChange={(event) => setSelectedMonth(event.target.value)}
+              style={{ width: '200px', marginRight: '10px' }}
+            >
+              {Array.from({ length: 12 }, (_, index) => (
+                <MenuItem key={index + 1} value={(index + 1).toString()}>
+                  {new Date(0, index).toLocaleString('default', { month: 'long' })}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
+          {selectedFilter === 'Quarterly' && (
+            <TextField
+              select
+              label="Quarter"
+              value={selectedQuarter}
+              onChange={(event) => setSelectedQuarter(event.target.value)}
+              style={{ width: '200px', marginRight: '10px' }}
+            >
+              <MenuItem value="Q1">Quarter 1 (Jan - Mar)</MenuItem>
+              <MenuItem value="Q2">Quarter 2 (Apr - Jun)</MenuItem>
+              <MenuItem value="Q3">Quarter 3 (Jul - Sep)</MenuItem>
+              <MenuItem value="Q4">Quarter 4 (Oct - Dec)</MenuItem>
+            </TextField>
+          )}
+          {selectedFilter === 'HalfYearly' && (
+            <TextField
+              select
+              label="Half Year"
+              value={selectedQuarter}
+              onChange={(event) => setSelectedQuarter(event.target.value)}
+              style={{ width: '200px', marginRight: '10px' }}
+            >
+              <MenuItem value="H1">First Half (Jan - Jun)</MenuItem>
+              <MenuItem value="H2">Second Half (Jul - Dec)</MenuItem>
+            </TextField>
+          )}
           <Autocomplete
             options={['Web Development', 'Data Science', 'Machine Learning', 'UI/UX Design']}
             value={selectedDomain}
@@ -90,7 +159,7 @@ const CourseReport = () => {
                 <TableCell>Employees Enrolled</TableCell>
                 <TableCell>Employees Completed</TableCell>
                 <TableCell>Attendance</TableCell>
-                <TableCell>Date</TableCell>
+                <TableCell>Month</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -102,7 +171,8 @@ const CourseReport = () => {
                   <TableCell>{course.employeesEnrolled}</TableCell>
                   <TableCell>{course.employeesCompleted}</TableCell>
                   <TableCell>{`${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`}</TableCell>
-                  <TableCell>{course.completionDate}</TableCell>
+                  <TableCell>{new Date(0, course.completionMonth - 1).toLocaleString('default', { month: 'long' })}</TableCell>
+
                 </TableRow>
               ))}
             </TableBody>
