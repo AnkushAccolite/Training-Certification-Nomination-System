@@ -24,6 +24,7 @@ public class CourseController {
         return ResponseEntity.ok(res);
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping
     public ResponseEntity<List<Course>> getCourses() {
         List<Course> res = this.courseService.getAllCourses();
