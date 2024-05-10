@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, MenuItem } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import SearchIcon from '@mui/icons-material/Search';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -10,7 +10,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const CourseReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedQuarter, setSelectedQuarter] = useState('');
   const [selectedDomain, setSelectedDomain] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -40,16 +40,23 @@ const CourseReport = () => {
   
     doc.autoTable({
       head: [['Course ID', 'Name', 'Domain', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Month']],
-      body: tableData,
+      body: courses.map(course => [course.courseId, course.name, course.domain, course.employeesEnrolled, course.employeesCompleted, `${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`, getMonthName(course.completionDate)]),
       startY: 20 
     });
     doc.save('course_report.pdf');
   };
   
 
+  const getMonthName = (date) => {
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const completionDateMonth = new Date(date).getMonth();
+    return monthNames[completionDateMonth];
+  };
+
   const handleSearch = () => {
     const filteredCourses = courses.filter(course => {
-      return (!selectedMonth || course.completionMonth === parseInt(selectedMonth)) &&
+      const completionDateMonth = new Date(course.completionDate).getMonth() + 1; // Adding 1 to get month index starting from 1
+      return (!selectedMonth || completionDateMonth === selectedMonth) &&
         (!selectedDomain || course.domain.toLowerCase().includes(selectedDomain.toLowerCase())) &&
         (!searchQuery || course.courseId.toLowerCase().includes(searchQuery.toLowerCase())) &&
         (selectedQuarter === '' || (selectedQuarter === 'Q1' && course.completionMonth >= 1 && course.completionMonth <= 3) ||
@@ -64,6 +71,31 @@ const CourseReport = () => {
 
   const handleFilterChange = (event) => {
     setSelectedFilter(event.target.value);
+  };
+
+  const renderInnerDropdown = () => {
+    if (selectedFilter === 'Monthly') {
+      return (
+        <DatePicker
+          label="Month"
+          value={selectedMonth}
+          onChange={(date) => setSelectedMonth(date.getMonth() + 1)} // Adding 1 to get month index starting from 1
+          views={['month']}
+          style={{ marginRight: '10px' }}
+        />
+      );
+    } else if (selectedFilter === 'Quarterly') {
+      return (
+        <Autocomplete
+          options={['Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4']}
+          value={selectedQuarter}
+          onChange={(event, newValue) => setSelectedQuarter(newValue)}
+          renderInput={(params) => <TextField {...params} label="Quarter" style={{ width: '200px', marginRight: '10px' }} />}
+        />
+      );
+    } else {
+      return null;
+    }
   };
 
   return (
@@ -85,50 +117,9 @@ const CourseReport = () => {
           >
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
-            <MenuItem value="HalfYearly">Half Yearly</MenuItem>
             <MenuItem value="Yearly">Yearly</MenuItem>
           </TextField>
-          {selectedFilter === 'Monthly' && (
-            <TextField
-              select
-              label="Month"
-              value={selectedMonth}
-              onChange={(event) => setSelectedMonth(event.target.value)}
-              style={{ width: '200px', marginRight: '10px' }}
-            >
-              {Array.from({ length: 12 }, (_, index) => (
-                <MenuItem key={index + 1} value={(index + 1).toString()}>
-                  {new Date(0, index).toLocaleString('default', { month: 'long' })}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
-          {selectedFilter === 'Quarterly' && (
-            <TextField
-              select
-              label="Quarter"
-              value={selectedQuarter}
-              onChange={(event) => setSelectedQuarter(event.target.value)}
-              style={{ width: '200px', marginRight: '10px' }}
-            >
-              <MenuItem value="Q1">Quarter 1 (Jan - Mar)</MenuItem>
-              <MenuItem value="Q2">Quarter 2 (Apr - Jun)</MenuItem>
-              <MenuItem value="Q3">Quarter 3 (Jul - Sep)</MenuItem>
-              <MenuItem value="Q4">Quarter 4 (Oct - Dec)</MenuItem>
-            </TextField>
-          )}
-          {selectedFilter === 'HalfYearly' && (
-            <TextField
-              select
-              label="Half Year"
-              value={selectedQuarter}
-              onChange={(event) => setSelectedQuarter(event.target.value)}
-              style={{ width: '200px', marginRight: '10px' }}
-            >
-              <MenuItem value="H1">First Half (Jan - Jun)</MenuItem>
-              <MenuItem value="H2">Second Half (Jul - Dec)</MenuItem>
-            </TextField>
-          )}
+          {renderInnerDropdown()}
           <Autocomplete
             options={['Web Development', 'Data Science', 'Machine Learning', 'UI/UX Design']}
             value={selectedDomain}
@@ -159,7 +150,7 @@ const CourseReport = () => {
                 <TableCell>Employees Enrolled</TableCell>
                 <TableCell>Employees Completed</TableCell>
                 <TableCell>Attendance</TableCell>
-                <TableCell>Month</TableCell>
+                <TableCell>Month</TableCell> {/* Change "Date" to "Month" */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -171,8 +162,7 @@ const CourseReport = () => {
                   <TableCell>{course.employeesEnrolled}</TableCell>
                   <TableCell>{course.employeesCompleted}</TableCell>
                   <TableCell>{`${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`}</TableCell>
-                  <TableCell>{new Date(0, course.completionMonth - 1).toLocaleString('default', { month: 'long' })}</TableCell>
-
+                  <TableCell>{getMonthName(course.completionDate)}</TableCell> {/* Change to display month */}
                 </TableRow>
               ))}
             </TableBody>
