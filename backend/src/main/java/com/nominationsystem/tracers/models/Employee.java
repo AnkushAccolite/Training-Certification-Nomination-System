@@ -18,6 +18,8 @@ public class Employee {
     @Id
     private String id;
 
+    private String empName;
+
     private String empId;
 
     @NotBlank

@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @Validated
+@CrossOrigin(origins="*")
 @RequestMapping("/course")
 public class CourseController {
 
