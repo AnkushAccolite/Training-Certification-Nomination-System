@@ -25,8 +25,6 @@ import DialogActions from '@mui/material/DialogActions';
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios"
 
-import axios from "../../api/axios";
-
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
