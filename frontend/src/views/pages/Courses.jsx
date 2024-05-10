@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
@@ -24,6 +23,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { useNavigate } from "react-router-dom";
+import axios from "../../api/axios"
 
 import axios from "../../api/axios";
 
@@ -45,35 +45,36 @@ function getStyles(name, personName, theme) {
     fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
   };
 }
-function createData(name, category, duration, description) {
-  return { name, category, duration, description };
-}
-const rows = [
-  createData('Web development with Python (e.g., Django, Flask)', 'Technical', 4),
-  createData('Become an iOS Developer from Scratch', 'Technical', 8),
-  createData('Cybersecurity Fundamentals', 'Domain', 3),
-  createData('Frontend development with JavaScript (e.g., React.js, Angular, Vue.js)', 'Technical', 5),
-  createData('Effective Presentation Skills', 'Power', 2),
-  createData('Mindfulness and Stress Management', 'Power', 1.5),
-  createData('Financial Analysis and Reporting', 'Domain', 4),
-  createData('Learn Flutter - Beginners Course', 'Technical', 2),
-  createData('Agile Scrum Fundamentals for Product Managers', 'Domains', 2),
-  createData('MEAN/MERN stack development (MongoDB, Express.js, Angular/React.js, Node.js)', 'Technical', 8),
-  createData('Product Lifecycle Management (PLM)', 'Domain', 3),
-  createData('React JS For Beginners', 'Technical', 2),
-  createData('Data Visualization using Python ', 'Technical', 2.5),
-  createData('Microsoft Azure Application', 'Technical', 2),
-  createData('Google Cloud Platform for Beginners', 'Technical', 1),
-  createData('Writing Powerful Business Reports', 'Power', 1.5),
-  createData('Emotional Intelligence in the workplace', 'Power', 1),
-  createData('Spring Framework for Java development', 'Technical', 6),
-];
+// function createData(name, category, duration, description) {
+//   return { name, category, duration, description };
+// }
+// const rows = [
+//   createData('Web development with Python (e.g., Django, Flask)', 'Technical', 4),
+//   createData('Become an iOS Developer from Scratch', 'Technical', 8),
+//   createData('Cybersecurity Fundamentals', 'Domain', 3),
+//   createData('Frontend development with JavaScript (e.g., React.js, Angular, Vue.js)', 'Technical', 5),
+//   createData('Effective Presentation Skills', 'Power', 2),
+//   createData('Mindfulness and Stress Management', 'Power', 1.5),
+//   createData('Financial Analysis and Reporting', 'Domain', 4),
+//   createData('Learn Flutter - Beginners Course', 'Technical', 2),
+//   createData('Agile Scrum Fundamentals for Product Managers', 'Domains', 2),
+//   createData('MEAN/MERN stack development (MongoDB, Express.js, Angular/React.js, Node.js)', 'Technical', 8),
+//   createData('Product Lifecycle Management (PLM)', 'Domain', 3),
+//   createData('React JS For Beginners', 'Technical', 2),
+//   createData('Data Visualization using Python ', 'Technical', 2.5),
+//   createData('Microsoft Azure Application', 'Technical', 2),
+//   createData('Google Cloud Platform for Beginners', 'Technical', 1),
+//   createData('Writing Powerful Business Reports', 'Power', 1.5),
+//   createData('Emotional Intelligence in the workplace', 'Power', 1),
+//   createData('Spring Framework for Java development', 'Technical', 6),
+// ];
 function Courses() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState('All'); // Default category set to 'All'
-  const [selectedCourse, setSelectedCourse] = React.useState(null);
-  const [showDetails, setShowDetails] = React.useState(false);
+  const [personName, setPersonName] = useState('All'); // Default category set to 'All'
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [data,setData] = useState([]);
 
   const handleChange = (event) => {
     const {
@@ -91,7 +92,19 @@ function Courses() {
     setShowDetails(false);
   };
 
-  const filteredRows = personName === 'All' ? rows : rows.filter(row => row.category === personName);
+  useEffect(()=>{
+    const getData=async()=>{
+      try{
+        const temp = await axios.get("/course");
+        setData(temp.data);
+      }catch(err){
+        console.log("Courses Fetch Error => ",err);
+      }
+    }
+    getData();
+  })
+
+  const filteredRows = personName === 'All' ? data : data?.filter(row => row.category === personName);
 
   useEffect(() => {
     const getData = async () => {
@@ -150,16 +163,16 @@ function Courses() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.map((row) => (
-                <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              {filteredRows?.map((row) => (
+                <TableRow key={row?.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell style={{ paddingRight: '5%' }} component="th" scope="row">
-                    {row.name}
+                    {row?.courseName}
                     <div>
                       <Button variant="contained" style={{ marginLeft: '500px', marginRight: '-100px' }} onClick={() => handleViewDetails(row)}>View Details</Button>
                     </div>
                   </TableCell>
-                  <TableCell style={{ margin: 'auto' }}>{row.category}</TableCell>
-                  <TableCell style={{ paddingLeft: '5%' }}>{row.duration}</TableCell>
+                  <TableCell style={{ margin: 'auto' }}>{row?.category}</TableCell>
+                  <TableCell style={{ paddingLeft: '5%' }}>{row?.duration}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

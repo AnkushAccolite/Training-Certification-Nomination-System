@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, FormControl, InputLabel, OutlinedInput, MenuItem, Select, Chip, Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
+import axios from '../../api/axios';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -9,31 +10,25 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 300,
-    },
-  },
+      width: 300
+    }
+  }
 };
-const courseOptions = [
-  'Course A',
-  'Course B',
-  'Course C',
-  'Course D',
-  // Add more courses as needed
-];
 
 export default function Nominate() {
   const [formData, setFormData] = useState({
-    employeeName: '',
-    employeeID: '',
-    coursesToEnroll: [],
-    suggestions: ''
+    empName: '',
+    empId: '',
+    courses: [],
+    courseSuggestions: ''
   });
 
   const [showSuccessAlert, setShowSuccessAlert] = useState(false); // State for showing success alert
+  const [courses, setCourses] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
       [name]: value
     }));
@@ -41,30 +36,43 @@ export default function Nominate() {
 
   const handleCourseChange = (event) => {
     const { value } = event.target;
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
-      coursesToEnroll: value,
+      courses: value
     }));
   };
 
   const handleSuggestionsFocus = () => {
-    // Do not reset the coursesToEnroll field when moving to the suggestions field
+    // Do not reset the courses field when moving to the courseSuggestions field
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission, you can send formData to server or perform any other action
-    console.log(formData);
-    // Show success alert
-    setShowSuccessAlert(true);
-    // Reset form data after submission
-    setFormData({
-      employeeName: '',
-      employeeID: '',
-      coursesToEnroll: [],
-      suggestions: ''
-    });
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      const resp = await axios.post('/nomination', formData);
+      setShowSuccessAlert(true);
+      setFormData({
+        empName: '',
+        empId: '',
+        courses: [],
+        courseSuggestions: ''
+      });
+    } catch (err) {
+      console.log(err)
+    }
   };
+
+  useEffect(() => {
+    const getCourseData = async () => {
+      try {
+        const temp = await axios.get('/course');
+        setCourses(temp.data);
+      } catch (err) {
+        console.log('Courses Fetch Error => ', err);
+      }
+    };
+    getCourseData();
+  }, []);
 
   return (
     <Box
@@ -79,7 +87,7 @@ export default function Nominate() {
         border: '1px solid #ccc',
         borderRadius: 5,
         backgroundColor: '#fff',
-        boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.2)',
+        boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.2)'
       }}
     >
       <h2 style={{ textAlign: 'center', marginTop: 0 }}>NOMINATION FORM</h2>
@@ -89,8 +97,8 @@ export default function Nominate() {
           <OutlinedInput
             id="employee-name"
             type="text"
-            name="employeeName"
-            value={formData.employeeName}
+            name="empName"
+            value={formData.empName}
             onChange={handleChange}
             label="Employee Name"
             required
@@ -101,8 +109,8 @@ export default function Nominate() {
           <OutlinedInput
             id="employee-id"
             type="text"
-            name="employeeID"
-            value={formData.employeeID}
+            name="empId"
+            value={formData.empId}
             onChange={handleChange}
             label="Employee ID"
             required
@@ -114,7 +122,7 @@ export default function Nominate() {
             labelId="courses-to-enroll-label"
             id="courses-to-enroll"
             multiple
-            value={formData.coursesToEnroll}
+            value={formData.courses}
             onChange={handleCourseChange}
             onBlur={handleSuggestionsFocus}
             renderValue={(selected) => (
@@ -128,24 +136,24 @@ export default function Nominate() {
             label="Courses to Enroll"
             required
           >
-            {courseOptions.map((course) => (
-              <MenuItem key={course} value={course}>
-                {course}
+            {courses?.map((course) => (
+              <MenuItem key={course?.courseName} value={course?.courseName}>
+                {course?.courseName}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
-          <InputLabel htmlFor="suggestions">Suggestions</InputLabel>
+          <InputLabel htmlFor="courseSuggestions">courseSuggestions</InputLabel>
           <OutlinedInput
-            id="suggestions"
+            id="courseSuggestions"
             multiline
             rows={4}
-            name="suggestions"
-            value={formData.suggestions}
+            name="courseSuggestions"
+            value={formData.courseSuggestions}
             onChange={handleChange}
             onFocus={handleSuggestionsFocus}
-            label="Suggestions"
+            label="courseSuggestions"
             required
           />
         </FormControl>
