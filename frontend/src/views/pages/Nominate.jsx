@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Box, FormControl, InputLabel, OutlinedInput, MenuItem, Select, Chip, Button } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import CheckIcon from '@mui/icons-material/Check';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -27,6 +29,8 @@ export default function Nominate() {
     suggestions: ''
   });
 
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false); // State for showing success alert
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -51,6 +55,8 @@ export default function Nominate() {
     e.preventDefault();
     // Handle form submission, you can send formData to server or perform any other action
     console.log(formData);
+    // Show success alert
+    setShowSuccessAlert(true);
     // Reset form data after submission
     setFormData({
       employeeName: '',
@@ -143,10 +149,22 @@ export default function Nominate() {
             required
           />
         </FormControl>
+        {/* Other form fields */}
         <Button type="submit" variant="contained" sx={{ width: '100%', borderRadius: 5 }}>
           Submit
         </Button>
       </form>
+      {/* Success alert */}
+      {showSuccessAlert && (
+        <Alert
+          icon={<CheckIcon fontSize="inherit" />}
+          severity="success"
+          onClose={() => setShowSuccessAlert(false)} // Close alert on close button click
+          sx={{ width: '100%', marginTop: 2 }}
+        >
+          Your form has been submitted successfully.
+        </Alert>
+      )}
     </Box>
   );
 }

@@ -23,7 +23,7 @@ const AllCourses = () => {
     { id: 11, coursename: 'Course 11', duration: '1 month', domain: 'Non-Technical', status: 'inactive', description: 'Course 11 description' },
   ]);
   
-    // Add more courses here
+  // Add more courses here
 
   const [showAddCourse, setShowAddCourse] = useState(false);
   const handleCourseAdd = (newCourse) => {
@@ -122,7 +122,8 @@ const AllCourses = () => {
   const handleActivateButtonClick = () => {
     const updatedCourses = courses.map(course => {
       if (selectedRows.includes(course.id)) {
-        return { ...course, status: 'active' };
+        // Toggle between 'active' and 'inactive' statuses
+        return { ...course, status: course.status === 'active' ? 'inactive' : 'active' };
       }
       return course;
     });
@@ -148,33 +149,39 @@ const AllCourses = () => {
     <div>
       <h2>All Courses</h2>
       
-      <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-        <Button variant="contained" onClick={handleClick}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+        {/* Domain filter */}
+        <div style={{ flex: '1', marginRight: '10px' }}>
+          <label htmlFor="domainFilter">Filter by Domain:</label>
+          <Select
+            id="domainFilter"
+            value={selectedDomain}
+            onChange={handleDomainFilterChange}
+            style={{ width: '150px' }}
+          >
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="Technical">Technical</MenuItem>
+            <MenuItem value="Non-Technical">Non-Technical</MenuItem>
+          </Select>
+        </div>
+        
+        {/* Add Course Button */}
+        <Button variant="contained" onClick={handleClick} style={{ marginRight: '10px' }}>
           Add Course
         </Button>
+        
+        {/* Activate Button */}
         <Button
           variant="contained"
           disabled={!isActivateButtonEnabled}
-          style={{ marginLeft: '10px' }}
           onClick={handleActivateButtonClick}
         >
-          Activate
+         Change Status
         </Button>
       </div>
-      {showAddCourse && <AddCourse onCourseAdd={handleCourseAdd} />}
-      {/* Domain filter */}
-      <label htmlFor="domainFilter">Filter by Domain:</label>
-      <Select
-  id="domainFilter"
-  value={selectedDomain}
-  onChange={handleDomainFilterChange}
-  style={{ width: '150px' }} // Adjust the width here as needed
->
-  <MenuItem value="All">All</MenuItem>
-  <MenuItem value="Technical">Technical</MenuItem>
-  <MenuItem value="Non-Technical">Non-Technical</MenuItem>
-</Select>
 
+      {showAddCourse && <AddCourse onCourseAdd={handleCourseAdd} />}
+      
       {/* Table */}
       <Table  style={{ backgroundColor: 'white' }}>
         <TableHead>
