@@ -29,6 +29,7 @@
     "@tabler/icons-react": "^2.47.0",
     "@vitejs/plugin-react": "^4.2.1",
     "apexcharts": "^3.46.2",
+    "axios": "^1.6.8",
     "chart.js": "^4.4.2",
     "dayjs": "^1.11.11",
     "env-cmd": "^10.1.0",

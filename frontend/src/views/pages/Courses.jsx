@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import ArticleIcon from '@mui/icons-material/Article';
@@ -23,6 +24,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { useNavigate } from "react-router-dom";
+
+import axios from "../../api/axios";
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -89,10 +93,23 @@ function Courses() {
 
   const filteredRows = personName === 'All' ? rows : rows.filter(row => row.category === personName);
 
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const temp = await axios.get("/course")
+
+        console.log(temp.data);
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    getData();
+  })
+
   return (
     <div>
       {/* Dropdown(single select) */}
-      <div style={{display:'inline-block'}}>
+      <div style={{ display: 'inline-block' }}>
         <FormControl sx={{ m: 1, width: 300 }}>
           <InputLabel id="demo-multiple-category-label" >Category</InputLabel>
           <Select
@@ -113,7 +130,7 @@ function Courses() {
       </div>
       {/* Nominate Btn */}
       <div>
-        <Stack style={{ float: 'right', width: '20%', fontSize:'larger', paddingTop:'0%' }} direction="row" spacing={2}>
+        <Stack style={{ float: 'right', width: '20%', fontSize: 'larger', paddingTop: '0%' }} direction="row" spacing={2}>
           <Button className="nominateBtn" variant="outlined" startIcon={<LocalLibraryIcon />} onClick={() => navigate('/courses/nominate')}>
             Nominate
           </Button>
