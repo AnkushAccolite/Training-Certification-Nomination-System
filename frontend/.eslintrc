@@ -43,6 +43,7 @@
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
     "react/react-in-jsx-scope": "off",
+    "requireConfigFile": false,
     "no-undef": "off",
     "react/display-name": "off",
     "react/jsx-filename-extension": "off",
