@@ -1,0 +1,86 @@
+.request-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.request-card h3 {
+    margin-top: 0;
+    cursor: pointer;
+}
+
+.course-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.course-details {
+    flex-grow: 1;
+}
+
+.accepted {
+    background-color: white; /* Green */
+    color: green;
+}
+
+.rejected {
+    background-color: white; /* Red */
+    color: red;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.accept-button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin: 2px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Style for reject button */
+.reject-button {
+    background-color: #f44336; /* Red */
+    border: none;
+    color: white;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin: 2px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+.accept-button:hover {
+    background-color: #388e3c; /* Darker shade of green */
+}
+
+.reject-button:hover {
+    background-color: #d32f2f; /* Darker shade of red */
+}
+.greyed-out {
+    pointer-events: none;
+    opacity: 0.5; /* Optionally reduce opacity for visual indication */
+}
+table {
+    border-collapse: separate;
+    width: max-content;
+}
+
+td, th {
+    padding: 5px 30px; /* Adjust the padding values to increase or decrease space between columns */
+}

@@ -107,6 +107,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import './Requests.css';
 
 const Requests = () => {
+<<<<<<< Updated upstream
   const [courses, setCourses] = useState([
     { id: 1, courseName: 'React', domain: 'Web Development', duration: '4 weeks', accepted: false, rejected: false },
     { id: 2, courseName: 'Machine Learning', domain: 'Data Science', duration: '6 weeks', accepted: false, rejected: false }
@@ -168,6 +169,73 @@ const Requests = () => {
                   checked={isSelected(course.id)}
                   onChange={() => handleCheckboxChange(course.id)}
                   disabled={course.accepted || course.rejected}
+=======
+    const [cards, setCards] = useState([
+        { 
+            id: 1, 
+            employeeName: 'Employee 1', 
+            courses: [
+                { courseId: 1, courseName: 'Course A', category: 'Category X', courseDuration: '2 weeks', accepted: false },
+                { courseId: 2, courseName: 'Course B', category: 'Category Y', courseDuration: '3 weeks', accepted: false }
+            ],
+            closed: false // New property to track if card is closed
+        },
+        { 
+            id: 2, 
+            employeeName: 'Employee 2', 
+            courses: [
+                { courseId: 3, courseName: 'Course C', category: 'Category Z', courseDuration: '4 weeks', accepted: false }
+            ],
+            closed: false // New property to track if card is closed
+        }
+        // Add more initial card data as needed
+    ]);
+
+    const handleAcceptCourse = (employeeId, courseId) => {
+        setCards(cards.map(card => {
+            if (card.id === employeeId) {
+                const updatedCourses = card.courses.map(course => {
+                    if (course.courseId === courseId) {
+                        return { ...course, accepted: true };
+                    }
+                    return course;
+                });
+                const allAccepted = updatedCourses.every(course => course.accepted);
+                return { ...card, courses: updatedCourses, closed: allAccepted };
+            }
+            return card;
+        }));
+    };
+
+    const handleRejectCourse = (employeeId, courseId) => {
+        setCards(cards.map(card => {
+            if (card.id === employeeId) {
+                const updatedCourses = card.courses.map(course => {
+                    if (course.courseId === courseId) {
+                        return { ...course, accepted: false };
+                    }
+                    return course;
+                });
+                const allAccepted = updatedCourses.every(course => course.accepted);
+                return { ...card, courses: updatedCourses, closed: allAccepted };
+            }
+            return card;
+        }));
+    };
+
+    return (
+        <div className="requests">
+            <h2>Pending Requests</h2>
+            
+            {cards.map(card => (
+                <RequestCard
+                    key={card.id}
+                    employeeName={card.employeeName}
+                    courses={card.courses}
+                    closed={card.closed}
+                    onAccept={(courseId) => handleAcceptCourse(card.id, courseId)}
+                    onReject={(courseId) => handleRejectCourse(card.id, courseId)}
+>>>>>>> Stashed changes
                 />
               </TableCell>
               <TableCell>{course.courseName}</TableCell>
