@@ -1,17 +1,18 @@
-
-
 import 'chart.js/auto';
 import React, { useState, useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
 import '../../App.css';
 import cardImg from '../../assets/images/icons/image.png';
+import Typography from '@mui/material/Typography';
+import PieChartOutlineIcon from '@mui/icons-material/PieChartOutline';
+// import { PieChartOutline } from '@mui/icons-material';
 
 const AssignedCourses = () => {
   const [courses, setCourses] = useState([
     { name: 'Course 1', status: 'start' },
     { name: 'Course 2', status: 'inprogress' },
     { name: 'Course 3', status: 'completed' },
-    { name: 'Course 4', status: 'start' },
+    { name: 'Course 4', status: 'start' }
     // Add more courses as needed
   ]);
 
@@ -55,7 +56,7 @@ const AssignedCourses = () => {
 
     // Define button color based on status
     let buttonColor = '';
-    switch(status) {
+    switch (status) {
       case 'start':
         buttonColor = '#3498db'; // Blue
         break;
@@ -74,12 +75,20 @@ const AssignedCourses = () => {
         <img src={cardImg} alt="Course" style={{ width: '100%', maxWidth: '200px' }} />
         <h3>{name}</h3>
         {status === 'start' && (
-          <button onClick={handleStartCourse} style={{ backgroundColor: buttonColor }} className="start-button">Start Course</button>
+          <button onClick={handleStartCourse} style={{ backgroundColor: buttonColor }} className="start-button">
+            Start Course
+          </button>
         )}
         {status === 'inprogress' && (
-          <button onClick={handleGoToCourse} style={{ backgroundColor: buttonColor }} className="go-to-button">Go to Course</button>
+          <button onClick={handleGoToCourse} style={{ backgroundColor: buttonColor }} className="go-to-button">
+            Go to Course
+          </button>
         )}
-        <p><b>Status: <span style={{ color: '#000' }}>{status}</span></b></p>
+        <p>
+          <b>
+            Status: <span style={{ color: '#000' }}>{status}</span>
+          </b>
+        </p>
       </div>
     );
   };
@@ -95,15 +104,23 @@ const AssignedCourses = () => {
         </div>
       </div>
       <div className="pie-chart-section">
-        <h2>Course Status</h2>
+        {/* <h2>Course Status</h2> */}
+        <Typography variant="h2" gutterBottom style={{ display: 'flex', alignItems: 'center' }}>
+          <PieChartOutlineIcon sx={{ marginRight: '10px' }} />
+          Employee Report
+        </Typography>
         <div className="pie-chart-container">
-          <Pie data={{
-            labels: Object.keys(chartData),
-            datasets: [{
-              data: Object.values(chartData),
-              backgroundColor: ['#3498db', '#8e44ad', '#2ecc71'], // Blue, Purple, Green
-            }]
-          }} />
+          <Pie
+            data={{
+              labels: Object.keys(chartData),
+              datasets: [
+                {
+                  data: Object.values(chartData),
+                  backgroundColor: ['#3498db', '#8e44ad', '#2ecc71'] // Blue, Purple, Green
+                }
+              ]
+            }}
+          />
         </div>
       </div>
     </div>
@@ -111,4 +128,3 @@ const AssignedCourses = () => {
 };
 
 export default AssignedCourses;
-
