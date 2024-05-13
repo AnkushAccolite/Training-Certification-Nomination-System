@@ -1,12 +1,11 @@
 package com.nominationsystem.tracers.repository;
 
-
-
 import com.nominationsystem.tracers.models.Employee;
 import org.springframework.data.mongodb.repository.MongoRepository;
-
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
+@Repository
 public interface EmployeeRepository extends MongoRepository<Employee, String> {
 
     Optional<Employee> findByUsername(String username);
@@ -16,5 +15,7 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
     Boolean existsByUsername(String username);
 
     Boolean existsByEmail(String email);
+
+    Employee findByEmpId(String empId);
 
 }

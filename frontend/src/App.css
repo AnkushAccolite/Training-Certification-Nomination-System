@@ -15,8 +15,12 @@
     position: fixed; 
     top: 20%; 
     right: 0; 
-    bottom: 0; 
+    bottom: 0%; 
+    margin-top: 50px;
     /* overflow: auto;  */
+  }
+  .pie-chart-section h2 {
+    text-align: center; /* Center align the heading */
   }
   
   .pie-chart-container {
@@ -27,6 +31,7 @@
   .course-cards {
     display: flex;
     flex-wrap: wrap;
+    gap: 20px;
   }
   .course-card {
     flex: 1 1 calc(50% - 20px); /* Two cards per row */
