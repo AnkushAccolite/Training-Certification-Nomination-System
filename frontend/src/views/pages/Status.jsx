@@ -7,6 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 function createData(CourseID, CourseName) {
   return { CourseID, CourseName };
@@ -76,6 +77,7 @@ const Status = () => {
                     variant="contained"
                     color="error"
                     onClick={() => handleCancel(row.CourseID)}
+                    startIcon={<CancelIcon/>}
                   >
                     Cancel
                   </Button>

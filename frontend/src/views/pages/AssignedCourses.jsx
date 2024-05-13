@@ -8,6 +8,9 @@ import Typography from '@mui/material/Typography';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea, Button } from '@mui/material'; // Import Button from MUI
 import cardImg from '../../assets/images/icons/image.png';
+import Typography from '@mui/material/Typography';
+import PieChartOutlineIcon from '@mui/icons-material/PieChartOutline';
+// import { PieChartOutline } from '@mui/icons-material';
 
 const AssignedCourses = () => {
   const cardImageHeight = 180;
