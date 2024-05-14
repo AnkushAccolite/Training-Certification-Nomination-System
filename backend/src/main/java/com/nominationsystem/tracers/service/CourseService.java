@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -17,9 +18,17 @@ public class CourseService {
     public Course getCourse(String courseName) {
         return courseRepository.findByCourseName(courseName);
     }
+    public Course getCourseById(String courseId) {
+        return courseRepository.findByCourseId(courseId);
+    }
 
     public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+        List<Course> temp = courseRepository.findAll();
+
+        List<Course> filteredList=temp.stream()
+                .filter(obj -> !obj.getDelete())
+                .collect(Collectors.toList());;
+        return filteredList;
     }
 
     public Course addCourse(Course course) {
@@ -27,7 +36,9 @@ public class CourseService {
     }
 
     public void updateCourse(String courseId, Course updatedCourse) {
-        Course existingCourse = getCourse(courseId);
+        Course existingCourse = getCourseById(courseId);
+
+        System.out.println(existingCourse);
 
         if(updatedCourse.getCourseName() != null) {
             existingCourse.setCourseName(updatedCourse.getCourseName());
@@ -35,8 +46,8 @@ public class CourseService {
         if(updatedCourse.getDuration() != null) {
             existingCourse.setDuration(updatedCourse.getDuration());
         }
-        if(updatedCourse.getCategory() != null) {
-            existingCourse.setCategory(updatedCourse.getCategory());
+        if(updatedCourse.getDomain() != null) {
+            existingCourse.setDomain(updatedCourse.getDomain());
         }
         if(updatedCourse.getDescription() != null) {
             existingCourse.setDescription(updatedCourse.getDescription());
@@ -49,15 +60,17 @@ public class CourseService {
     }
 
     public void deleteCourse(String courseId) {
-        this.courseRepository.deleteById(courseId);
+        Course existingCourse = getCourseById(courseId);
+        existingCourse.setDelete(true);
+        courseRepository.save(existingCourse);
     }
 
-    public void changeMonthlyCourseStatus(List<String> courseNames, String month) {
+    public void changeMonthlyCourseStatus(List<String> courseIds, String month) {
 
         Month monthEnum = Month.valueOf(month.toUpperCase());
 
-        courseNames.forEach(courseName -> {
-            Course course = courseRepository.findByCourseName(courseName);
+        courseIds.forEach(courseId -> {
+            Course course = courseRepository.findByCourseId(courseId);
             if (course != null) {
                 course.getMonthlyStatus().stream()
                         .filter(status -> status.getMonth() == monthEnum)
