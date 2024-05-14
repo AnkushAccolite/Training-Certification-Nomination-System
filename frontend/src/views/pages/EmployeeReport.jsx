@@ -62,11 +62,12 @@ const EmployeeReport = () => {
         employee.empID,
         employee.name,
         employee.coursesEnrolled.join(', '),
+        employee.category.join(', '), 
         employee.completionMonth.map(month => new Date(0, month - 1).toLocaleString('default', { month: 'long' })).join(', ')
       ]);
 
       doc.autoTable({
-        head: [['EmpID', 'Name', 'Courses', 'Completion Month']], 
+        head: [['EmpID', 'Name', 'Courses','Category', 'Completion Month']], 
         body: tableData,
         startY: 20
       });
@@ -111,14 +112,25 @@ const EmployeeReport = () => {
     }
   };
 
+
   // const handleSearch = () => {
   //   const filteredEmployees = employees.filter(employee => {
-  //     const hasSelectedCategory = employee.category.some(cat => cat === selectedCategory);
+  //     const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
+  //       if (employee.completionMonth[index] === parseInt(selectedMonth)) {
+  //         acc.push({
+  //           course,
+  //           category: employee.category[index],
+  //           completionMonth: new Date(0, employee.completionMonth[index] - 1).toLocaleString('default', { month: 'long' })
+  //         });
+  //       }
+  //       return acc;
+  //     }, []);
+  
   //     return (
-  //       (!selectedMonth || employee.completionMonth.includes(parseInt(selectedMonth))) &&
-  //       (selectedCategory === '' || hasSelectedCategory) && 
+  //       (!selectedMonth || matchingCourses.length > 0) &&
   //       (!searchQueryName || employee.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
   //       (!searchQueryID || employee.empID.toLowerCase().includes(searchQueryID.toLowerCase())) &&
+  //       (selectedCategory === '' || matchingCourses.some(course => course.category === selectedCategory)) &&
   //       (selectedQuarter === '' || 
   //         (selectedQuarter === 'Q1' && employee.completionMonth.some(month => month >= 1 && month <= 3)) ||
   //         (selectedQuarter === 'Q2' && employee.completionMonth.some(month => month >= 4 && month <= 6)) ||
@@ -127,35 +139,48 @@ const EmployeeReport = () => {
   //         (selectedQuarter === 'H1' && employee.completionMonth.some(month => month >= 1 && month <= 6)) ||
   //         (selectedQuarter === 'H2' && employee.completionMonth.some(month => month >= 7 && month <= 12)))
   //     );
+      
   //   });
   
   //   setEmployees(filteredEmployees);
   // };
-
+  
   const handleSearch = () => {
     const filteredEmployees = employees.filter(employee => {
-      const filteredCourses = employee.coursesEnrolled.filter((course, index) => {
-        const hasSelectedCategory = employee.category[index] === selectedCategory;
-        return hasSelectedCategory;
-      });
+      const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
+        const completionMonth = employee.completionMonth[index];
+        if (
+          (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
+          (!selectedCategory || employee.category[index] === selectedCategory) &&
+          (
+            (!selectedQuarter) ||
+            (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
+            (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
+            (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
+            (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
+            (selectedQuarter === 'H1' && (completionMonth >= 1 && completionMonth <= 6)) ||
+            (selectedQuarter === 'H2' && (completionMonth >= 7 && completionMonth <= 12))
+          )
+        ) {
+          acc.push({
+            course,
+            category: employee.category[index],
+            completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
+          });
+        }
+        return acc;
+      }, []);
   
       return (
-        (!selectedMonth || employee.completionMonth.includes(parseInt(selectedMonth))) &&
         (!searchQueryName || employee.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
         (!searchQueryID || employee.empID.toLowerCase().includes(searchQueryID.toLowerCase())) &&
-        (selectedCategory === '' || filteredCourses.length > 0) && 
-        (selectedQuarter === '' || 
-          (selectedQuarter === 'Q1' && employee.completionMonth.some(month => month >= 1 && month <= 3)) ||
-          (selectedQuarter === 'Q2' && employee.completionMonth.some(month => month >= 4 && month <= 6)) ||
-          (selectedQuarter === 'Q3' && employee.completionMonth.some(month => month >= 7 && month <= 9)) ||
-          (selectedQuarter === 'Q4' && employee.completionMonth.some(month => month >= 10 && month <= 12)) ||
-          (selectedQuarter === 'H1' && employee.completionMonth.some(month => month >= 1 && month <= 6)) ||
-          (selectedQuarter === 'H2' && employee.completionMonth.some(month => month >= 7 && month <= 12)))
+        (matchingCourses.length > 0)
       );
     });
   
     setEmployees(filteredEmployees);
   };
+  
 
 
   
@@ -261,7 +286,7 @@ const EmployeeReport = () => {
             </TextField>
           )}
           <Autocomplete
-            options={['Domain', 'Power', 'Technical']}
+            options={['Domain', 'Power', 'Technical','Process']}
             value={selectedCategory}
             onChange={(event, newValue) => setSelectedCategory(newValue)}
             renderInput={(params) => <TextField {...params} label="Category" style={{ width: '200px', marginRight: '10px' }} />}
@@ -297,23 +322,103 @@ const EmployeeReport = () => {
                 <TableCell>Completion Month</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {employees.map((employee) => (
-                employee.coursesEnrolled.map((course, index) => (
-                  <TableRow key={`${employee.empID}-${course}`}>
-                    {index === 0 && (
-                      <TableCell rowSpan={employee.coursesEnrolled.length}>{employee.empID}</TableCell>
-                    )}
-                    {index === 0 && (
-                      <TableCell rowSpan={employee.coursesEnrolled.length}>{employee.name}</TableCell>
-                    )}
-                    <TableCell>{course}</TableCell>
-                    <TableCell>{employee.category[index]}</TableCell>
-                    <TableCell>{new Date(0, employee.completionMonth[index] - 1).toLocaleString('default', { month: 'long' })}</TableCell>
-                  </TableRow>
-                ))
-              ))}
-            </TableBody>
+
+
+            {/* <TableBody>
+  {employees.map((employee) => {
+    const filteredCourses = employee.coursesEnrolled.filter((course, index) => 
+      !selectedCategory || employee.category[index] === selectedCategory
+    );
+    const coursesLength = filteredCourses.length;
+    let rows = [];
+    let firstRowRendered = false;
+
+    employee.coursesEnrolled.forEach((course, index) => {
+      if (!selectedCategory || employee.category[index] === selectedCategory) {
+        const completionMonth = new Date(0, employee.completionMonth[index] - 1).toLocaleString('default', { month: 'long' });
+        if (!firstRowRendered) {
+          firstRowRendered = true;
+          rows.push(
+            <TableRow key={`${employee.empID}-${course}`}>
+              <TableCell rowSpan={coursesLength}>{employee.empID}</TableCell>
+              <TableCell rowSpan={coursesLength}>{employee.name}</TableCell>
+              <TableCell>{course}</TableCell>
+              <TableCell>{employee.category[index]}</TableCell>
+              <TableCell>{completionMonth}</TableCell>
+            </TableRow>
+          );
+        } else {
+          rows.push(
+            <TableRow key={`${employee.empID}-${course}`}>
+              <TableCell>{course}</TableCell>
+              <TableCell>{employee.category[index]}</TableCell>
+              <TableCell>{completionMonth}</TableCell>
+            </TableRow>
+          );
+        }
+      }
+    });
+    
+    return coursesLength > 0 ? rows : null; 
+  })}
+</TableBody> */}
+
+<TableBody>
+  {employees.map((employee) => {
+    const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
+      const completionMonth = employee.completionMonth[index];
+      if (
+        (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
+        (!selectedCategory || employee.category[index] === selectedCategory) &&
+        (
+          (!selectedQuarter) ||
+          (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
+          (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
+          (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
+          (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
+          (selectedQuarter === 'H1' && (completionMonth >= 1 && completionMonth <= 6)) ||
+          (selectedQuarter === 'H2' && (completionMonth >= 7 && completionMonth <= 12))
+        )
+      ) {
+        acc.push({
+          course,
+          category: employee.category[index],
+          completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
+        });
+      }
+      return acc;
+    }, []);
+
+    let rows = [];
+    matchingCourses.forEach((course, index) => {
+      const completionMonth = course.completionMonth;
+      if (index === 0) {
+        rows.push(
+          <TableRow key={`${employee.empID}-${course.course}`}>
+            <TableCell rowSpan={matchingCourses.length}>{employee.empID}</TableCell>
+            <TableCell rowSpan={matchingCourses.length}>{employee.name}</TableCell>
+            <TableCell>{course.course}</TableCell>
+            <TableCell>{course.category}</TableCell>
+            <TableCell>{completionMonth}</TableCell>
+          </TableRow>
+        );
+      } else {
+        rows.push(
+          <TableRow key={`${employee.empID}-${course.course}`}>
+            <TableCell>{course.course}</TableCell>
+            <TableCell>{course.category}</TableCell>
+            <TableCell>{completionMonth}</TableCell>
+          </TableRow>
+        );
+      }
+    });
+
+    return matchingCourses.length > 0 ? rows : null;
+  })}
+</TableBody>
+
+
+
           </Table>
         </TableContainer>
       </div>
