@@ -104,6 +104,10 @@ function Courses() {
 
   useEffect(() => {
     if(!(auth?.isAuthenticated))navigate("/login");
+    if(!localStorage.getItem("refresh")){
+      localStorage.setItem("refresh",true)
+      navigate(0);
+    }
   }, []);
 
   const handleChange = (event) => {
