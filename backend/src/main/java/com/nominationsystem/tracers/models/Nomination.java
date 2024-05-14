@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,27 +21,18 @@ public class Nomination {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String nominationId;
 
-    private String approvalStatus;
-
     private String empName;
 
     private String empId;
 
-    private List<String> courses;
-
-    private List<String> certifId;
-
     private String managerId;
+
+    private List<NominatedCourseStatus> nominatedCourses = new ArrayList<>();
+
+    private List<String> certifId = new ArrayList<>();
 
     private String nominationDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
     private String courseSuggestions;
 
-    public ApprovalStatus getApprovalStatus() {
-        return ApprovalStatus.valueOf(approvalStatus);
-    }
-
-    public void setApprovalStatus(ApprovalStatus approvalStatus) {
-        this.approvalStatus = approvalStatus.name();
-    }
 }

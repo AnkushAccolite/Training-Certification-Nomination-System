@@ -5,6 +5,7 @@ import com.nominationsystem.tracers.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Month;
 import java.util.List;
 
 @Service
@@ -21,16 +22,8 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public void renderAddCourseForm() {
-        //redirect to add form
-    }
-
     public Course addCourse(Course course) {
         return (this.courseRepository.save(course));
-    }
-
-    public void renderUpdateCourseForm(String courseId) {
-        //redirect to update form
     }
 
     public void updateCourse(String courseId, Course updatedCourse) {
@@ -51,9 +44,6 @@ public class CourseService {
         if(updatedCourse.getIsApprovalReq() != null) {
             existingCourse.setIsApprovalReq(updatedCourse.getIsApprovalReq());
         }
-        if(updatedCourse.getIsActive() != null) {
-            existingCourse.setIsActive(updatedCourse.getIsActive());
-        }
 
         courseRepository.save(existingCourse);
     }
@@ -62,4 +52,21 @@ public class CourseService {
         this.courseRepository.deleteById(courseId);
     }
 
+    public void changeMonthlyCourseStatus(List<String> courseNames, String month) {
+
+        Month monthEnum = Month.valueOf(month.toUpperCase());
+
+        courseNames.forEach(courseName -> {
+            Course course = courseRepository.findByCourseName(courseName);
+            if (course != null) {
+                course.getMonthlyStatus().stream()
+                        .filter(status -> status.getMonth() == monthEnum)
+                        .findFirst()
+                        .ifPresent(status -> {
+                            status.setActivationStatus(!status.isActivationStatus());
+                            courseRepository.save(course);
+                        });
+            }
+        });
+    }
 }

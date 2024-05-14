@@ -46,4 +46,12 @@ public class NominationController {
         nominationService.deleteNomination(nominationId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{approveOrRejectAction}")
+    public void approvePendingRequest(@PathVariable("approveOrRejectAction") String action,
+                                      @RequestParam String nominationId,
+                                      @RequestParam String courseName) {
+        nominationService.takeActionOnPendingRequest(nominationId, courseName, action);
+    }
+
 }
