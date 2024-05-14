@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Table, TableHead, TableBody, TableCell, TableRow, Select, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Checkbox } from '@mui/material';
 import AddCourse from './AddCourse';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
 
 const AllCourses = () => {
   // Dummy data for courses (replace with actual data)
