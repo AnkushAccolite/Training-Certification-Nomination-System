@@ -3,6 +3,9 @@ package com.nominationsystem.tracers.payload.response;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class JwtResponse {
     private String token;
@@ -22,6 +25,33 @@ public class JwtResponse {
 
     @JsonIgnore
     private List<String> roles;
+//    --------------------------------------
+
+    @JsonIgnore
+    private String empName;
+
+    @JsonIgnore
+    private String empId;
+
+//    private List<String> courseIds;
+//
+//    private List<String> certificationIds;
+
+    @JsonIgnore
+    private String managerId;
+
+
+//    ----------------------------------------
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -69,13 +99,16 @@ public class JwtResponse {
         this.token = token;
     }
 
-    public JwtResponse(String token, String type, String id, String username, String email, List<String> roles) {
+    public JwtResponse(String token, String type, String id, String username, String email, List<String> roles,String empId,String managerId,String empName) {
         this.token = token;
         this.type = type;
         this.id = id;
         this.username = username;
         this.email = email;
         this.roles = roles;
+        this.empId=empId;
+        this.managerId=managerId;
+        this.empName=empName;
     }
 
     public JwtResponse(String token, List<String> roles) {
@@ -86,5 +119,27 @@ public class JwtResponse {
         super();
     }
 
+    public String getEmpName() {
+        return empName;
+    }
 
+    public void setEmpName(String empName) {
+        this.empName = empName;
+    }
+
+    public String getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(String empId) {
+        this.empId = empId;
+    }
+
+    public String getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
+    }
 }

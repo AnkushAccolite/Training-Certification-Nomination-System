@@ -5,9 +5,12 @@ import ButtonBase from '@mui/material/ButtonBase';
 import config from 'config';
 import { MENU_OPEN } from 'store/actions';
 import logo from 'assets/images/logo.png'; // Import the logo image
+
+
 const LogoSection = () => {
   const defaultId = useSelector((state) => state.customization.defaultId);
   const dispatch = useDispatch();
+
   return (
     <ButtonBase
       disableRipple

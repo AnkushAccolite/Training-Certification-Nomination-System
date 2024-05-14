@@ -150,25 +150,15 @@ const ProfileSection = () => {
                       <Stack direction="row" spacing={0.5} alignItems="center">
                         <Typography variant="h4">Welcome,</Typography>
                         <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                          Employee Name
+                          {auth?.user?.empName}
                         </Typography>
                       </Stack>
-                      <Typography variant="subtitle2">Employee ID</Typography>
+                      <Typography variant="subtitle2">{auth?.user?.empId}</Typography>
                     </Stack>
                     
                   </Box>
                   <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                     <Box sx={{ p: 2, pt: 0 }}>
-                      <UpgradePlanCard />
-                      
-                      <Card
-                        sx={{
-                          bgcolor: theme.palette.primary.light,
-                          my: 2
-                        }}
-                      >      
-                      </Card>
-                      
                       <List
                         component="nav"
                         sx={{
@@ -205,6 +195,7 @@ const ProfileSection = () => {
                           </ListItemIcon>
                           <ListItemText onClick={()=>{
                             dispatch(logout());
+                            localStorage.removeItem("refresh")
                             navigate("/login")
                           }} primary={<Typography variant="body2">Logout</Typography>} />
                         </ListItemButton>

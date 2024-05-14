@@ -38,7 +38,7 @@ public class CourseController {
     }
 
     @PostMapping
-    public Course addCourse(@Valid @RequestBody Course course) {
+    public Course addCourse(@RequestBody Course course) {
         return (this.courseService.addCourse(course));
     }
 
