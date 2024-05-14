@@ -6,9 +6,20 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 import cardImg from '../../assets/images/icons/image.png';
 import Typography from '@mui/material/Typography';
 import PieChartOutlineIcon from '@mui/icons-material/PieChartOutline';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 // import { PieChartOutline } from '@mui/icons-material';
 
 const AssignedCourses = () => {
+  const cardImageHeight = 180;
+
+  const navigate = useNavigate();
+  const auth = useSelector(state=>state.auth);
+
+  useEffect(() => {
+    if(!(auth?.isAuthenticated))navigate("/login");
+  }, []);
+
   const [courses, setCourses] = useState([
     { name: 'Course 1', status: 'start' },
     { name: 'Course 2', status: 'inprogress' },

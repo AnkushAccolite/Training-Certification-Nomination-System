@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import Stack from '@mui/material/Stack';
@@ -20,6 +20,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -96,6 +98,13 @@ function Courses() {
   const [selectedYear, setSelectedYear] = React.useState('All');
   const [selectedMonth, setSelectedMonth] = React.useState('All');
   const [selectedStatus, setSelectedStatus] = React.useState('All');
+  
+  const navigate = useNavigate();
+  const auth = useSelector(state=>state.auth);
+
+  useEffect(() => {
+    if(!(auth?.isAuthenticated))navigate("/login");
+  }, []);
 
   const handleChange = (event) => {
     const {
@@ -172,6 +181,13 @@ function Courses() {
       return (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
     }
   });
+
+  // const auth = useSelector(state=>state.auth);
+  // const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  // useEffect(()=>{
+  //   // console.log("Auth -> ",auth);
+  //   console.log("Authenticated -> ",isAuthenticated);
+  // },[])
 
   return (
     <div>

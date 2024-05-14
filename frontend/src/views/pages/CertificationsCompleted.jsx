@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
@@ -12,6 +12,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 function createData(SNo, CertificationName, Duration, DateOfCompletion) {
   return { SNo, CertificationName, Duration, DateOfCompletion };
@@ -33,6 +35,12 @@ const CertificationsCompleted = () => {
   const handleEndDateChange = (date) => {
     setEndDate(date);
   };
+  const navigate = useNavigate();
+  const auth = useSelector(state=>state.auth);
+
+  useEffect(() => {
+    if(!(auth?.isAuthenticated))navigate("/login");
+  }, []);
 
   return (
     <div>

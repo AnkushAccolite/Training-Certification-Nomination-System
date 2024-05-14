@@ -9,15 +9,31 @@ import Typography from '@mui/material/Typography';
 // project imports
 import NavItem from '../NavItem';
 import NavCollapse from '../NavCollapse';
+import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 
 // ==============================|| SIDEBAR MENU LIST GROUP ||============================== //
 
 const NavGroup = ({ item }) => {
   const theme = useTheme();
 
+  const role = useSelector(state=>state.auth?.user?.role);
+
+  const [loading,setLoading] = useState(false);
+
+
+  useEffect(()=>{
+    setLoading(false);
+    item.children = item.children.filter(x=>x.roles.includes(role))
+    setLoading(true);
+    // console.log("item->",item.children.filter(x=>x.roles.includes(role)))
+  },[])
+
   // menu list collapse & items
   const items = item.children?.map((menu) => {
-    switch (menu.type) {
+
+    if(loading){
+      switch (menu.type) {
       case 'collapse':
         return <NavCollapse key={menu.id} menu={menu} level={1} />;
       case 'item':
@@ -28,12 +44,15 @@ const NavGroup = ({ item }) => {
             Menu Items Error
           </Typography>
         );
+    }  
     }
+    
   });
 
   return (
     <>
-      <List
+      {loading && (
+        <List
         subheader={
           item.title && (
             <Typography variant="caption" sx={{ ...theme.typography.menuCaption }} display="block" gutterBottom>
@@ -49,6 +68,7 @@ const NavGroup = ({ item }) => {
       >
         {items}
       </List>
+      )}
 
       {/* group divider */}
       <Divider sx={{ mt: 0.25, mb: 1.25 }} />

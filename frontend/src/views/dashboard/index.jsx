@@ -1,4 +1,5 @@
 import { useEffect} from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 
 
@@ -24,10 +25,12 @@ const Dashboard = () => {
   // const [isLoading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+  const auth = useSelector(state=>state.auth);
 
   useEffect(() => {
     // setLoading(false);
-    navigate("/courses")
+    if(!(auth?.isAuthenticated))navigate("/login");
+    else navigate("/courses")
 
   }, []);
 

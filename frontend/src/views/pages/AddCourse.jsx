@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, FormControl, InputLabel, OutlinedInput, Button } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 const AddCourse = ({ onCourseAdd }) => {
+
+  const auth = useSelector(state=>state.auth);
+    const navigate = useNavigate();
+    useEffect(()=>{
+        if(!(auth?.isAuthenticated && auth?.user?.role==="ADMIN"))navigate("/login");
+    },[])
+
+
   const [formData, setFormData] = useState({
     coursename: '',
     duration: '',

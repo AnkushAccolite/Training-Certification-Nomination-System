@@ -75,7 +75,7 @@ const MainRoutes = {
           element: <AllCourses />
         },
         {
-          path:'/AllCourses/add-course',
+          path:'AllCourses/add-course',
           element: <AddCourse />
         },
        
