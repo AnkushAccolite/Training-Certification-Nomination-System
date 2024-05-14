@@ -266,10 +266,12 @@ const MonthlyCourses = () => {
       ]);
 
 
+
   const [sortingOrder, setSortingOrder] = useState('ascending');
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
-  const [selectedDomainFilter, setSelectedDomainFilter] = useState('All');
+  const [domainFilter, setDomainFilter] = useState('All');
+
 
   const handleSortingOrderChange = () => {
     setSortingOrder(sortingOrder === 'ascending' ? 'descending' : 'ascending');
@@ -290,7 +292,8 @@ const MonthlyCourses = () => {
   };
 
   const handleDomainFilterChange = (event) => {
-    setSelectedDomainFilter(event.target.value);
+    setDomainFilter(event.target.value);
+
   };
 
   const sortedCourses = [...courses].sort((a, b) => {
@@ -302,17 +305,26 @@ const MonthlyCourses = () => {
   });
 
   const filteredCourses = sortedCourses.filter(course => {
-    if (selectedDomainFilter === 'All') {
+    if (domainFilter === 'All') {
       return true;
     } else {
-      return course.domain === selectedDomainFilter;
+      return course.domain === domainFilter;
+
     }
   });
 
   return (
     <div>
-      <h2>Monthly Courses</h2>
+      <div style={{ marginBottom: '10px' }}>
+        <label>Filter by Domain:</label>
+        <Select value={domainFilter} onChange={handleDomainFilterChange} style={{ marginLeft: '10px' }}>
+          <MenuItem value="All">All</MenuItem>
+          <MenuItem value="Technical">Technical</MenuItem>
+          <MenuItem value="Non-Technical">Non-Technical</MenuItem>
+        </Select>
+      </div>
 
+      <h2>Monthly Courses</h2>
       <Table sx={{ backgroundColor: 'white' }}>
         <TableHead>
           <TableRow>
@@ -323,17 +335,7 @@ const MonthlyCourses = () => {
               </Button>
             </TableCell>
             <TableCell align="center">Duration</TableCell>
-            <TableCell align="center">
-              <label style={{ marginRight: '5px' }}>Domain</label>
-              <Select
-                value={selectedDomainFilter}
-                onChange={handleDomainFilterChange}
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Technical">Technical</MenuItem>
-                <MenuItem value="Non-Technical">Non-Technical</MenuItem>
-              </Select>
-            </TableCell>
+            <TableCell align="center">Domain</TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
