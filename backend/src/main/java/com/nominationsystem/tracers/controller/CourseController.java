@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @Validated
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 @RequestMapping("/course")
 public class CourseController {
 
@@ -38,20 +38,20 @@ public class CourseController {
 
     @PutMapping("/{id}")
     public String updateCourse(@PathVariable("id") String courseId,
-                               @RequestBody Course course) {
+            @RequestBody Course course) {
         this.courseService.updateCourse(courseId, course);
         return "Course edited";
     }
 
-    @DeleteMapping("")
-    public void deleteCourse(@RequestParam("id") String courseId) {
+    @PutMapping("/delete/{id}")
+    public void deleteCourse(@PathVariable("id") String courseId) {
         this.courseService.deleteCourse(courseId);
     }
 
     @PostMapping("/change-status")
     public void changeMonthlyCourseStatus(@RequestParam String month,
-                                          @RequestBody List<String> courseNames) {
-        this.courseService.changeMonthlyCourseStatus(courseNames, month);
+            @RequestBody List<String> courseIds) {
+        this.courseService.changeMonthlyCourseStatus(courseIds, month);
     }
 
 }
