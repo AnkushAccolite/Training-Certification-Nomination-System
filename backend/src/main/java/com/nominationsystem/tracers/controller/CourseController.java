@@ -25,26 +25,15 @@ public class CourseController {
         return ResponseEntity.ok(res);
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping
     public ResponseEntity<List<Course>> getCourses() {
         List<Course> res = this.courseService.getAllCourses();
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/add")
-    public void addCourseForm() {
-        this.courseService.renderAddCourseForm();
-    }
-
     @PostMapping
     public Course addCourse(@RequestBody Course course) {
         return (this.courseService.addCourse(course));
-    }
-
-    @GetMapping("/edit/{id}")
-    public void updateCourseForm(@PathVariable("id") String courseId) {
-        this.courseService.renderUpdateCourseForm(courseId);
     }
 
     @PutMapping("/{id}")
@@ -57,6 +46,12 @@ public class CourseController {
     @DeleteMapping("")
     public void deleteCourse(@RequestParam("id") String courseId) {
         this.courseService.deleteCourse(courseId);
+    }
+
+    @PostMapping("/change-status")
+    public void changeMonthlyCourseStatus(@RequestParam String month,
+                                          @RequestBody List<String> courseNames) {
+        this.courseService.changeMonthlyCourseStatus(courseNames, month);
     }
 
 }

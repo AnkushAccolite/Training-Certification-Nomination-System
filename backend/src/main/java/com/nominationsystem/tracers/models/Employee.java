@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -38,9 +39,13 @@ public class Employee {
 
     private String role;
 
-    private List<String> courseIds;
+    private List<String> courseIds = new ArrayList<>();
 
-    private List<String> certificationIds;
+    private List<String> pendingCourses = new ArrayList<>();
+
+    private List<String> approvedCourses = new ArrayList<>();
+
+    private List<String> certificationIds = new ArrayList<>();
 
     private String managerId;
 

@@ -10,7 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,7 +37,7 @@ public class Course {
 
     private Boolean isApprovalReq;
 
-    private Boolean isActive;
+    private List<MonthlyCourseStatus> monthlyStatus = new ArrayList<>();
 
     private String publishedDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 }
