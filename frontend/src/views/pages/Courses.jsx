@@ -10,11 +10,9 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -186,90 +184,83 @@ function Courses() {
     }
   });
 
-  // const auth = useSelector(state=>state.auth);
-  // const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-  // useEffect(()=>{
-  //   // console.log("Auth -> ",auth);
-  //   console.log("Authenticated -> ",isAuthenticated);
-  // },[])
-
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-        <div style={{ marginRight: '30px', marginLeft:'20px' }}>
-          <label htmlFor="demo-year-select">Filter By Year:</label>
-          <FormControl sx={{ m: 1, width: 100 }}>
-            <Select
-              labelId="demo-year-label"
-              id="demo-year-select"
-              value={selectedYear}
-              onChange={handleYearChange}
-            >
-              <MenuItem value="All">All</MenuItem>
-              {[2022, 2023, 2024, 2025].map((year) => (
-                <MenuItem key={year} value={year}>{year}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </div>
-        <div style={{ marginRight: '100px', marginLeft:'-70px' }}>
-          <label htmlFor="demo-month-select">Filter By Month:</label>
-          <FormControl sx={{ m: 1, width: 100 }}>
-            <Select
-              labelId="demo-month-label"
-              id="demo-month-select"
-              value={selectedMonth}
-              onChange={handleMonthChange}
-            >
-              <MenuItem value="All">All</MenuItem>
-              {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
-                <MenuItem key={month} value={month}>{month}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </div>
-        <div style={{ marginRight: '200px', marginLeft:'-150px' }}>
-          <label htmlFor="demo-category-select">Filter By Category:</label>
-          <FormControl sx={{ m: 1, width: 100 }}>
-            <Select
-              labelId="demo-category-label"
-              id="demo-category-select"
-              value={personName}
-              onChange={handleCategoryChange}
-              style={{ width: '100px' }}
-            >
-              {names.map((name) => (
-                <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </div>
-        <div style={{ marginRight: '300px',marginLeft: '-250px' }}>
-          <label htmlFor="demo-status-select">Filter By Status:</label>
-          <FormControl sx={{ m: 1, width: 100 }}>
-            <Select
-              labelId="demo-status-label"
-              id="demo-status-select"
-              value={selectedStatus}
-              onChange={handleStatusChange}
-              style={{ width: '100px' }}
-            >
-              {statuses.map((status) => (
-                <MenuItem key={status} value={status} style={getStyles(status, selectedStatus, theme)}>
-                  {status}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </div>
-        <div>
-          <Button className="nominateBtn" variant="outlined" startIcon={<LocalLibraryIcon />} onClick={nominateCourses}>
-            Nominate
-          </Button>
-        </div>
-      </div>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" marginBottom="20px">
+        <Stack direction="row" spacing={5} alignItems="center">
+          <Stack direction="column" spacing={1} alignItems="center">
+            <label htmlFor="demo-year-select">Filter By Year:</label>
+            <FormControl sx={{ width: 100 }}>
+              <Select
+                labelId="demo-year-label"
+                id="demo-year-select"
+                value={selectedYear}
+                onChange={handleYearChange}
+              >
+                <MenuItem value="All">All</MenuItem>
+                {[2022, 2023, 2024, 2025].map((year) => (
+                  <MenuItem key={year} value={year}>{year}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+          <Stack direction="column" spacing={1} alignItems="center">
+            <label htmlFor="demo-month-select">Filter By Month:</label>
+            <FormControl sx={{ width: 100 }}>
+              <Select
+                labelId="demo-month-label"
+                id="demo-month-select"
+                value={selectedMonth}
+                onChange={handleMonthChange}
+              >
+                <MenuItem value="All">All</MenuItem>
+                {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
+                  <MenuItem key={month} value={month}>{month}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+          <Stack direction="column" spacing={1} alignItems="center">
+            <label htmlFor="demo-category-select">Filter By Category:</label>
+            <FormControl sx={{ width: 100 }}>
+              <Select
+                labelId="demo-category-label"
+                id="demo-category-select"
+                value={personName}
+                onChange={handleCategoryChange}
+                style={{ width: '100px' }}
+              >
+                {names.map((name) => (
+                  <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+          <Stack direction="column" spacing={1} alignItems="center">
+            <label htmlFor="demo-status-select">Filter By Status:</label>
+            <FormControl sx={{ width: 100 }}>
+              <Select
+                labelId="demo-status-label"
+                id="demo-status-select"
+                value={selectedStatus}
+                onChange={handleStatusChange}
+                style={{ width: '100px' }}
+              >
+                {statuses.map((status) => (
+                  <MenuItem key={status} value={status} style={getStyles(status, selectedStatus, theme)}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+        </Stack>
+        <Button className="nominateBtn" variant="outlined" startIcon={<LocalLibraryIcon />} onClick={nominateCourses}>
+          Nominate
+        </Button>
+      </Stack>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
         <TableContainer component={Paper}>
