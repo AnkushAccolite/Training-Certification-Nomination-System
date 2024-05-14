@@ -16,17 +16,17 @@ const AllCourses = () => {
     navigate("/AllCourses/add-course")
   };
   const [courses, setCourses] = useState([
-    { id: 1, coursename: 'Course 1', duration: '2 months', domain: 'Technical', status: 'inactive', month: 'January', description: 'Course 1 description' },
-    { id: 2, coursename: 'Course 2', duration: '3 months', domain: 'Technical', status: 'inactive', month: 'February', description: 'Course 2 description' },
-    { id: 3, coursename: 'Course 3', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'March', description: 'Course 3 description' },
-    { id: 4, coursename: 'Course 4', duration: '2 months', domain: 'Technical', status: 'inactive', month: 'April', description: 'Course 4 description' },
-    { id: 5, coursename: 'Course 5', duration: '3 months', domain: 'Technical', status: 'inactive', month: 'May', description: 'Course 5 description' },
-    { id: 6, coursename: 'Course 6', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'January', description: 'Course 6 description' },
-    { id: 7, coursename: 'Course 7', duration: '2 months', domain: 'Non-Technical', status: 'inactive', month: 'July', description: 'Course 7 description' },
-    { id: 8, coursename: 'Course 8', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'August', description: 'Course 8 description' },
-    { id: 9, coursename: 'Course 9', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'September', description: 'Course 9 description' },
-    { id: 10, coursename: 'Course 10', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'October', description: 'Course 10 description' },
-    { id: 11, coursename: 'Course 11', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'November', description: 'Course 11 description' },
+    { id: 1, coursename: 'Course 1', duration: '2 months', domain: 'Technical', status: 'inactive',description: 'Course 1 description' },
+    { id: 2, coursename: 'Course 2', duration: '3 months', domain: 'Technical', status: 'inactive',description: 'Course 2 description' },
+    { id: 3, coursename: 'Course 3', duration: '1 month', domain: 'Non-Technical', status: 'inactive',description: 'Course 3 description' },
+    { id: 4, coursename: 'Course 4', duration: '2 months', domain: 'Technical', status: 'inactive',description: 'Course 4 description' },
+    { id: 5, coursename: 'Course 5', duration: '3 months', domain: 'Technical', status: 'inactive',description: 'Course 5 description' },
+    { id: 6, coursename: 'Course 6', duration: '1 month', domain: 'Non-Technical', status: 'inactive',description: 'Course 6 description' },
+    { id: 7, coursename: 'Course 7', duration: '2 months', domain: 'Non-Technical', status: 'inactive',description: 'Course 7 description' },
+    { id: 8, coursename: 'Course 8', duration: '1 month', domain: 'Non-Technical', status: 'inactive',description: 'Course 8 description' },
+    { id: 9, coursename: 'Course 9', duration: '1 month', domain: 'Non-Technical', status: 'inactive',description: 'Course 9 description' },
+    { id: 10, coursename: 'Course 10', duration: '1 month', domain: 'Non-Technical', status: 'inactive',description: 'Course 10 description' },
+    { id: 11, coursename: 'Course 11', duration: '1 month', domain: 'Non-Technical', status: 'inactive',description: 'Course 11 description' },
     // Add more courses here
   ]);
 
@@ -138,22 +138,20 @@ const AllCourses = () => {
   }, [selectedRows]);
 
   const filteredCourses = courses.filter(course => {
-    if (selectedDomain === "All" && selectedStatus === "All" && selectedMonth === "All") {
+    if (selectedDomain === "All" && selectedStatus === "All") {
       return true;
     } else if (selectedDomain === "All" && selectedStatus === "All") {
-      return course.month === selectedMonth;
-    } else if (selectedDomain === "All" && selectedMonth === "All") {
+      return true;
+    } else if (selectedDomain === "All") {
       return course.status === selectedStatus;
-    } else if (selectedStatus === "All" && selectedMonth === "All") {
+    } else if (selectedStatus === "All") {
       return course.domain === selectedDomain;
     } else if (selectedDomain === "All") {
-      return course.status === selectedStatus && course.month === selectedMonth;
+      return course.status === selectedStatus;
     } else if (selectedStatus === "All") {
-      return course.domain === selectedDomain && course.month === selectedMonth;
-    } else if (selectedMonth === "All") {
+      return course.domain === selectedDomain;
+    }else {
       return course.domain === selectedDomain && course.status === selectedStatus;
-    } else {
-      return course.domain === selectedDomain && course.status === selectedStatus && course.month === selectedMonth;
     }
   });
 
@@ -190,7 +188,7 @@ const AllCourses = () => {
         </div>
 
         {/* Status filter */}
-        <div style={{ flex: '1', marginRight: '10px' }}>
+        <div style={{ flex: '1', marginRight: '10px',marginLeft:"-5px" }}>
           <label htmlFor="statusFilter">Filter by Status:</label>
           <Select
             id="statusFilter"
@@ -206,7 +204,7 @@ const AllCourses = () => {
 
         {/* Month filter */}
         <div style={{ flex: '1', marginRight: '10px' }}>
-          <label htmlFor="monthFilter">Filter by Month:</label>
+          <label htmlFor="monthFilter">Select Month:</label>
           <Select
             id="monthFilter"
             value={selectedMonth}
@@ -267,7 +265,7 @@ const AllCourses = () => {
             <TableCell align="center">Duration</TableCell>
             <TableCell align="center">Domain</TableCell>
             <TableCell align="center">Status</TableCell>
-            <TableCell align="center">Month</TableCell>
+            {/* <TableCell align="center">Month</TableCell> */}
             <TableCell align="center">Action</TableCell>
           </TableRow>
         </TableHead>
@@ -319,7 +317,7 @@ const AllCourses = () => {
                   {course.status}
                 </span>
               </TableCell>
-              <TableCell align="center">
+              {/* <TableCell align="center">
                 {editingCourseId === course.id ? (
                   <TextField
                     value={editFields.month || course.month}
@@ -328,7 +326,7 @@ const AllCourses = () => {
                 ) : (
                   course.month
                 )}
-              </TableCell>
+              </TableCell> */}
               <TableCell align="center">
                 {editingCourseId === course.id ? (
                   <>
