@@ -7,6 +7,11 @@ import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 const AllCourses = () => {
   // Dummy data for courses (replace with actual data)
   const navigate = useNavigate();
+  const auth = useSelector(state=>state.auth);
+    // const navigate = useNavigate();
+    useEffect(()=>{
+        if(!(auth?.isAuthenticated && auth?.user?.role==="ADMIN"))navigate("/login");
+    },[])
   const handleClick = () => {
     navigate("/AllCourses/add-course")
   };

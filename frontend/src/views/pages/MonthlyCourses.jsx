@@ -248,8 +248,15 @@
 import React, { useState } from 'react';
 import { Button, Table, TableHead, TableBody, TableCell, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem } from '@mui/material';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const MonthlyCourses = () => {
+
+  const auth = useSelector(state=>state.auth);
+    const navigate = useNavigate();
+    useEffect(()=>{
+        if(!(auth?.isAuthenticated && auth?.user?.role==="ADMIN"))navigate("/login");
+    },[])
  
   const [courses, setCourses] = useState([
         { id: 1, coursename: 'Course 1', duration: '2 months', domain: 'Technical', description: 'Course 1 description' },

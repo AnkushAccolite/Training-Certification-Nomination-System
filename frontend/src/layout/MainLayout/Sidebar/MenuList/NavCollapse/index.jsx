@@ -22,12 +22,19 @@ import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 // ==============================|| SIDEBAR MENU LIST COLLAPSE ITEMS ||============================== //
 
 const NavCollapse = ({ menu, level }) => {
+
   const theme = useTheme();
   const customization = useSelector((state) => state.customization);
+  const role = useSelector((state) => state.auth?.user?.role);
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
+
+  useEffect(()=>{
+    // console.log("here here -> ",menu);
+    menu.children= menu.children.filter(item=>item.roles.includes(role));
+  },[])
 
   const handleClick = () => {
     setOpen(!open);
