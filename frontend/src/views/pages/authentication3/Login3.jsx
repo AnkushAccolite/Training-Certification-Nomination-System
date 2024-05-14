@@ -1,6 +1,5 @@
 
 // material-ui
-
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -38,7 +37,7 @@ const Login = () => {
                       <Grid item>
                         <Stack alignItems="center" justifyContent="center" spacing={1}>
                           <Typography color="InfoText" gutterBottom variant={downMD ? 'h3' : 'h2'}>
-                            TECHKNOW
+                            TEKNOW
                           </Typography>
                           <Typography color="secondary.main" gutterBottom variant={downMD ? 'h3' : 'h2'}>
                             Hi, Welcome Back

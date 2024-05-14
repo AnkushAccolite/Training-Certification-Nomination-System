@@ -1,7 +1,5 @@
-import { IconArrowRight, IconBook, IconBookOff } from '@tabler/icons-react';
-
-const icons = { IconArrowRight, IconBook, IconBookOff };
-
+import { IconArrowRight, IconBook, IconBook2 ,IconCertificate,IconFileCertificate,IconFileDescription,IconClipboardText,IconMessages} from '@tabler/icons-react';
+const icons = { IconArrowRight, IconBook, IconBook2 ,IconCertificate,IconFileCertificate,IconFileDescription,IconClipboardText,IconMessages };
 const items = {
   id: 'items',
   type: 'group',
@@ -10,7 +8,7 @@ const items = {
       id: 'courses',
       title: 'Courses',
       type: 'collapse',
-      icon: icons.IconBookOff,
+      icon: icons.IconBook2,
       roles: ['ADMIN', 'USER', 'MANAGER'],
       children: [
         {
@@ -40,14 +38,6 @@ const items = {
           icon: icons.IconBook,
           breadcrumbs: false
         },
-        // {
-        //   id: 'assigned-courses',
-        //   title: 'Assigned Courses',
-        //   type: 'item',
-        //   url: '/assigned-courses',
-        //   icon: icons.IconBook,
-        //   breadcrumbs: false
-        // },
         {
           id: 'courses-completed',
           title: 'Courses Completed',
@@ -63,7 +53,7 @@ const items = {
       id: 'certifications',
       title: 'Certifications',
       type: 'collapse',
-      icon: icons.IconBookOff,
+      icon: icons.IconCertificate,
       roles: ['ADMIN', 'USER', 'MANAGER'],
       children: [
         {
@@ -71,7 +61,7 @@ const items = {
           title: 'Available Courses for certification',
           type: 'item',
           url: '/certifications',
-          icon: icons.IconBook,
+          icon: icons.IconFileCertificate,
           roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false
         },
@@ -81,7 +71,7 @@ const items = {
           type: 'item',
           url: '/certifications-completed',
           roles: ['ADMIN', 'USER', 'MANAGER'],
-          icon: icons.IconBook,
+          icon: icons.IconFileCertificate,
           breadcrumbs: false
         }
       ]
@@ -90,7 +80,7 @@ const items = {
       id: 'reports',
       title: 'Reports',
       type: 'collapse',
-      icon: icons.IconBookOff,
+      icon: icons.IconFileDescription,
       roles: ['ADMIN'],
       children: [
         {
@@ -99,7 +89,7 @@ const items = {
           type: 'item',
           url: '/employee-report',
           roles: ['ADMIN'],
-          icon: icons.IconBook,
+          icon: icons.IconClipboardText,
           breadcrumbs: false
         },
         {
@@ -108,7 +98,7 @@ const items = {
           type: 'item',
           url: '/course-report',
           roles: ['ADMIN'],
-          icon: icons.IconBook,
+          icon: icons.IconClipboardText,
           breadcrumbs: false
         }
       ]
@@ -119,10 +109,9 @@ const items = {
       type: 'item',
       url: '/pending-requests',
       roles: ['MANAGER'],
-      icon: icons.IconBookOff,
+      icon: icons.IconMessages,
       breadcrumbs: false
     }
   ]
 };
-
 export default items;
