@@ -26,6 +26,12 @@ public class UserDetailsImpl implements UserDetails{
 
     private String email;
 
+    private String empId;
+
+    private String managerId;
+
+    private String empName;
+
     @JsonIgnore
     private String password;
 
@@ -36,13 +42,16 @@ public class UserDetailsImpl implements UserDetails{
 
 
 
-    public UserDetailsImpl(String id, String username, String email, String password, String role) {
+    public UserDetailsImpl(String id, String username, String email, String password, String role,String empId,String managerId,String empName) {
         super();
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.empId=empId;
+        this.managerId=managerId;
+        this.empName=empName;
     }
     public static UserDetailsImpl build(Employee users) {
 
@@ -51,7 +60,10 @@ public class UserDetailsImpl implements UserDetails{
                 users.getUsername(),
                 users.getEmail(),
                 users.getPassword(),
-                users.getRole());
+                users.getRole(),
+                users.getEmpId(),
+                users.getManagerId(),
+                users.getEmpName());
     }
 
 
@@ -84,6 +96,16 @@ public class UserDetailsImpl implements UserDetails{
 
     public String getEmail() {
         return email;
+    }
+
+    public String getEmpId() {
+        return empId;
+    }
+    public String getManagerId() {
+        return managerId;
+    }
+    public String getEmpName() {
+        return empName;
     }
 
     @Override
