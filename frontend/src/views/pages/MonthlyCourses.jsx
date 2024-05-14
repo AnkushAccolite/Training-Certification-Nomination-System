@@ -3,42 +3,52 @@ import { Button, Table, TableHead, TableBody, TableCell, TableRow, Dialog, Dialo
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import axios from '../../api/axios';
 
 const MonthlyCourses = () => {
 
   const auth = useSelector(state => state.auth);
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+
   useEffect(() => {
     if (!(auth?.isAuthenticated && auth?.user?.role === "ADMIN")) navigate("/login");
+
+    const getCourses=async()=>{
+      try {
+        const {data}=await axios.get("/course");
+        setCourses(data);
+        console.log("monthly",data)
+      } catch (error) {
+        console.log(error?.message);
+      }
+    }
+    getCourses();
+
   }, []);
 
-  const [courses, setCourses] = useState([
-    { id: 1, coursename: 'Course 1', duration: '2 months', domain: 'Technical', month: 'January', description: 'Course 1 description' },
-    { id: 2, coursename: 'Course 2', duration: '3 months', domain: 'Technical', month: 'February', description: 'Course 2 description' },
-    { id: 3, coursename: 'Course 3', duration: '1 month', domain: 'Non-Technical', month: 'March', description: 'Course 3 description' },
-    { id: 4, coursename: 'Course 4', duration: '2 months', domain: 'Technical', month: 'April', description: 'Course 4 description' },
-    { id: 5, coursename: 'Course 5', duration: '3 months', domain: 'Technical', month: 'May', description: 'Course 5 description' },
-    { id: 6, coursename: 'Course 6', duration: '1 month', domain: 'Non-Technical', month: 'June', description: 'Course 6 description' },
-    { id: 7, coursename: 'Course 7', duration: '2 months', domain: 'Non-Technical', month: 'July', description: 'Course 7 description' },
-    { id: 8, coursename: 'Course 8', duration: '1 month', domain: 'Non-Technical', month: 'August', description: 'Course 8 description' },
-    { id: 9, coursename: 'Course 9', duration: '1 month', domain: 'Non-Technical', month: 'September', description: 'Course 9 description' },
-    { id: 10, coursename: 'Course 10', duration: '1 month', domain: 'Non-Technical', month: 'October', description: 'Course 10 description' },
-    { id: 11, coursename: 'Course 11', duration: '1 month', domain: 'Non-Technical', month: 'November', description: 'Course 11 description' },
-    // Add more courses here as needed
-  ]);
+
+    // Create a new Date object
+const currentDate = new Date();
+
+// Get the current month name
+const currentMonthName = currentDate.toLocaleString('default', { month: 'long' });
+
+// Convert the month name to uppercase
+const currentMonthUppercase = currentMonthName.toUpperCase();
 
   const [sortingOrder, setSortingOrder] = useState('ascending');
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [domainFilter, setDomainFilter] = useState('All');
-  const [monthFilter, setMonthFilter] = useState('All');
+  const [monthFilter, setMonthFilter] = useState(currentMonthUppercase);
 
   const handleSortingOrderChange = () => {
     setSortingOrder(sortingOrder === 'ascending' ? 'descending' : 'ascending');
   };
 
   const deleteCourse = (id) => {
-    const updatedCourses = courses.filter(course => course.id !== id);
+    const updatedCourses = courses.filter(course => course.courseId !== id);
     setCourses(updatedCourses);
   };
 
@@ -61,21 +71,19 @@ const MonthlyCourses = () => {
 
   const sortedCourses = [...courses].sort((a, b) => {
     if (sortingOrder === 'ascending') {
-      return a.coursename.localeCompare(b.coursename);
+      return a?.courseName.localeCompare(b?.courseName);
     } else {
-      return b.coursename.localeCompare(a.coursename);
+      return b?.courseName.localeCompare(a?.courseName);
     }
   });
 
+
+
   const filteredCourses = sortedCourses.filter(course => {
-    if (domainFilter === 'All' && monthFilter === 'All') {
-      return true;
-    } else if (domainFilter === 'All') {
-      return course.month === monthFilter;
-    } else if (monthFilter === 'All') {
-      return course.domain === domainFilter;
-    } else {
-      return course.domain === domainFilter && course.month === monthFilter;
+    if (domainFilter === 'All') {
+      return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === monthFilter)?.activationStatus
+    }else {
+      return course?.domain === domainFilter && course?.monthlyStatus?.find(monthStatus => monthStatus?.month === monthFilter)?.activationStatus
     }
   });
 
@@ -87,23 +95,24 @@ const MonthlyCourses = () => {
           <MenuItem value="All">All</MenuItem>
           <MenuItem value="Technical">Technical</MenuItem>
           <MenuItem value="Non-Technical">Non-Technical</MenuItem>
+          <MenuItem value="Power">Non-Technical</MenuItem>
+          <MenuItem value="Process">Non-Technical</MenuItem>
         </Select>
 
         <label style={{ marginLeft: '20px' }}>Filter by Month:</label>
         <Select value={monthFilter} onChange={handleMonthFilterChange} style={{ marginLeft: '10px' }}>
-          <MenuItem value="All">All</MenuItem>
-          <MenuItem value="January">January</MenuItem>
-          <MenuItem value="February">February</MenuItem>
-          <MenuItem value="March">March</MenuItem>
-          <MenuItem value="April">April</MenuItem>
-          <MenuItem value="May">May</MenuItem>
-          <MenuItem value="June">June</MenuItem>
-          <MenuItem value="July">July</MenuItem>
-          <MenuItem value="August">August</MenuItem>
-          <MenuItem value="September">September</MenuItem>
-          <MenuItem value="October">October</MenuItem>
-          <MenuItem value="November">November</MenuItem>
-          <MenuItem value="December">December</MenuItem>
+          <MenuItem value="JANUARY">January</MenuItem>
+            <MenuItem value="FEBRUARY">February</MenuItem>
+            <MenuItem value="MARCH">March</MenuItem>
+            <MenuItem value="APRIL">April</MenuItem>
+            <MenuItem value="MAY">May</MenuItem>
+            <MenuItem value="JUNE">June</MenuItem>
+            <MenuItem value="JULY">July</MenuItem>
+            <MenuItem value="AUGUST">August</MenuItem>
+            <MenuItem value="SEPTEMBER">September</MenuItem>
+            <MenuItem value="OCTOBER">October</MenuItem>
+            <MenuItem value="NOVEMBER">November</MenuItem>
+            <MenuItem value="DECEMBER">December</MenuItem>
         </Select>
       </div>
 
@@ -119,19 +128,19 @@ const MonthlyCourses = () => {
             </TableCell>
             <TableCell align="center">Duration</TableCell>
             <TableCell align="center">Domain</TableCell>
-            <TableCell align="center">Month</TableCell>
+            {/* <TableCell align="center">Month</TableCell> */}
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {filteredCourses.map(course => (
-            <TableRow key={course.id}>
-              <TableCell>{course.coursename}</TableCell>
-              <TableCell align="center">{course.duration}</TableCell>
-              <TableCell align="center">{course.domain}</TableCell>
-              <TableCell align="center">{course.month}</TableCell>
+            <TableRow key={course?.courseId}>
+              <TableCell>{course?.courseName}</TableCell>
+              <TableCell align="center">{course?.duration}</TableCell>
+              <TableCell align="center">{course?.domain}</TableCell>
+              {/* <TableCell align="center">{course.month}</TableCell> */}
               <TableCell align="center">
-                <Button variant="contained" onClick={() => deleteCourse(course.id)}>Delete</Button>
+                <Button variant="contained" onClick={() => deleteCourse(course.courseId)}>Delete</Button>
                 <Button variant="contained" style={{ marginLeft: '10px' }} onClick={() => handleViewDetails(course)}>View Details</Button>
               </TableCell>
             </TableRow>
@@ -144,8 +153,8 @@ const MonthlyCourses = () => {
         <DialogContent>
           {selectedCourse && (
             <div>
-              <h3>{selectedCourse.coursename}</h3>
-              <p>{selectedCourse.description}</p>
+              <h3>{selectedCourse?.courseName}</h3>
+              <p>{selectedCourse?.description}</p>
             </div>
           )}
         </DialogContent>
