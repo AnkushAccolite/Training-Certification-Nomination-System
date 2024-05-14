@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useEffect } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
+import { useSelector } from 'react-redux';
 
 const HeaderAvatar = forwardRef(({ children, ...others }, ref) => {
   const theme = useTheme();
@@ -30,9 +31,11 @@ const MobileSearch = ({ value, setValue, popupState }) => {
 
 const SearchSection = () => {
 
+  const auth = useSelector(state=>state.auth);
+
   return (
     <>
-    <h2 style={{marginLeft: '20px'}}>Welcome!</h2>
+    <h2 style={{marginLeft: '20px'}}>Welcome! {`${auth?.user?.role}`}</h2>
     </>
   );
 };

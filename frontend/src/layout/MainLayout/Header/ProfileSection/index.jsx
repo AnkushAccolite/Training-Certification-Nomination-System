@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -27,6 +27,9 @@ import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 import UpgradePlanCard from './UpgradePlanCard';
 import User1 from 'assets/images/users/user-round.svg';
+import {logout} from "../../../../store/actions"
+
+
 
 // assets
 import { IconLogout, IconSettings} from '@tabler/icons-react';
@@ -36,6 +39,8 @@ import { IconLogout, IconSettings} from '@tabler/icons-react';
 const ProfileSection = () => {
   const theme = useTheme();
   const customization = useSelector((state) => state.customization);
+  const auth = useSelector(state=>state.auth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -145,25 +150,15 @@ const ProfileSection = () => {
                       <Stack direction="row" spacing={0.5} alignItems="center">
                         <Typography variant="h4">Welcome,</Typography>
                         <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                          Employee Name
+                          {auth?.user?.empName}
                         </Typography>
                       </Stack>
-                      <Typography variant="subtitle2">Employee ID</Typography>
+                      <Typography variant="subtitle2">{auth?.user?.empId}</Typography>
                     </Stack>
                     
                   </Box>
                   <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                     <Box sx={{ p: 2, pt: 0 }}>
-                      <UpgradePlanCard />
-                      
-                      <Card
-                        sx={{
-                          bgcolor: theme.palette.primary.light,
-                          my: 2
-                        }}
-                      >      
-                      </Card>
-                      
                       <List
                         component="nav"
                         sx={{
@@ -198,7 +193,11 @@ const ProfileSection = () => {
                           <ListItemIcon>
                             <IconLogout stroke={1.5} size="1.3rem" />
                           </ListItemIcon>
-                          <ListItemText primary={<Typography variant="body2">Logout</Typography>} />
+                          <ListItemText onClick={()=>{
+                            dispatch(logout());
+                            localStorage.removeItem("refresh")
+                            navigate("/login")
+                          }} primary={<Typography variant="body2">Logout</Typography>} />
                         </ListItemButton>
                       </List>
                     </Box>

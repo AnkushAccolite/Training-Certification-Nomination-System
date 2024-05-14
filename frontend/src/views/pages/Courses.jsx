@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 import Stack from '@mui/material/Stack';
@@ -20,6 +20,8 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -34,6 +36,7 @@ const MenuProps = {
 };
 
 const names = ['All', 'Technical', 'Domain', 'Power'];
+const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Assigned'];
 
 function getStyles(name, personName, theme) {
   return {
@@ -83,14 +86,6 @@ const initialRows = [
   createData(8, 'Technical', 2),
   createData(9, 'Domains', 2),
   createData(10, 'Technical', 8),
-  createData(11, 'Domain', 3),
-  createData(12, 'Technical', 2),
-  createData(13, 'Technical', 2.5),
-  createData(14, 'Technical', 2),
-  createData(15, 'Technical', 1),
-  createData(16, 'Power', 1.5),
-  createData(17, 'Power', 1),
-  createData(18, 'Technical', 6),
 ];
 
 function Courses() {
@@ -102,6 +97,18 @@ function Courses() {
   const [showDetails, setShowDetails] = React.useState(false);
   const [selectedYear, setSelectedYear] = React.useState('All');
   const [selectedMonth, setSelectedMonth] = React.useState('All');
+  const [selectedStatus, setSelectedStatus] = React.useState('All');
+  
+  const navigate = useNavigate();
+  const auth = useSelector(state=>state.auth);
+
+  useEffect(() => {
+    if(!(auth?.isAuthenticated))navigate("/login");
+    if(!localStorage.getItem("refresh")){
+      localStorage.setItem("refresh",true)
+      navigate(0);
+    }
+  }, []);
 
   const handleChange = (event) => {
     const {
@@ -163,83 +170,108 @@ function Courses() {
     setPersonName(event.target.value);
   };
 
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
+  };
+
   const filteredRows = rows.filter(row => {
     if (selectedYear !== 'All' && selectedMonth !== 'All') {
-      return row.year === parseInt(selectedYear) && row.month === selectedMonth && (personName === 'All' || row.category === personName);
+      return row.year === parseInt(selectedYear) && row.month === selectedMonth && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
     } else if (selectedYear !== 'All') {
-      return row.year === parseInt(selectedYear) && (personName === 'All' || row.category === personName);
+      return row.year === parseInt(selectedYear) && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
     } else if (selectedMonth !== 'All') {
-      return row.month === selectedMonth && (personName === 'All' || row.category === personName);
+      return row.month === selectedMonth && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
     } else {
-      return personName === 'All' || row.category === personName;
+      return (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
     }
   });
 
+  // const auth = useSelector(state=>state.auth);
+  // const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  // useEffect(()=>{
+  //   // console.log("Auth -> ",auth);
+  //   console.log("Authenticated -> ",isAuthenticated);
+  // },[])
+
   return (
     <div>
-  <div style={{ display: 'flex', alignItems: 'center', marginRight: '20px' }}>
-  <div style={{ marginRight: '20px' }}>
-    <label htmlFor="demo-year-select">Filter By Year:</label>
-    <FormControl sx={{ m: 1, width: 100 }}>
-      <Select
-        labelId="demo-year-label"
-        id="demo-year-select"
-        value={selectedYear}
-        onChange={handleYearChange}
-      >
-        <MenuItem value="All">All</MenuItem>
-        {[2022, 2023, 2024, 2025].map((year) => (
-          <MenuItem key={year} value={year}>{year}</MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  </div>
-  <div style={{ marginRight: '20px' }}>
-    <label htmlFor="demo-month-select">Filter By Month:</label>
-    <FormControl sx={{ m: 1, width: 100 }}>
-      <Select
-        labelId="demo-month-label"
-        id="demo-month-select"
-        value={selectedMonth}
-        onChange={handleMonthChange}
-      >
-        <MenuItem value="All">All</MenuItem>
-        {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
-          <MenuItem key={month} value={month}>{month}</MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  </div>
-  <div>
-    <label htmlFor="demo-category-select">Filter By Category:</label>
-    <FormControl sx={{ m: 1, width: 100 }}>
-      <Select
-        labelId="demo-category-label"
-        id="demo-category-select"
-        value={personName}
-        onChange={handleCategoryChange}
-        style={{ width: '100px' }}
-      >
-        {names.map((name) => (
-          <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
-            {name}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  </div>
-</div>
-
-      <div>
-        <Stack style={{ float: 'right', width: '20%', fontSize: 'larger', paddingTop: '0%' }} direction="row" spacing={2}>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+        <div style={{ marginRight: '30px', marginLeft:'20px' }}>
+          <label htmlFor="demo-year-select">Filter By Year:</label>
+          <FormControl sx={{ m: 1, width: 100 }}>
+            <Select
+              labelId="demo-year-label"
+              id="demo-year-select"
+              value={selectedYear}
+              onChange={handleYearChange}
+            >
+              <MenuItem value="All">All</MenuItem>
+              {[2022, 2023, 2024, 2025].map((year) => (
+                <MenuItem key={year} value={year}>{year}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div style={{ marginRight: '100px', marginLeft:'-70px' }}>
+          <label htmlFor="demo-month-select">Filter By Month:</label>
+          <FormControl sx={{ m: 1, width: 100 }}>
+            <Select
+              labelId="demo-month-label"
+              id="demo-month-select"
+              value={selectedMonth}
+              onChange={handleMonthChange}
+            >
+              <MenuItem value="All">All</MenuItem>
+              {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
+                <MenuItem key={month} value={month}>{month}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div style={{ marginRight: '200px', marginLeft:'-150px' }}>
+          <label htmlFor="demo-category-select">Filter By Category:</label>
+          <FormControl sx={{ m: 1, width: 100 }}>
+            <Select
+              labelId="demo-category-label"
+              id="demo-category-select"
+              value={personName}
+              onChange={handleCategoryChange}
+              style={{ width: '100px' }}
+            >
+              {names.map((name) => (
+                <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div style={{ marginRight: '300px',marginLeft: '-250px' }}>
+          <label htmlFor="demo-status-select">Filter By Status:</label>
+          <FormControl sx={{ m: 1, width: 100 }}>
+            <Select
+              labelId="demo-status-label"
+              id="demo-status-select"
+              value={selectedStatus}
+              onChange={handleStatusChange}
+              style={{ width: '100px' }}
+            >
+              {statuses.map((status) => (
+                <MenuItem key={status} value={status} style={getStyles(status, selectedStatus, theme)}>
+                  {status}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div>
           <Button className="nominateBtn" variant="outlined" startIcon={<LocalLibraryIcon />} onClick={nominateCourses}>
             Nominate
           </Button>
-        </Stack>
+        </div>
       </div>
-      <br />
-      <br />
-      <div style={{ paddingTop: '2%' }}>
+
+      <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>

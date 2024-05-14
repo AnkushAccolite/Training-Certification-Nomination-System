@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -32,13 +32,21 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
+import axios from '../../../../api/axios';
+
+import { login,logout } from '../../../../store/actions';
+import { useNavigate } from 'react-router-dom';
+import parseUser from 'utils/parseUser';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
-const AuthLogin = ({ ...others }) => {
+const AuthLogin = ({...others }) => {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const customization = useSelector((state) => state.customization);
+  const auth = useSelector(state=>state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [checked, setChecked] = useState(true);
 
   const googleHandler = async () => {
@@ -53,6 +61,33 @@ const AuthLogin = ({ ...others }) => {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  const submit=async(values)=>{
+    
+    try{
+      const credentials={"username":values.email,"password":values.password};
+      const res=await axios.post("/auth/signin",credentials);
+
+      const token=res.data.token;
+
+      const user = parseUser(token);
+      // const user={"email":decoded.email,"role":decoded.role[0]}
+
+      // console.log("tokennn->",res.data.token);
+      // console.log("decoded->",user);
+      dispatch(login(user,token));
+      
+      navigate("/courses")
+
+      console.log("Auth --> ",auth);
+      
+
+    }catch(err){
+      console.log(err);
+    }
+    
+    console.log(values)
+  }
 
   return (
     <>
@@ -130,7 +165,10 @@ const AuthLogin = ({ ...others }) => {
         })}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit} {...others}>
+          <form noValidate onSubmit={(e)=>{
+           e.preventDefault() 
+           submit(values);
+          }} {...others}>
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
               <OutlinedInput
@@ -212,4 +250,14 @@ const AuthLogin = ({ ...others }) => {
   );
 };
 
+// const mapStateToProps = (state) => ({
+//   isAuthenticated: state.auth.isAuthenticated
+// });
+
+// const mapDispatchToProps = {
+//   login,
+//   logout
+// };
+
+// export default connect(mapStateToProps, mapDispatchToProps)(AuthLogin);
 export default AuthLogin;
