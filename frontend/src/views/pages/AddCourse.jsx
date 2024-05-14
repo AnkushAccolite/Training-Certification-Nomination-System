@@ -32,9 +32,9 @@ const AddCourse = ({ onCourseAdd }) => {
       const newCourse = {
       courseName: formData.coursename,
       duration: formData.duration,
-      category: formData.domain,
+      domain: formData.domain,
       description: formData.description,
-      isApprovalReq: true
+      isApprovalReq: true,
       };
 
     const res = await axios.post("/course",newCourse);
