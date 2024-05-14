@@ -22,6 +22,8 @@ public class Nomination {
 
     private String approvalStatus;
 
+    private String empName;
+
     private String empId;
 
     private List<String> courses;

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins="*")
 @RequestMapping("/employee")
 public class EmployeeController {
 

@@ -4,6 +4,9 @@ import { Pie } from 'react-chartjs-2';
 import '../../App.css';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'; // Import Table components from MUI
 import cardImg from '../../assets/images/icons/image.png';
+import Typography from '@mui/material/Typography';
+import PieChartOutlineIcon from '@mui/icons-material/PieChartOutline';
+// import { PieChartOutline } from '@mui/icons-material';
 
 const AssignedCourses = () => {
   const [courses, setCourses] = useState([

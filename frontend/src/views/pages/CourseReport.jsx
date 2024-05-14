@@ -1,70 +1,107 @@
 import React, { useState } from 'react';
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, MenuItem } from '@mui/material';
+import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, MenuItem, Popover, List, ListItem, ListItemText } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import SearchIcon from '@mui/icons-material/Search';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import Autocomplete from '@mui/material/Autocomplete';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable'; 
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'; 
+import 'jspdf-autotable';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import * as XLSX from 'xlsx';
+import Papa from 'papaparse';
 
 const CourseReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedQuarter, setSelectedQuarter] = useState('');
-  const [selectedDomain, setSelectedDomain] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchQueryID, setSearchQueryID] = useState('');
+  const [searchQueryName, setSearchQueryName] = useState('');
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
   const [courses, setCourses] = useState([
-    { courseId: 'C001', name: 'Course 1', domain: 'Web Development', employeesEnrolled: 10, completionMonth: 4, employeesCompleted: 6 },
-    { courseId: 'C002', name: 'Course 2', domain: 'Data Science', employeesEnrolled: 15, completionMonth: 5, employeesCompleted: 12 },
+    { courseId: 'C001', name: 'Course 1', category: 'Power', employeesEnrolled: 10, completionMonth: 4, employeesCompleted: 6 },
+    { courseId: 'C002', name: 'Course 2', category: 'Process', employeesEnrolled: 15, completionMonth: 5, employeesCompleted: 12 },
   ]);
 
   const calculateAttendance = (completed, enrolled) => {
     return Math.round((completed / enrolled) * 100);
   };
 
-  const handleGenerateReport = () => {
+  const handleGenerateReport = (format) => {
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text('Course Report', 10, 10);
-  
+
     const tableData = courses.map(course => [
       course.courseId,
       course.name,
-      course.domain,
+      course.category,
       course.employeesEnrolled,
       course.employeesCompleted,
       `${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`,
-      new Date(0, course.completionMonth - 1).toLocaleString('default', { month: 'long' })
+      getMonthName(course.completionMonth)
     ]);
-  
-    doc.autoTable({
-      head: [['Course ID', 'Name', 'Domain', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Month']],
-      body: courses.map(course => [course.courseId, course.name, course.domain, course.employeesEnrolled, course.employeesCompleted, `${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`, getMonthName(course.completionDate)]),
-      startY: 20 
-    });
-    doc.save('course_report.pdf');
-  };
-  
 
-  const getMonthName = (date) => {
+    const tableData1 = courses.map(course => ({
+      'Course ID': course.courseId,
+      'Name': course.name,
+      'Category': course.category,
+      'Employees Enrolled': course.employeesEnrolled,
+      'Employees Completed': course.employeesCompleted,
+      'Attendance': `${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`,
+      'Completion Month': getMonthName(course.completionMonth)
+    }));
+
+    switch (format) {
+      case 'pdf':
+        doc.autoTable({
+          head: [['Course ID', 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month']],
+          body: tableData,
+          startY: 20
+        });
+        doc.save('course_report.pdf');
+        break;
+      case 'excel':
+        const ws = XLSX.utils.json_to_sheet(tableData1, { header: Object.keys(tableData1[0]) });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Course Report');
+        XLSX.writeFile(wb, 'course_report.xlsx');
+        break;
+      case 'csv':
+        const csv = Papa.unparse({
+          fields: ['Course ID', 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month'],
+          data: tableData
+        });
+        const csvContent = `data:text/csv;charset=utf-8,${csv}`;
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'course_report.csv');
+        document.body.appendChild(link);
+        link.click();
+        break;
+    }
+  };
+
+  const getMonthName = (month) => {
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    const completionDateMonth = new Date(date).getMonth();
-    return monthNames[completionDateMonth];
+    return monthNames[month - 1];
   };
 
   const handleSearch = () => {
     const filteredCourses = courses.filter(course => {
-      const completionDateMonth = new Date(course.completionDate).getMonth() + 1; // Adding 1 to get month index starting from 1
-      return (!selectedMonth || completionDateMonth === selectedMonth) &&
-        (!selectedDomain || course.domain.toLowerCase().includes(selectedDomain.toLowerCase())) &&
-        (!searchQuery || course.courseId.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      return ((!selectedMonth || course.completionMonth.toString() === selectedMonth) &&
+        (!selectedCategory || course.category.toLowerCase() === selectedCategory.toLowerCase()) &&
+        (!searchQueryName || course.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
+        (!searchQueryID || course.courseId.toLowerCase().includes(searchQueryID.toLowerCase())) &&
         (selectedQuarter === '' || (selectedQuarter === 'Q1' && course.completionMonth >= 1 && course.completionMonth <= 3) ||
-        (selectedQuarter === 'Q2' && course.completionMonth >= 4 && course.completionMonth <= 6) ||
-        (selectedQuarter === 'Q3' && course.completionMonth >= 7 && course.completionMonth <= 9) ||
-        (selectedQuarter === 'Q4' && course.completionMonth >= 10 && course.completionMonth <= 12) ||
-        (selectedQuarter === 'H1' && course.completionMonth >= 1 && course.completionMonth <= 6) ||
-        (selectedQuarter === 'H2' && course.completionMonth >= 7 && course.completionMonth <= 12));
+          (selectedQuarter === 'Q2' && course.completionMonth >= 4 && course.completionMonth <= 6) ||
+          (selectedQuarter === 'Q3' && course.completionMonth >= 7 && course.completionMonth <= 9) ||
+          (selectedQuarter === 'Q4' && course.completionMonth >= 10 && course.completionMonth <= 12) ||
+          (selectedQuarter === 'H1' && course.completionMonth >= 1 && course.completionMonth <= 6) ||
+          (selectedQuarter === 'H2' && course.completionMonth >= 7 && course.completionMonth <= 12)));
     });
     setCourses(filteredCourses);
   };
@@ -73,36 +110,51 @@ const CourseReport = () => {
     setSelectedFilter(event.target.value);
   };
 
-  const renderInnerDropdown = () => {
-    if (selectedFilter === 'Monthly') {
-      return (
-        <DatePicker
-          label="Month"
-          value={selectedMonth}
-          onChange={(date) => setSelectedMonth(date.getMonth() + 1)} // Adding 1 to get month index starting from 1
-          views={['month']}
-          style={{ marginRight: '10px' }}
-        />
-      );
-    } else if (selectedFilter === 'Quarterly') {
-      return (
-        <Autocomplete
-          options={['Quarter 1', 'Quarter 2', 'Quarter 3', 'Quarter 4']}
-          value={selectedQuarter}
-          onChange={(event, newValue) => setSelectedQuarter(newValue)}
-          renderInput={(params) => <TextField {...params} label="Quarter" style={{ width: '200px', marginRight: '10px' }} />}
-        />
-      );
-    } else {
-      return null;
-    }
+  const handleDownloadClick = (event) => {
+    setDownloadAnchorEl(event.currentTarget);
+  };
+
+  const handleDownloadClose = () => {
+    setDownloadAnchorEl(null);
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div>
-        <Typography variant="h2" gutterBottom style={{ display: 'flex', marginBottom: '30px' }}>
+        <Typography variant="h2" gutterBottom style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           Course Report
+          <Button
+            variant="contained"
+            endIcon={<GetAppIcon />}
+            onClick={handleDownloadClick}
+          >
+            Download
+          </Button>
+          <Popover
+            open={Boolean(downloadAnchorEl)}
+            anchorEl={downloadAnchorEl}
+            onClose={handleDownloadClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <List>
+              <ListItem button onClick={() => handleGenerateReport('pdf')}>
+                <ListItemText primary="Download as PDF" />
+              </ListItem>
+              <ListItem button onClick={() => handleGenerateReport('excel')}>
+                <ListItemText primary="Download as XLSX" />
+              </ListItem>
+              <ListItem button onClick={() => handleGenerateReport('csv')}>
+                <ListItemText primary="Download as CSV" />
+              </ListItem>
+            </List>
+          </Popover>
         </Typography>
         <Typography variant="h3" gutterBottom>
           Filter by:
@@ -119,17 +171,45 @@ const CourseReport = () => {
             <MenuItem value="Quarterly">Quarterly</MenuItem>
             <MenuItem value="Yearly">Yearly</MenuItem>
           </TextField>
-          {renderInnerDropdown()}
+          {selectedFilter === 'Monthly' && (
+            <DatePicker
+              label="Month"
+              value={selectedMonth}
+              onChange={(date) => setSelectedMonth(date.getMonth() + 1)}
+              views={['month']}
+              style={{ marginRight: '10px' }}
+            />
+          )}
+          {selectedFilter === 'Quarterly' && (
+            <TextField
+              select
+              label="Quarter"
+              value={selectedQuarter}
+              onChange={(event) => setSelectedQuarter(event.target.value)}
+              style={{ width: '200px', marginRight: '10px' }}
+            >
+              <MenuItem value="Q1">Quarter 1 (Jan - Mar)</MenuItem>
+              <MenuItem value="Q2">Quarter 2 (Apr - Jun)</MenuItem>
+              <MenuItem value="Q3">Quarter 3 (Jul - Sep)</MenuItem>
+              <MenuItem value="Q4">Quarter 4 (Oct - Dec)</MenuItem>
+            </TextField>
+          )}
           <Autocomplete
-            options={['Web Development', 'Data Science', 'Machine Learning', 'UI/UX Design']}
-            value={selectedDomain}
-            onChange={(event, newValue) => setSelectedDomain(newValue)}
-            renderInput={(params) => <TextField {...params} label="Domain" style={{ width: '200px', marginRight: '10px' }} />}
+            options={['Power', 'Process', 'Technical', 'Domain']}
+            value={selectedCategory}
+            onChange={(event, newValue) => setSelectedCategory(newValue)}
+            renderInput={(params) => <TextField {...params} label="Category" style={{ width: '200px', marginRight: '10px' }} />}
           />
           <TextField
             label="Search by Course ID"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQueryID}
+            onChange={(e) => setSearchQueryID(e.target.value)}
+            style={{ width: '300px', marginRight: '10px' }}
+          />
+          <TextField
+            label="Search by Course Name"
+            value={searchQueryName}
+            onChange={(e) => setSearchQueryName(e.target.value)}
             style={{ width: '300px', marginRight: '10px' }}
           />
           <Button
@@ -146,11 +226,11 @@ const CourseReport = () => {
               <TableRow>
                 <TableCell>Course ID</TableCell>
                 <TableCell>Name</TableCell>
-                <TableCell>Domain</TableCell>
+                <TableCell>Category</TableCell>
                 <TableCell>Employees Enrolled</TableCell>
                 <TableCell>Employees Completed</TableCell>
                 <TableCell>Attendance</TableCell>
-                <TableCell>Month</TableCell> {/* Change "Date" to "Month" */}
+                <TableCell>Completion Month</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -158,24 +238,16 @@ const CourseReport = () => {
                 <TableRow key={course.courseId}>
                   <TableCell>{course.courseId}</TableCell>
                   <TableCell>{course.name}</TableCell>
-                  <TableCell>{course.domain}</TableCell>
+                  <TableCell>{course.category}</TableCell>
                   <TableCell>{course.employeesEnrolled}</TableCell>
                   <TableCell>{course.employeesCompleted}</TableCell>
                   <TableCell>{`${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`}</TableCell>
-                  <TableCell>{getMonthName(course.completionDate)}</TableCell> {/* Change to display month */}
+                  <TableCell>{getMonthName(course.completionMonth)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
-        <Button
-          variant="contained"
-          endIcon={<PictureAsPdfIcon />}
-          onClick={handleGenerateReport}
-          style={{ float: 'right', marginTop: '20px' }}
-        >
-          Generate report
-        </Button>
       </div>
     </LocalizationProvider>
   );

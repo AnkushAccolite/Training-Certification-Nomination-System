@@ -1,4 +1,3 @@
-/* RequestCard.css */
 .request-card {
     border: 1px solid #ccc;
     padding: 10px;
@@ -9,6 +8,7 @@
 
 .request-card h3 {
     margin-top: 0;
+    cursor: pointer;
 }
 
 .course-container {
@@ -22,38 +22,49 @@
     flex-grow: 1;
 }
 
+.accepted {
+    background-color: white; /* Green */
+    color: green;
+}
+
+.rejected {
+    background-color: white; /* Red */
+    color: red;
+}
+
 .action-buttons {
     display: flex;
     align-items: center;
 }
 
-.accept-button,
-.reject-button,
-.submit-button {
-    border: none;
-    border-radius: 3px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
 .accept-button {
-    background-color: #4CAF50;
+    background-color: #4CAF50; /* Green */
+    border: none;
     color: white;
-    margin-right: 8px;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin: 2px 2px;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
+/* Style for reject button */
 .reject-button {
-    background-color: #f44336;
+    background-color: #f44336; /* Red */
+    border: none;
     color: white;
-    margin-right: 8px;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 15px;
+    margin: 2px 2px;
+    cursor: pointer;
+    border-radius: 5px;
 }
-
-.submit-button {
-    background-color: #2196F3;
-    color: white;
-}
-
 .accept-button:hover {
     background-color: #388e3c; /* Darker shade of green */
 }
@@ -61,25 +72,15 @@
 .reject-button:hover {
     background-color: #d32f2f; /* Darker shade of red */
 }
-
-.submit-button:hover {
-    background-color: #0c7bb3; /* Darker shade of blue */
+.greyed-out {
+    pointer-events: none;
+    opacity: 0.5; /* Optionally reduce opacity for visual indication */
+}
+table {
+    border-collapse: separate;
+    width: max-content;
 }
 
-.submit-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.status {
-    font-weight: bold;
-    margin: 0;
-}
-
-.accepted {
-    color: #4CAF50;
-}
-
-.rejected {
-    color: #f44336;
+td, th {
+    padding: 5px 30px; /* Adjust the padding values to increase or decrease space between columns */
 }
