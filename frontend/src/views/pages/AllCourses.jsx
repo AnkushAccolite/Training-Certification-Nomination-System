@@ -8,33 +8,32 @@ import { useSelector } from 'react-redux';
 const AllCourses = () => {
   // Dummy data for courses (replace with actual data)
   const navigate = useNavigate();
-  const auth = useSelector(state=>state.auth);
-    // const navigate = useNavigate();
-    useEffect(()=>{
-        if(!(auth?.isAuthenticated && auth?.user?.role==="ADMIN"))navigate("/login");
-    },[])
+  const auth = useSelector(state => state.auth);
+  useEffect(() => {
+    if (!(auth?.isAuthenticated && auth?.user?.role === "ADMIN")) navigate("/login");
+  }, []);
   const handleClick = () => {
     navigate("/AllCourses/add-course")
   };
   const [courses, setCourses] = useState([
-    { id: 1, coursename: 'Course 1', duration: '2 months', domain: 'Technical', status: 'inactive', description: 'Course 1 description' },
-    { id: 2, coursename: 'Course 2', duration: '3 months', domain: 'Technical', status: 'inactive', description: 'Course 2 description' },
-    { id: 3, coursename: 'Course 3', duration: '1 month', domain: 'Non-Technical', status: 'inactive', description: 'Course 3 description' },
-    { id: 4, coursename: 'Course 4', duration: '2 months', domain: 'Technical', status: 'inactive', description: 'Course 4 description' },
-    { id: 5, coursename: 'Course 5', duration: '3 months', domain: 'Technical', status: 'inactive', description: 'Course 5 description' },
-    { id: 6, coursename: 'Course 6', duration: '1 month', domain: 'Non-Technical', status: 'inactive', description: 'Course 6 description' },
-    { id: 7, coursename: 'Course 7', duration: '2 months', domain: 'Non-Technical', status: 'inactive', description: 'Course 7 description' },
-    { id: 8, coursename: 'Course 8', duration: '1 month', domain: 'Non-Technical', status: 'inactive', description: 'Course 8 description' },
-    { id: 9, coursename: 'Course 9', duration: '1 month', domain: 'Non-Technical', status: 'inactive', description: 'Course 9 description' },
-    { id: 10, coursename: 'Course 10', duration: '1 month', domain: 'Non-Technical', status: 'inactive', description: 'Course 10 description' },
-    { id: 11, coursename: 'Course 11', duration: '1 month', domain: 'Non-Technical', status: 'inactive', description: 'Course 11 description' },
+    { id: 1, coursename: 'Course 1', duration: '2 months', domain: 'Technical', status: 'inactive', month: 'January', description: 'Course 1 description' },
+    { id: 2, coursename: 'Course 2', duration: '3 months', domain: 'Technical', status: 'inactive', month: 'February', description: 'Course 2 description' },
+    { id: 3, coursename: 'Course 3', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'March', description: 'Course 3 description' },
+    { id: 4, coursename: 'Course 4', duration: '2 months', domain: 'Technical', status: 'inactive', month: 'April', description: 'Course 4 description' },
+    { id: 5, coursename: 'Course 5', duration: '3 months', domain: 'Technical', status: 'inactive', month: 'May', description: 'Course 5 description' },
+    { id: 6, coursename: 'Course 6', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'January', description: 'Course 6 description' },
+    { id: 7, coursename: 'Course 7', duration: '2 months', domain: 'Non-Technical', status: 'inactive', month: 'July', description: 'Course 7 description' },
+    { id: 8, coursename: 'Course 8', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'August', description: 'Course 8 description' },
+    { id: 9, coursename: 'Course 9', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'September', description: 'Course 9 description' },
+    { id: 10, coursename: 'Course 10', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'October', description: 'Course 10 description' },
+    { id: 11, coursename: 'Course 11', duration: '1 month', domain: 'Non-Technical', status: 'inactive', month: 'November', description: 'Course 11 description' },
+    // Add more courses here
   ]);
-
-  // Add more courses here
 
   const [showAddCourse, setShowAddCourse] = useState(false);
   const [selectedDomain, setSelectedDomain] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All"); // State for selected status filter
+  const [selectedMonth, setSelectedMonth] = useState("All");
   const [editingCourseId, setEditingCourseId] = useState(null);
   const [editFields, setEditFields] = useState({});
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -51,6 +50,11 @@ const AllCourses = () => {
   const handleStatusFilterChange = (event) => {
     const { value } = event.target;
     setSelectedStatus(value === "All" ? "All" : value);
+  };
+
+  const handleMonthFilterChange = (event) => {
+    const { value } = event.target;
+    setSelectedMonth(value === "All" ? "All" : value);
   };
 
   const deleteCourse = (id) => {
@@ -134,14 +138,22 @@ const AllCourses = () => {
   }, [selectedRows]);
 
   const filteredCourses = courses.filter(course => {
-    if (selectedDomain === "All" && selectedStatus === "All") {
+    if (selectedDomain === "All" && selectedStatus === "All" && selectedMonth === "All") {
       return true;
-    } else if (selectedDomain === "All") {
+    } else if (selectedDomain === "All" && selectedStatus === "All") {
+      return course.month === selectedMonth;
+    } else if (selectedDomain === "All" && selectedMonth === "All") {
       return course.status === selectedStatus;
-    } else if (selectedStatus === "All") {
+    } else if (selectedStatus === "All" && selectedMonth === "All") {
       return course.domain === selectedDomain;
-    } else {
+    } else if (selectedDomain === "All") {
+      return course.status === selectedStatus && course.month === selectedMonth;
+    } else if (selectedStatus === "All") {
+      return course.domain === selectedDomain && course.month === selectedMonth;
+    } else if (selectedMonth === "All") {
       return course.domain === selectedDomain && course.status === selectedStatus;
+    } else {
+      return course.domain === selectedDomain && course.status === selectedStatus && course.month === selectedMonth;
     }
   });
 
@@ -192,6 +204,31 @@ const AllCourses = () => {
           </Select>
         </div>
 
+        {/* Month filter */}
+        <div style={{ flex: '1', marginRight: '10px' }}>
+          <label htmlFor="monthFilter">Filter by Month:</label>
+          <Select
+            id="monthFilter"
+            value={selectedMonth}
+            onChange={handleMonthFilterChange}
+            style={{ width: '150px' }}
+          >
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="January">January</MenuItem>
+            <MenuItem value="February">February</MenuItem>
+            <MenuItem value="March">March</MenuItem>
+            <MenuItem value="April">April</MenuItem>
+            <MenuItem value="May">May</MenuItem>
+            <MenuItem value="June">June</MenuItem>
+            <MenuItem value="July">July</MenuItem>
+            <MenuItem value="August">August</MenuItem>
+            <MenuItem value="September">September</MenuItem>
+            <MenuItem value="October">October</MenuItem>
+            <MenuItem value="November">November</MenuItem>
+            <MenuItem value="December">December</MenuItem>
+          </Select>
+        </div>
+
         {/* Add Course Button */}
         <Button variant="contained" onClick={handleClick} style={{ marginRight: '10px' }}>
           Add Course
@@ -230,6 +267,7 @@ const AllCourses = () => {
             <TableCell align="center">Duration</TableCell>
             <TableCell align="center">Domain</TableCell>
             <TableCell align="center">Status</TableCell>
+            <TableCell align="center">Month</TableCell>
             <TableCell align="center">Action</TableCell>
           </TableRow>
         </TableHead>
@@ -280,6 +318,16 @@ const AllCourses = () => {
                 <span style={{ color: course.status === 'inactive' ? 'red' : 'green' }}>
                   {course.status}
                 </span>
+              </TableCell>
+              <TableCell align="center">
+                {editingCourseId === course.id ? (
+                  <TextField
+                    value={editFields.month || course.month}
+                    onChange={(event) => handleEditFieldChange(event, 'month')}
+                  />
+                ) : (
+                  course.month
+                )}
               </TableCell>
               <TableCell align="center">
                 {editingCourseId === course.id ? (
