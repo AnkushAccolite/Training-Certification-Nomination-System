@@ -102,9 +102,9 @@ public class EmployeeService {
 
         nominatedCourses.forEach(nominatedCourse -> {
             if (nominatedCourse.getApprovalStatus().equals(ApprovalStatus.APPROVED))
-                approvedCourses.add(nominatedCourse.getCourseName());
+                approvedCourses.add(nominatedCourse.getCourseId());
             else if (nominatedCourse.getApprovalStatus().equals(ApprovalStatus.PENDING))
-                pendingCourses.add(nominatedCourse.getCourseName());
+                pendingCourses.add(nominatedCourse.getCourseId());
         });
 
         if (employee.getApprovedCourses() == null)
@@ -126,16 +126,16 @@ public class EmployeeService {
         return courseList;
     }
 
-    public void updateCoursesNominatedByEmployee(String empId, String courseName, String action) {
+    public void updateCoursesNominatedByEmployee(String empId, String courseId, String action) {
         Employee employee = this.employeeRepository.findByEmpId(empId);
 
         if (action.equals("approve")) {
-            employee.getPendingCourses().remove(courseName);
-            if (!employee.getApprovedCourses().contains(courseName))
-                employee.getApprovedCourses().add(courseName);
+            employee.getPendingCourses().remove(courseId);
+            if (!employee.getApprovedCourses().contains(courseId))
+                employee.getApprovedCourses().add(courseId);
         }
         else if (action.equals("reject")) {
-            employee.getPendingCourses().remove(courseName);
+            employee.getPendingCourses().remove(courseId);
         }
         employeeRepository.save(employee);
     }

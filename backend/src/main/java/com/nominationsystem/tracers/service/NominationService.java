@@ -41,13 +41,13 @@ public class NominationService {
         List<String> approvedCourses = employee.getApprovedCourses() != null ? employee.getApprovedCourses() : Collections.emptyList();
 
         List<NominatedCourseStatus> nominatedCourses = nomination.getNominatedCourses().stream()
-                .filter(nominatedCourse -> !pendingCourses.contains(nominatedCourse.getCourseName()) &&
-                        !approvedCourses.contains(nominatedCourse.getCourseName()))
+                .filter(nominatedCourse -> !pendingCourses.contains(nominatedCourse.getCourseId()) &&
+                        !approvedCourses.contains(nominatedCourse.getCourseId()))
                 .map(nominatedCourse -> {
                     NominatedCourseStatus newNominatedCourse = new NominatedCourseStatus();
-                    newNominatedCourse.setCourseName(nominatedCourse.getCourseName());
+                    newNominatedCourse.setCourseId(nominatedCourse.getCourseId());
 
-                    boolean isApprovalRequired = courseService.getCourse(nominatedCourse.getCourseName()).getIsApprovalReq();
+                    boolean isApprovalRequired = courseService.getCourseById(nominatedCourse.getCourseId()).getIsApprovalReq();
                     newNominatedCourse.setApprovalStatus(isApprovalRequired ? ApprovalStatus.PENDING : ApprovalStatus.APPROVED);
 
                     return newNominatedCourse;
@@ -81,11 +81,11 @@ public class NominationService {
         nominationRepository.deleteById(nominationId);
     }
 
-    public void takeActionOnPendingRequest(String nominationId, String courseName, String action) {
+    public void takeActionOnPendingRequest(String nominationId, String courseId, String action) {
         Nomination nomination = this.getNomination(nominationId);
 
         boolean updated = nomination.getNominatedCourses().stream()
-                .filter(course -> course.getCourseName().equals(courseName) && course.getApprovalStatus() == ApprovalStatus.PENDING)
+                .filter(course -> course.getCourseId().equals(courseId) && course.getApprovalStatus() == ApprovalStatus.PENDING)
                 .peek(course -> {
                     switch (action.toLowerCase()) {
                         case "approve":
@@ -95,11 +95,9 @@ public class NominationService {
                             course.setApprovalStatus(ApprovalStatus.REJECTED);
                             break;
                         default:
-                            System.out.println("Hi");
                             throw new IllegalArgumentException("Invalid action: " + action);
                     }
-                    System.out.println(action);
-                    employeeService.updateCoursesNominatedByEmployee(nomination.getEmpId(), courseName, action);
+                    employeeService.updateCoursesNominatedByEmployee(nomination.getEmpId(), courseId, action);
                 })
                 .findAny()
                 .isPresent();

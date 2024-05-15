@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class NominatedCourseStatus {
 
-    private String courseName;
+    private String courseId;
 
     private String approvalStatus;
 
