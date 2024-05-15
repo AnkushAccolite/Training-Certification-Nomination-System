@@ -10,7 +10,7 @@ const MonthlyCourses = () => {
   const auth = useSelector(state => state.auth);
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
-
+  
   useEffect(() => {
     if (!(auth?.isAuthenticated && auth?.user?.role === "ADMIN")) navigate("/login");
 
@@ -75,8 +75,16 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
     } else {
       return b?.courseName.localeCompare(a?.courseName);
     }
+    return true;
   });
 
+  const getArrow = (key) => {
+    // if (sortConfig.key === key) {
+    //   return sortConfig.direction === 'ascending' ? '▲' : '▼';
+    // }
+    return <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+    // return '▼';
+  };
 
 
   const filteredCourses = sortedCourses.filter(course => {

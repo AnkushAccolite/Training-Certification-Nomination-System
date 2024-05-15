@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
@@ -28,9 +29,9 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
+      width: 250,
+    },
+  },
 };
 
 const names = ['All', 'Technical', 'Domain', 'Power'];
@@ -38,7 +39,7 @@ const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Assigned'];
 
 function getStyles(name, personName, theme) {
   return {
-    fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
+    fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
   };
 }
 
@@ -184,6 +185,30 @@ function Courses() {
     }
   });
 
+  const sortRows = (rows, config) => {
+    if (!config.key) return rows;
+
+    return [...rows].sort((a, b) => {
+      if (a[config.key] < b[config.key]) {
+        return config.direction === 'ascending' ? -1 : 1;
+      }
+      if (a[config.key] > b[config.key]) {
+        return config.direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedRows = sortRows(filteredRows, sortConfig);
+
   return (
     <div>
       <Stack direction="row" justifyContent="space-between" alignItems="center" marginBottom="20px">
@@ -268,17 +293,29 @@ function Courses() {
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
-                <TableCell>Course Name</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Duration(Hours)</TableCell>
-                <TableCell>Month</TableCell>
-                <TableCell>Year</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
+                  Course Name {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
+                </TableCell>
+                <TableCell onClick={() => handleSort('category')} style={{ cursor: 'pointer' }}>
+                  Category {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
+                </TableCell>
+                <TableCell onClick={() => handleSort('duration')} style={{ cursor: 'pointer' }}>
+                  Duration {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
+                </TableCell>
+                <TableCell onClick={() => handleSort('month')} style={{ cursor: 'pointer' }}>
+                  Month {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
+                </TableCell>
+                <TableCell onClick={() => handleSort('year')} style={{ cursor: 'pointer' }}>
+                  Year {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
+                </TableCell>
+                <TableCell onClick={() => handleSort('status')} style={{ cursor: 'pointer' }}>
+                  Status {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
+                </TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.map((row) => (
+              {sortedRows.map((row) => (
                 <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell padding="checkbox">
                     <Checkbox checked={selectedCourseIds.includes(row.id)} onChange={(e) => handleCheckboxChange(e, row.id)} />
@@ -290,8 +327,12 @@ function Courses() {
                   <TableCell>{row.year}</TableCell>
                   <TableCell style={{ color: row.statusColor }}>{row.status}</TableCell>
                   <TableCell>
-                    <Button variant="contained" onClick={() => handleViewDetails(row)}>View Details</Button>
-                    <Button variant="contained" onClick={() => cancelNomination(row.id)} disabled={row.status !== 'Pending for Approval'} style={{ marginLeft: '8px' }}>Cancel</Button>
+                    <Button variant="contained" onClick={() => handleViewDetails(row)}>
+                      View Details
+                    </Button>
+                    <Button variant="contained" onClick={() => cancelNomination(row.id)} disabled={row.status !== 'Pending for Approval'} style={{ marginLeft: '8px' }}>
+                      Cancel
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

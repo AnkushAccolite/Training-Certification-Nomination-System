@@ -38,7 +38,7 @@
 }
 
 .accept-button {
-    background-color: #4CAF50; /* Green */
+    background-color: #388e3c; /* Green */
     border: none;
     color: white;
     padding: 10px 10px;
@@ -53,7 +53,7 @@
 
 /* Style for reject button */
 .reject-button {
-    background-color: #f44336; /* Red */
+    background-color: #d32f2f; /* Red */
     border: none;
     color: white;
     padding: 10px 10px;
@@ -76,11 +76,31 @@
     pointer-events: none;
     opacity: 0.5; /* Optionally reduce opacity for visual indication */
 }
-table {
+/* table {
     border-collapse: separate;
     width: max-content;
 }
 
 td, th {
     padding: 5px 30px; /* Adjust the padding values to increase or decrease space between columns */
-}
+/* } */ */
+.course-row {
+    transition: background-color 0.3s;
+  }
+  
+  .course-row:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .greyed-out {
+    opacity: 0.6;
+  }
+  
+  .accept-button, .reject-button {
+    margin-right: 5px;
+  }
+  
+  /* .accept-button:hover, .reject-button:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  } */
+  
