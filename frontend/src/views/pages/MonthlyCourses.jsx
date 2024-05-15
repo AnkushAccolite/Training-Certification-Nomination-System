@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Button, Table, TableHead, TableBody, TableCell, TableRow, Select, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-// import AddCourse from './AddCourse';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
 
 const MonthlyCourses = () => {
- 
   const [courses, setCourses] = useState([
     { id: 1, coursename: 'Course 1', duration: '2 months', domain: 'Technical', description: 'Course 1 description' },
     { id: 2, coursename: 'Course 2', duration: '3 months', domain: 'Technical', description: 'Course 2 description' },
@@ -17,12 +17,13 @@ const MonthlyCourses = () => {
     { id: 10, coursename: 'Course 10', duration: '1 month', domain: 'Non-Technical', description: 'Course 10 description' },
     { id: 11, coursename: 'Course 11', duration: '1 month', domain: 'Non-Technical', description: 'Course 11 description' },
   ]);
-  //const [showAddCourse, setShowAddCourse] = useState(false);
+
   const [selectedDomain, setSelectedDomain] = useState('All');
   const [editingCourseId, setEditingCourseId] = useState(null);
   const [editFields, setEditFields] = useState({});
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
 
   // Function to handle domain filter change
   const handleDomainFilterChange = (event) => {
@@ -31,15 +32,12 @@ const MonthlyCourses = () => {
   };
 
   const deleteCourse = (id) => {
-    // Filter out the course with the given id
     const updatedCourses = courses.filter(course => course.id !== id);
-    // Update the state with the filtered courses
     setCourses(updatedCourses);
   };
 
   const handleEditCourse = (id) => {
     setEditingCourseId(id);
-    // Set the editing fields based on the course being edited
     const courseToEdit = courses.find(course => course.id === id);
     setEditFields(courseToEdit);
   };
@@ -53,7 +51,6 @@ const MonthlyCourses = () => {
   };
 
   const saveEditedCourse = () => {
-    // Update the course with the edited fields
     const updatedCourses = courses.map(course => {
       if (course.id === editingCourseId) {
         return { ...course, ...editFields };
@@ -61,13 +58,11 @@ const MonthlyCourses = () => {
       return course;
     });
     setCourses(updatedCourses);
-    // Reset editing state
     setEditingCourseId(null);
     setEditFields({});
   };
 
   const cancelEditing = () => {
-    // Reset editing state
     setEditingCourseId(null);
     setEditFields({});
   };
@@ -81,26 +76,55 @@ const MonthlyCourses = () => {
     setShowDetails(false);
   };
 
-  const filteredCourses = courses.filter(course => {
-    if (selectedDomain!=="All") {
-      return course.domain === selectedDomain;
-    } else {
-      return true;
+  const handleSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
     }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedCourses = [...courses].sort((a, b) => {
+    if (sortConfig.key) {
+      const aValue = a[sortConfig.key].toLowerCase();
+      const bValue = b[sortConfig.key].toLowerCase();
+      if (aValue < bValue) {
+        return sortConfig.direction === 'ascending' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    }
+    return 0;
   });
 
+  const filteredCourses = sortedCourses.filter(course => {
+    if (selectedDomain !== "All") {
+      return course.domain === selectedDomain;
+    }
+    return true;
+  });
+
+  const getArrow = (key) => {
+    // if (sortConfig.key === key) {
+    //   return sortConfig.direction === 'ascending' ? '▲' : '▼';
+    // }
+    return <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+    // return '▼';
+  };
 
   return (
     <div>
       <h2>Monthly Courses</h2>
 
       {/* Domain filter */}
-      <label htmlFor="domainFilter" style={{ fontSize: '1 rem' }}>Filter by Domain:</label>
+      <label htmlFor="domainFilter" style={{ fontSize: '1rem' }}>Filter by Domain:</label>
       <Select
         id="domainFilter"
         value={selectedDomain}
         onChange={handleDomainFilterChange}
-        sx={{ width: '150px', fontSize: '15px', marginLeft: '10px', color: 'black'}} 
+        sx={{ width: '150px', fontSize: '15px', marginLeft: '10px', color: 'black' }}
       >
         <MenuItem value="All">All</MenuItem>
         <MenuItem value="Technical">Technical</MenuItem>
@@ -111,9 +135,15 @@ const MonthlyCourses = () => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell align="center">Course Name</TableCell>
-            <TableCell align="center">Duration</TableCell>
-            <TableCell align="center">Domain</TableCell>
+            <TableCell align="center" onClick={() => handleSort('coursename')} style={{ cursor: 'pointer' }}>
+              Course Name <span>{getArrow('coursename')}</span>
+            </TableCell>
+            <TableCell align="center" onClick={() => handleSort('duration')} style={{ cursor: 'pointer' }}>
+              Duration <span>{getArrow('duration')}</span>
+            </TableCell>
+            <TableCell align="center" onClick={() => handleSort('domain')} style={{ cursor: 'pointer' }}>
+              Domain <span>{getArrow('domain')}</span>
+            </TableCell>
             <TableCell align="center">Action</TableCell>
           </TableRow>
         </TableHead>

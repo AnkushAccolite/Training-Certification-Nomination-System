@@ -43,29 +43,28 @@ const RequestCard = ({ employeeName, courses = [], onAccept, onReject }) => {
                   <TableCell>{course.category}</TableCell>
                   <TableCell>{course.courseDuration}</TableCell>
                   <TableCell>
-                    {course.status === 'Pending' && (
-                      <>
-                        <Button
-                          className={`accept-button ${isSelected(course.courseId) ? 'highlighted' : ''}`}
-                          onClick={() => onAccept(course.courseId)}
-                          variant="outlined"
-                          startIcon={<CheckCircleOutlineIcon />}
-                        >
-                          Accept
-                        </Button>
-                        <Button
-                          className={`reject-button ${isSelected(course.courseId) ? 'highlighted' : ''}`}
-                          onClick={() => onReject(course.courseId)}
-                          variant="outlined"
-                          startIcon={<HighlightOffIcon />}
-                        >
-                          Reject
-                        </Button>
-                      </>
-                    )}
-                    {course.status !== 'Pending' && (
-                      <span className={`status ${course.status.toLowerCase()}`}>{course.status}</span>
-                    )}
+                    <Button
+                      className={`accept-button ${isSelected(course.courseId) ? 'highlighted' : ''}`}
+                      disabled={courseStatus.find((c) => c.id === course.courseId).accepted || courseStatus.find((c) => c.id === course.courseId).rejected}
+                      onClick={() => handleAcceptReject(course.courseId, 'accept')}
+                      variant="outlined"
+                      startIcon={<CheckCircleOutlineIcon />}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      className={`reject-button ${isSelected(course.courseId) ? 'highlighted' : ''}`}
+                      disabled={courseStatus.find((c) => c.id === course.courseId).accepted || courseStatus.find((c) => c.id === course.courseId).rejected}
+                      onClick={() => handleAcceptReject(course.courseId, 'reject')}
+                      variant="outlined"
+                      startIcon={<HighlightOffIcon />}
+                    >
+                      Reject
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    {courseStatus.find((c) => c.id === course.courseId).accepted && <span className="status accepted">Accepted</span>}
+                    {courseStatus.find((c) => c.id === course.courseId).rejected && <span className="status rejected">Rejected</span>}
                   </TableCell>
                 </TableRow>
               ))}

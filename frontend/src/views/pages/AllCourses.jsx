@@ -18,7 +18,6 @@ import {
 } from '@mui/material';
 import AddCourse from './AddCourse';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 const AllCourses = () => {
   // Dummy data for courses (replace with actual data)
@@ -290,19 +289,19 @@ const AllCourses = () => {
               />
             </TableCell>
 
-            <TableCell align="center" onClick={() => requestSort('coursename')}>
+            <TableCell align="center" onClick={() => requestSort('coursename')} style={{ cursor: 'pointer' }}>
               Course Name
               <ArrowDropDownIcon style={{ fontSize: '130%' }} />
             </TableCell>
-            <TableCell align="center" onClick={() => requestSort('duration')}>
+            <TableCell align="center" onClick={() => requestSort('duration')} style={{ cursor: 'pointer' }}>
               Duration
               <ArrowDropDownIcon style={{ fontSize: '130%' }} />
             </TableCell>
-            <TableCell align="center" onClick={() => requestSort('domain')}>
+            <TableCell align="center" onClick={() => requestSort('domain')} style={{ cursor: 'pointer' }}>
               Domain
               <ArrowDropDownIcon style={{ fontSize: '130%' }} />
             </TableCell>
-            <TableCell align="center" onClick={() => requestSort('status')}>
+            <TableCell align="center" onClick={() => requestSort('status')} style={{ cursor: 'pointer' }}>
               Status
               <ArrowDropDownIcon style={{ fontSize: '130%' }} />
             </TableCell>
