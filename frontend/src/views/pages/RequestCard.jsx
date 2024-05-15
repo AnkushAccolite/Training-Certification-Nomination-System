@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import './RequestCard.css';
+import React, { useEffect, useState } from 'react';
+import '../../assets/css/RequestCard.css';
 import IconButton from '@mui/material/IconButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
-const RequestCard = ({ employeeName, courses = [], onAccept, onReject }) => {
+const RequestCard = ({ employeeName, nominations = [], onAccept, onReject }) => {
   const [collapsed, setCollapsed] = useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
 
@@ -16,6 +16,10 @@ const RequestCard = ({ employeeName, courses = [], onAccept, onReject }) => {
   };
 
   const isSelected = (courseId) => selectedRows.includes(courseId);
+
+  useEffect(() => {
+    console.log(nominations);
+  }, []);
 
   return (
     <div className="request-card">
@@ -28,34 +32,34 @@ const RequestCard = ({ employeeName, courses = [], onAccept, onReject }) => {
             <TableHead>
               <TableRow>
                 <TableCell>Course Name</TableCell>
-                <TableCell>Category</TableCell>
+                <TableCell>Domain</TableCell>
                 <TableCell>Duration</TableCell>
                 <TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {courses.map((course) => (
-                <TableRow
-                  key={course.courseId}
-                  className={`course-row ${course.status !== 'Pending' ? 'greyed-out' : ''}`}
-                >
-                  <TableCell>{course.courseName}</TableCell>
-                  <TableCell>{course.category}</TableCell>
-                  <TableCell>{course.courseDuration}</TableCell>
+              {nominations.map((course) => (
+                <TableRow key={course?.courseId} className={`course-row ${course?.approvalStatus !== 'PENDING' ? 'greyed-out' : ''}`}>
+                  <TableCell>{course?.courseName}</TableCell>
+                  <TableCell>{course?.domain}</TableCell>
+                  <TableCell>{course?.duration}</TableCell>
                   <TableCell>
-                    {course.status === 'Pending' && (
+                    {course?.approvalStatus === 'PENDING' && (
                       <>
                         <Button
-                          className={`accept-button ${isSelected(course.courseId) ? 'highlighted' : ''}`}
-                          onClick={() => onAccept(course.courseId)}
+                          className={`accept-button ${isSelected(course?.courseId) ? 'highlighted' : ''}`}
+                          onClick={() => {
+                            onAccept(course?.courseId);
+                            console.log('--------', course?.courseId);
+                          }}
                           variant="outlined"
                           startIcon={<CheckCircleOutlineIcon />}
                         >
                           Accept
                         </Button>
                         <Button
-                          className={`reject-button ${isSelected(course.courseId) ? 'highlighted' : ''}`}
-                          onClick={() => onReject(course.courseId)}
+                          className={`reject-button ${isSelected(course?.courseId) ? 'highlighted' : ''}`}
+                          onClick={() => onReject(course?.courseId)}
                           variant="outlined"
                           startIcon={<HighlightOffIcon />}
                         >
@@ -63,8 +67,8 @@ const RequestCard = ({ employeeName, courses = [], onAccept, onReject }) => {
                         </Button>
                       </>
                     )}
-                    {course.status !== 'Pending' && (
-                      <span className={`status ${course.status.toLowerCase()}`}>{course.status}</span>
+                    {course?.approvalStatus !== 'PENDING' && (
+                      <span className={`status ${course?.approvalStatus.toLowerCase()}`}>{course?.approvalStatus}</span>
                     )}
                   </TableCell>
                 </TableRow>
