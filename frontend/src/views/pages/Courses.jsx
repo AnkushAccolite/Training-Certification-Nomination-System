@@ -21,6 +21,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import useCourses from 'hooks/useCourses';
+import currentMonth from 'utils/currentMonth';
+import useCourseStatus from 'hooks/useCourseStatus';
+import getNominationCourses from 'utils/getNominationCourses';
+import axios from '../../api/axios';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -34,7 +39,7 @@ const MenuProps = {
   },
 };
 
-const names = ['All', 'Technical', 'Domain', 'Power'];
+const names = ['All', 'Technical', 'Domain', 'Power','Process'];
 const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Assigned'];
 
 function getStyles(name, personName, theme) {
@@ -89,17 +94,32 @@ const initialRows = [
 
 function Courses() {
   const theme = useTheme();
-  const [personName, setPersonName] = React.useState('All');
-  const [selectedCourseIds, setSelectedCourseIds] = React.useState([]);
-  const [rows, setRows] = React.useState(initialRows);
-  const [selectedCourse, setSelectedCourse] = React.useState(null);
-  const [showDetails, setShowDetails] = React.useState(false);
-  const [selectedYear, setSelectedYear] = React.useState('All');
-  const [selectedMonth, setSelectedMonth] = React.useState('All');
-  const [selectedStatus, setSelectedStatus] = React.useState('All');
+
+
+
+  const currentMonthUppercase = currentMonth();
+
+
+
+  const [selectedDomain, setSelectedDomain] = useState('All');
+  const [selectedCourseIds, setSelectedCourseIds] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedYear, setSelectedYear] = useState('All');
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthUppercase);
+  const [selectedStatus, setSelectedStatus] = useState('All');
+
+  const [approvedCourses,setApprovedCourses] = useState([]);
+  const [pendingCourses,setPendingCourses] = useState([]);
+  
   
   const navigate = useNavigate();
-  const auth = useSelector(state=>state.auth);
+  const auth = useSelector(state=>state?.auth);
+
+  const { courses, loading, error } = useCourses();
+  
+  
 
   useEffect(() => {
     if(!(auth?.isAuthenticated))navigate("/login");
@@ -107,14 +127,30 @@ function Courses() {
       localStorage.setItem("refresh",true)
       navigate(0);
     }
+    const getNominations=async()=>{
+      const nominationCourses = await getNominationCourses(auth?.user?.empId);
+
+      setApprovedCourses(nominationCourses?.approvedCourses)
+      setPendingCourses(nominationCourses?.pendingCourses)
+    }
+    getNominations();
+
+
   }, []);
 
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(value);
-  };
+  const getStatus = (id)=>{
+    // console.log("pending",pendingCourses);
+      if(approvedCourses?.includes(id))return "Assigned"
+      else if(pendingCourses?.includes(id))return "Pending for Approval"
+      else return "Not Opted"
+  }
+
+  // const handleChange = (event) => {
+  //   const {
+  //     target: { value },
+  //   } = event;
+  //   setSelectedDomain(value);
+  // };
 
   const handleViewDetails = (course) => {
     setSelectedCourse(course);
@@ -136,15 +172,21 @@ function Courses() {
     });
   };
 
-  const nominateCourses = () => {
-    const updatedRows = rows.map((row) => {
-      if (selectedCourseIds.includes(row.id)) {
-        return { ...row, status: 'Pending for Approval', statusColor: 'red' };
-      }
-      return row;
-    });
-    setRows(updatedRows);
-    setSelectedCourseIds([]);
+  const nominateCourses = async() => {
+    try {
+      const payload={
+      "empName":auth?.user?.empName,
+      "empId":auth?.user?.empId,
+      "nominatedCourses":selectedCourseIds.map(cid=>{
+        return {"courseId":cid}
+      })
+    }
+    console.log("payload",payload)
+    const res=await axios.post("/nomination",payload);
+    navigate(0);
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const cancelNomination = (courseId) => {
@@ -161,59 +203,43 @@ function Courses() {
     setSelectedMonth(event.target.value);
   };
 
-  const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
-  };
-
-  const handleCategoryChange = (event) => {
-    setPersonName(event.target.value);
+  const handleDomainChange = (event) => {
+    setSelectedDomain(event.target.value);
   };
 
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
   };
 
-  const filteredRows = rows.filter(row => {
-    if (selectedYear !== 'All' && selectedMonth !== 'All') {
-      return row.year === parseInt(selectedYear) && row.month === selectedMonth && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
-    } else if (selectedYear !== 'All') {
-      return row.year === parseInt(selectedYear) && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
-    } else if (selectedMonth !== 'All') {
-      return row.month === selectedMonth && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
-    } else {
-      return (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
+  const filteredRows = courses.filter(course => {
+    if (selectedDomain === "All" && selectedStatus === "All") {
+      return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus
+    } else if (selectedDomain === "All") {
+      return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus && getStatus(course?.courseId)===selectedStatus; //&&
+    } else if (selectedStatus === "All") {
+      return course?.domain === selectedDomain && course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus;
+    }else {
+      return course?.domain === selectedDomain && course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus && getStatus(course?.courseId) === selectedStatus;
     }
   });
 
-  const sortRows = (rows, config) => {
-    if (!config.key) return rows;
-
-    return [...rows].sort((a, b) => {
-      if (a[config.key] < b[config.key]) {
-        return config.direction === 'ascending' ? -1 : 1;
-      }
-      if (a[config.key] > b[config.key]) {
-        return config.direction === 'ascending' ? 1 : -1;
-      }
-      return 0;
-    });
-  };
-
-  const handleSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const sortedRows = sortRows(filteredRows, sortConfig);
+  // const filteredRows = courses?.filter(row => {
+  //   if (selectedMonth !== 'All') {
+  //     return row.month === selectedMonth && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
+  //   } else if (selectedYear !== 'All') {
+  //     return row.year === parseInt(selectedYear) && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
+  //   } else if (selectedMonth !== 'All') {
+  //     return row.month === selectedMonth && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
+  //   } else {
+  //     return (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
+  //   }
+  // });
 
   return (
     <div>
       <Stack direction="row" justifyContent="space-between" alignItems="center" marginBottom="20px">
         <Stack direction="row" spacing={5} alignItems="center">
-          <Stack direction="column" spacing={1} alignItems="center">
+          {/* <Stack direction="column" spacing={1} alignItems="center">
             <label htmlFor="demo-year-select">Filter By Year:</label>
             <FormControl sx={{ width: 100 }}>
               <Select
@@ -228,7 +254,7 @@ function Courses() {
                 ))}
               </Select>
             </FormControl>
-          </Stack>
+          </Stack> */}
           <Stack direction="column" spacing={1} alignItems="center">
             <label htmlFor="demo-month-select">Filter By Month:</label>
             <FormControl sx={{ width: 100 }}>
@@ -238,9 +264,9 @@ function Courses() {
                 value={selectedMonth}
                 onChange={handleMonthChange}
               >
-                <MenuItem value="All">All</MenuItem>
+                <MenuItem value="JANUARY">All</MenuItem>
                 {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
-                  <MenuItem key={month} value={month}>{month}</MenuItem>
+                  <MenuItem key={month} value={month.toUpperCase()}>{month}</MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -251,12 +277,12 @@ function Courses() {
               <Select
                 labelId="demo-category-label"
                 id="demo-category-select"
-                value={personName}
-                onChange={handleCategoryChange}
+                value={selectedDomain}
+                onChange={handleDomainChange}
                 style={{ width: '100px' }}
               >
                 {names.map((name) => (
-                  <MenuItem key={name} value={name} style={getStyles(name, personName, theme)}>
+                  <MenuItem key={name} value={name} style={getStyles(name, selectedDomain, theme)}>
                     {name}
                   </MenuItem>
                 ))}
@@ -293,39 +319,27 @@ function Courses() {
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
-                <TableCell onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-                  Course Name {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
-                </TableCell>
-                <TableCell onClick={() => handleSort('category')} style={{ cursor: 'pointer' }}>
-                  Category {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
-                </TableCell>
-                <TableCell onClick={() => handleSort('duration')} style={{ cursor: 'pointer' }}>
-                  Duration {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
-                </TableCell>
-                <TableCell onClick={() => handleSort('month')} style={{ cursor: 'pointer' }}>
-                  Month {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
-                </TableCell>
-                <TableCell onClick={() => handleSort('year')} style={{ cursor: 'pointer' }}>
-                  Year {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
-                </TableCell>
-                <TableCell onClick={() => handleSort('status')} style={{ cursor: 'pointer' }}>
-                  Status {<ArrowDropDownIcon style={{ fontSize: '130%' }} />}
-                </TableCell>
+                <TableCell>Course Name</TableCell>
+                <TableCell>Category</TableCell>
+                <TableCell>Duration(Hours)</TableCell>
+                {/* <TableCell>Month</TableCell> */}
+                {/* <TableCell>Year</TableCell> */}
+                <TableCell>Status</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedRows.map((row) => (
-                <TableRow key={row.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              {filteredRows.map((row) => (
+                <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell padding="checkbox">
-                    <Checkbox checked={selectedCourseIds.includes(row.id)} onChange={(e) => handleCheckboxChange(e, row.id)} />
+                    <Checkbox checked={selectedCourseIds.includes(row?.courseId)} onChange={(e) => handleCheckboxChange(e, row?.courseId)} />
                   </TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.category}</TableCell>
-                  <TableCell>{row.duration}</TableCell>
-                  <TableCell>{row.month}</TableCell>
-                  <TableCell>{row.year}</TableCell>
-                  <TableCell style={{ color: row.statusColor }}>{row.status}</TableCell>
+                  <TableCell>{row?.courseName}</TableCell>
+                  <TableCell>{row?.domain}</TableCell>
+                  <TableCell>{row?.duration}</TableCell>
+                  {/* <TableCell>{row.month}</TableCell> */}
+                  {/* <TableCell>{row.year}</TableCell> */}
+                  <TableCell style={{ color: row.statusColor }}>{getStatus(row?.courseId)}</TableCell>
                   <TableCell>
                     <Button variant="contained" onClick={() => handleViewDetails(row)}>
                       View Details

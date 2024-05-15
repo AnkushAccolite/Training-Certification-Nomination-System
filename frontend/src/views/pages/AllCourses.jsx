@@ -1,62 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Button,
-  Table,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableRow,
-  Select,
-  MenuItem,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Checkbox
-} from '@mui/material';
-import AddCourse from './AddCourse';
-
+import { useNavigate } from "react-router-dom";
+import { Button, Table, TableHead, TableBody, TableCell, TableRow, Select, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Checkbox } from '@mui/material';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
+import useCourses from 'hooks/useCourses';
+import currentMonth from 'utils/currentMonth';
 
 
 const AllCourses = () => {
   // Dummy data for courses (replace with actual data)
   const navigate = useNavigate();
   const auth = useSelector(state => state.auth);
-  const [courses, setCourses] = useState([]);
+  // const [courses, setCourses] = useState([]);
+  const { courses, loading, error } = useCourses();
 
 
   useEffect(() => {
     if (!(auth?.isAuthenticated && auth?.user?.role === "ADMIN")) navigate("/login");
 
-    const getCourses=async()=>{
-      try {
-        const {data}=await axios.get("/course");
-        // console.log("courses -> ",data)
-        setCourses(data);
-        
-      } catch (error) {
-        console.log(error?.message);
-      }
-    }
-    getCourses();
   }, []);
   const handleClick = () => {
     navigate('/AllCourses/add-course');
   };
 
-  // Create a new Date object
-const currentDate = new Date();
-
-// Get the current month name
-const currentMonthName = currentDate.toLocaleString('default', { month: 'long' });
-
-// Convert the month name to uppercase
-const currentMonthUppercase = currentMonthName.toUpperCase();
+  const currentMonthUppercase =currentMonth();
 
   const [selectedDomain, setSelectedDomain] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All"); // State for selected status filter
@@ -167,8 +135,6 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
 
   const filteredCourses = courses.filter(course => {
     if (selectedDomain === "All" && selectedStatus === "All") {
-      return true;
-    } else if (selectedDomain === "All" && selectedStatus === "All") {
       return true;
     } else if (selectedDomain === "All") {
       return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === selectedStatus;
