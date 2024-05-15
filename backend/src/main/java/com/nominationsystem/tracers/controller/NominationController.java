@@ -23,10 +23,16 @@ public class NominationController {
         return ResponseEntity.ok(nomination);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Nomination>> getAllNominations() {
         List<Nomination> nominations = nominationService.getAllNominations();
         return ResponseEntity.ok(nominations);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Nomination>> getAllRequests(@RequestParam String managerId){
+        List<Nomination> requests = nominationService.getAllRequests(managerId);
+        return ResponseEntity.ok(requests);
     }
 
     @PostMapping

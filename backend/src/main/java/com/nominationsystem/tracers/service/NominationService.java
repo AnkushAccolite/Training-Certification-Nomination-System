@@ -33,6 +33,14 @@ public class NominationService {
         return nominationRepository.findAll();
     }
 
+    public List<Nomination> getAllRequests(String managerId){
+        List<Nomination> allNominations=nominationRepository.findAll();
+
+        return allNominations.stream()
+                .filter(nomination -> managerId.equals(nomination.getManagerId()))
+                .collect(Collectors.toList());
+    }
+
     public Nomination createNomination(Nomination nomination) {
         Employee employee = employeeService.getEmployee(nomination.getEmpId());
         nomination.setManagerId(employee.getManagerId());
