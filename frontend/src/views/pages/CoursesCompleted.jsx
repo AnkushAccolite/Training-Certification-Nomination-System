@@ -14,6 +14,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { ArrowDropDownIcon } from '@mui/x-date-pickers';
 
 
 function createData(SNo, CourseName, Duration, DateOfCompletion) {
@@ -75,7 +76,7 @@ const CoursesCompleted = () => {
           </TableHead>
 
           <TableBody>
-            {sortedRows
+            {rows
               .filter((row) => {
                 if (!startDate && !endDate) return true;
                 const completionDate = dayjs(row.DateOfCompletion);

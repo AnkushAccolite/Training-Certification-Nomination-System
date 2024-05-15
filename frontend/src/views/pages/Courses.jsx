@@ -23,7 +23,6 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import useCourses from 'hooks/useCourses';
 import currentMonth from 'utils/currentMonth';
-import useCourseStatus from 'hooks/useCourseStatus';
 import getNominationCourses from 'utils/getNominationCourses';
 import axios from '../../api/axios';
 
