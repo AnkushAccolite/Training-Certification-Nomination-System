@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, MenuItem } from '@mui/material';
+import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, MenuItem, Popover, List, ListItem, ListItemText } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import SearchIcon from '@mui/icons-material/Search';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -16,12 +16,13 @@ const CourseReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [selectedQuarter, setSelectedQuarter] = useState('');
-  const [selectedDomain, setSelectedDomain] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
   const [courses, setCourses] = useState([
-    { courseId: 'C001', name: 'Course 1', domain: 'Web Development', employeesEnrolled: 10, completionMonth: 4, employeesCompleted: 6 },
-    { courseId: 'C002', name: 'Course 2', domain: 'Data Science', employeesEnrolled: 15, completionMonth: 5, employeesCompleted: 12 },
+    { courseId: 'C001', name: 'Course 1', category: 'Power', employeesEnrolled: 10, completionMonth: 4, employeesCompleted: 6 },
+    { courseId: 'C002', name: 'Course 2', category: 'Process', employeesEnrolled: 15, completionMonth: 5, employeesCompleted: 12 },
   ]);
 
   const calculateAttendance = (completed, enrolled) => {
@@ -36,7 +37,7 @@ const CourseReport = () => {
     const tableData = courses.map(course => [
       course.courseId,
       course.name,
-      course.domain,
+      course.category,
       course.employeesEnrolled,
       course.employeesCompleted,
       `${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`,
@@ -46,7 +47,7 @@ const CourseReport = () => {
     const tableData1 = courses.map(course => ({
       'Course ID': course.courseId,
       'Name': course.name,
-      'Domain': course.domain,
+      'Category': course.category,
       'Employees Enrolled': course.employeesEnrolled,
       'Employees Completed': course.employeesCompleted,
       'Attendance': `${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`,
@@ -56,7 +57,7 @@ const CourseReport = () => {
     switch (format) {
       case 'pdf':
         doc.autoTable({
-          head: [['Course ID', 'Name', 'Domain', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month']],
+          head: [['Course ID', 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month']],
           body: tableData,
           startY: 20
         });
@@ -70,7 +71,7 @@ const CourseReport = () => {
         break;
       case 'csv':
         const csv = Papa.unparse({
-          fields: ['Course ID', 'Name', 'Domain', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month'],
+          fields: ['Course ID', 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month'],
           data: tableData
         });
         const csvContent = `data:text/csv;charset=utf-8,${csv}`;
@@ -92,7 +93,7 @@ const CourseReport = () => {
   const handleSearch = () => {
     const filteredCourses = courses.filter(course => {
       return ((!selectedMonth || course.completionMonth.toString() === selectedMonth) &&
-        (!selectedDomain || course.domain.toLowerCase().includes(selectedDomain.toLowerCase())) &&
+        (!selectedCategory || course.category.toLowerCase() === selectedCategory.toLowerCase()) &&
         (!searchQueryName || course.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
         (!searchQueryID || course.courseId.toLowerCase().includes(searchQueryID.toLowerCase())) &&
         (selectedQuarter === '' || (selectedQuarter === 'Q1' && course.completionMonth >= 1 && course.completionMonth <= 3) ||
@@ -109,11 +110,51 @@ const CourseReport = () => {
     setSelectedFilter(event.target.value);
   };
 
+  const handleDownloadClick = (event) => {
+    setDownloadAnchorEl(event.currentTarget);
+  };
+
+  const handleDownloadClose = () => {
+    setDownloadAnchorEl(null);
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div>
-        <Typography variant="h2" gutterBottom style={{ display: 'flex', marginBottom: '30px' }}>
+        <Typography variant="h2" gutterBottom style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           Course Report
+          <Button
+            variant="contained"
+            endIcon={<GetAppIcon />}
+            onClick={handleDownloadClick}
+          >
+            Download
+          </Button>
+          <Popover
+            open={Boolean(downloadAnchorEl)}
+            anchorEl={downloadAnchorEl}
+            onClose={handleDownloadClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <List>
+              <ListItem button onClick={() => handleGenerateReport('pdf')}>
+                <ListItemText primary="Download as PDF" />
+              </ListItem>
+              <ListItem button onClick={() => handleGenerateReport('excel')}>
+                <ListItemText primary="Download as XLSX" />
+              </ListItem>
+              <ListItem button onClick={() => handleGenerateReport('csv')}>
+                <ListItemText primary="Download as CSV" />
+              </ListItem>
+            </List>
+          </Popover>
         </Typography>
         <Typography variant="h3" gutterBottom>
           Filter by:
@@ -154,10 +195,10 @@ const CourseReport = () => {
             </TextField>
           )}
           <Autocomplete
-            options={['Web Development', 'Data Science', 'Machine Learning', 'UI/UX Design']}
-            value={selectedDomain}
-            onChange={(event, newValue) => setSelectedDomain(newValue)}
-            renderInput={(params) => <TextField {...params} label="Domain" style={{ width: '200px', marginRight: '10px' }} />}
+            options={['Power', 'Process', 'Technical', 'Domain']}
+            value={selectedCategory}
+            onChange={(event, newValue) => setSelectedCategory(newValue)}
+            renderInput={(params) => <TextField {...params} label="Category" style={{ width: '200px', marginRight: '10px' }} />}
           />
           <TextField
             label="Search by Course ID"
@@ -185,7 +226,7 @@ const CourseReport = () => {
               <TableRow>
                 <TableCell>Course ID</TableCell>
                 <TableCell>Name</TableCell>
-                <TableCell>Domain</TableCell>
+                <TableCell>Category</TableCell>
                 <TableCell>Employees Enrolled</TableCell>
                 <TableCell>Employees Completed</TableCell>
                 <TableCell>Attendance</TableCell>
@@ -197,7 +238,7 @@ const CourseReport = () => {
                 <TableRow key={course.courseId}>
                   <TableCell>{course.courseId}</TableCell>
                   <TableCell>{course.name}</TableCell>
-                  <TableCell>{course.domain}</TableCell>
+                  <TableCell>{course.category}</TableCell>
                   <TableCell>{course.employeesEnrolled}</TableCell>
                   <TableCell>{course.employeesCompleted}</TableCell>
                   <TableCell>{`${calculateAttendance(course.employeesCompleted, course.employeesEnrolled)}%`}</TableCell>
@@ -207,34 +248,6 @@ const CourseReport = () => {
             </TableBody>
           </Table>
         </TableContainer>
-        <div style={{ marginTop: '20px' }}>
-          <Typography variant="h3" gutterBottom>
-            Generate Report:
-          </Typography>
-          <Button
-            variant="contained"
-            endIcon={<PictureAsPdfIcon />}
-            onClick={() => handleGenerateReport('pdf')}
-            style={{ marginRight: '10px' }}
-          >
-            PDF
-          </Button>
-          <Button
-            variant="contained"
-            endIcon={<InsertDriveFileIcon />}
-            onClick={() => handleGenerateReport('excel')}
-            style={{ marginRight: '10px' }}
-          >
-            XLSX
-          </Button>
-          <Button
-            variant="contained"
-            endIcon={<GetAppIcon />}
-            onClick={() => handleGenerateReport('csv')}
-          >
-            CSV
-          </Button>
-        </div>
       </div>
     </LocalizationProvider>
   );

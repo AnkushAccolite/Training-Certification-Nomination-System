@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
@@ -12,7 +12,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
 
 function createData(SNo, CourseName, Duration, DateOfCompletion) {
   return { SNo, CourseName, Duration, DateOfCompletion };
@@ -32,26 +34,13 @@ const CoursesCompleted = () => {
   const handleEndDateChange = (date) => {
     setEndDate(date);
   };
+  
+  const navigate = useNavigate();
+  const auth = useSelector(state=>state.auth);
 
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const sortedRows = [...rows].sort((a, b) => {
-    if (sortConfig.key) {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-      if (sortConfig.key === 'DateOfCompletion') {
-        return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
-      }
-      return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-    }
-    return 0;
-  });
+  useEffect(() => {
+    if(!(auth?.isAuthenticated))navigate("/login");
+  }, []);
 
   return (
     <div>

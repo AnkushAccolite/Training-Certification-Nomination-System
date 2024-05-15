@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, FormControl, InputLabel, OutlinedInput, Button } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import axios from "../../api/axios"
+
 const AddCourse = ({ onCourseAdd }) => {
+
+  const auth = useSelector(state=>state.auth);
+    const navigate = useNavigate();
+    useEffect(()=>{
+        if(!(auth?.isAuthenticated && auth?.user?.role==="ADMIN"))navigate("/login");
+    },[])
+
+
   const [formData, setFormData] = useState({
     coursename: '',
     duration: '',
-    domain: ''
+    domain: '',
+    description:''
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -13,23 +26,27 @@ const AddCourse = ({ onCourseAdd }) => {
       [name]: value
     }));
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Construct the new course object
-    const newCourse = {
-      id: Date.now(), // Generate a unique id (using current timestamp)
-      coursename: formData.coursename,
+  const handleSubmit = async(e) => {
+    try{
+      e.preventDefault();
+      const newCourse = {
+      courseName: formData.coursename,
       duration: formData.duration,
-      domain: formData.domain
-    };
-    // Pass the new course object to the parent component
-    onCourseAdd(newCourse);
-    // Reset form data after submission
+      domain: formData.domain,
+      description: formData.description,
+      isApprovalReq: true,
+      };
+
+    const res = await axios.post("/course",newCourse);
     setFormData({
       coursename: '',
       duration: '',
-      domain: ''
+      domain: '',
+      description:'',
     });
+    }catch(err){
+      console.log(err);
+    }
   };
   return (
     <Box
@@ -47,7 +64,7 @@ const AddCourse = ({ onCourseAdd }) => {
         boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.2)',
       }}
     >
-      <h2 style={{ textAlign: 'center', marginTop: 0 }}>ADD COURSE FORM</h2>
+      <h2 style={{ textAlign: 'center', marginTop: 0 }}>ADD COURSE</h2>
       <form onSubmit={handleSubmit} style={{ width: '100%' }}>
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
           <InputLabel htmlFor="coursename">Course Name</InputLabel>
@@ -82,6 +99,18 @@ const AddCourse = ({ onCourseAdd }) => {
             value={formData.domain}
             onChange={handleChange}
             label="Domain"
+            required
+          />
+        </FormControl>
+        <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
+          <InputLabel htmlFor="description">Description</InputLabel>
+          <OutlinedInput
+            id="description"
+            type="text"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            label="Description"
             required
           />
         </FormControl>

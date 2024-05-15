@@ -1,16 +1,12 @@
 package com.nominationsystem.tracers.controller;
 
-import com.nominationsystem.tracers.models.Employee;
-import com.nominationsystem.tracers.repository.EmployeeRepository;
 import com.nominationsystem.tracers.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins="*")
@@ -50,5 +46,9 @@ public class EmployeeController {
         return this.employeeService.addCourses(email,courseIds);
     }
 
+    @GetMapping("/status")
+    public Map<String, List<String>> getCoursesNominatedByEmployee(@RequestParam String empId) {
+        return this.employeeService.getCoursesNominatedByEmployee(empId);
+    }
 
 }

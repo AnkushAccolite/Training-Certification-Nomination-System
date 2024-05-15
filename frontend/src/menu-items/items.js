@@ -1,23 +1,22 @@
-import { IconArrowRight, IconBook, IconBookOff } from '@tabler/icons-react';
-
-const icons = { IconArrowRight, IconBook, IconBookOff };
-
+import { IconArrowRight, IconBook, IconBook2 ,IconCertificate,IconFileCertificate,IconFileDescription,IconClipboardText,IconMessages} from '@tabler/icons-react';
+const icons = { IconArrowRight, IconBook, IconBook2 ,IconCertificate,IconFileCertificate,IconFileDescription,IconClipboardText,IconMessages };
 const items = {
   id: 'items',
   type: 'group',
   children: [
-    
     {
       id: 'courses',
       title: 'Courses',
       type: 'collapse',
-      icon: icons.IconBookOff,
+      icon: icons.IconBook2,
+      roles: ['ADMIN', 'USER', 'MANAGER'],
       children: [
         {
           id: 'all-courses',
           title: 'All Courses',
           type: 'item',
           url: '/all-courses',
+          roles: ['ADMIN'],
           icon: icons.IconBook,
           breadcrumbs: false
         },
@@ -26,6 +25,7 @@ const items = {
           title: 'Monthly Courses',
           type: 'item',
           url: '/monthly-courses',
+          roles: ['ADMIN'],
           icon: icons.IconBook,
           breadcrumbs: false
         },
@@ -34,48 +34,35 @@ const items = {
           title: 'Available Courses',
           type: 'item',
           url: '/courses',
+          roles: ['ADMIN', 'USER', 'MANAGER'],
           icon: icons.IconBook,
           breadcrumbs: false
         },
-        // {
-        //   id: 'assigned-courses',
-        //   title: 'Assigned Courses',
-        //   type: 'item',
-        //   url: '/assigned-courses',
-        //   icon: icons.IconBook,
-        //   breadcrumbs: false
-        // },
         {
           id: 'courses-completed',
           title: 'Courses Completed',
           type: 'item',
           url: '/courses-completed',
+          roles: ['ADMIN', 'USER', 'MANAGER'],
           icon: icons.IconBook,
           breadcrumbs: false
         }
-      ],
+      ]
     },
-    
-    // {
-    //   id: 'status',
-    //   title: 'Status',
-    //   type: 'item',
-    //   url: '/status',
-    //   icon: icons.IconBookOff,
-    //   breadcrumbs: false
-    // },
     {
       id: 'certifications',
       title: 'Certifications',
       type: 'collapse',
-      icon: icons.IconBookOff,
+      icon: icons.IconCertificate,
+      roles: ['ADMIN', 'USER', 'MANAGER'],
       children: [
         {
           id: 'certification-list',
           title: 'Available Courses for certification',
           type: 'item',
           url: '/certifications',
-          icon: icons.IconBook,
+          icon: icons.IconFileCertificate,
+          roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false
         },
         {
@@ -83,23 +70,26 @@ const items = {
           title: 'Certifications Completed',
           type: 'item',
           url: '/certifications-completed',
-          icon: icons.IconBook,
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          icon: icons.IconFileCertificate,
           breadcrumbs: false
         }
-      ],
+      ]
     },
     {
       id: 'reports',
       title: 'Reports',
       type: 'collapse',
-      icon: icons.IconBookOff,
+      icon: icons.IconFileDescription,
+      roles: ['ADMIN'],
       children: [
         {
           id: 'employee-report',
           title: 'Employee Report',
           type: 'item',
           url: '/employee-report',
-          icon: icons.IconBook,
+          roles: ['ADMIN'],
+          icon: icons.IconClipboardText,
           breadcrumbs: false
         },
         {
@@ -107,52 +97,21 @@ const items = {
           title: 'Course Report',
           type: 'item',
           url: '/course-report',
-          icon: icons.IconBook,
+          roles: ['ADMIN'],
+          icon: icons.IconClipboardText,
           breadcrumbs: false
         }
-      ],
+      ]
     },
     {
       id: 'pending-requests',
       title: 'Requests',
       type: 'item',
       url: '/pending-requests',
-      icon: icons.IconBookOff,
+      roles: ['MANAGER'],
+      icon: icons.IconMessages,
       breadcrumbs: false
-    },
-    // {
-    //   id: 'monthly-courses',
-    //   title: 'Monthly Courses',
-    //   type: 'item',
-    //   url: '/monthly-courses',
-    //   icon: icons.IconBookOff,
-    //   breadcrumbs: false
-    // },
-    // {
-    //   id: 'employee-report',
-    //   title: 'Employee Report',
-    //   type: 'item',
-    //   url: '/employee-report',
-    //   icon: icons.IconBookOff,
-    //   breadcrumbs: false
-    // },
-    // {
-    //   id: 'all-courses',
-    //   title: 'All Courses',
-    //   type: 'item',
-    //   url: '/all-courses',
-    //   icon: icons.IconBookOff,
-    //   breadcrumbs: false
-    // }
-    // {
-    //   id: 'course-report',
-    //   title: 'Course Report',
-    //   type: 'item',
-    //   url: '/course-report',
-    //   icon: icons.IconBookOff,
-    //   breadcrumbs: false
-    // }
+    }
   ]
 };
-
 export default items;

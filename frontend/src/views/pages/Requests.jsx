@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import RequestCard from './RequestCard';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const Requests = () => {
+
+    const auth = useSelector(state=>state.auth);
+    const navigate = useNavigate();
+    useEffect(()=>{
+        if(!(auth?.isAuthenticated && auth?.user?.role==="MANAGER"))navigate("/login");
+    },[])
+
     const [cards, setCards] = useState([
         { 
             id: 1, 

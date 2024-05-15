@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @Validated
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 @RequestMapping("/course")
 public class CourseController {
 
@@ -25,38 +25,33 @@ public class CourseController {
         return ResponseEntity.ok(res);
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping
     public ResponseEntity<List<Course>> getCourses() {
         List<Course> res = this.courseService.getAllCourses();
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/add")
-    public void addCourseForm() {
-        this.courseService.renderAddCourseForm();
-    }
-
     @PostMapping
-    public Course addCourse(@Valid @RequestBody Course course) {
+    public Course addCourse(@RequestBody Course course) {
         return (this.courseService.addCourse(course));
-    }
-
-    @GetMapping("/edit/{id}")
-    public void updateCourseForm(@PathVariable("id") String courseId) {
-        this.courseService.renderUpdateCourseForm(courseId);
     }
 
     @PutMapping("/{id}")
     public String updateCourse(@PathVariable("id") String courseId,
-                               @RequestBody Course course) {
+            @RequestBody Course course) {
         this.courseService.updateCourse(courseId, course);
         return "Course edited";
     }
 
-    @DeleteMapping("")
-    public void deleteCourse(@RequestParam("id") String courseId) {
+    @PutMapping("/delete/{id}")
+    public void deleteCourse(@PathVariable("id") String courseId) {
         this.courseService.deleteCourse(courseId);
+    }
+
+    @PostMapping("/change-status")
+    public void changeMonthlyCourseStatus(@RequestParam String month,
+            @RequestBody List<String> courseIds) {
+        this.courseService.changeMonthlyCourseStatus(courseIds, month);
     }
 
 }
