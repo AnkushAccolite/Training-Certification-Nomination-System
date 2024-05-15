@@ -325,7 +325,10 @@ const RequestCard = ({ employeeName, courses = [], onAccept, onReject }) => {
                       disabled={courseStatus.find((c) => c.id === course.courseId).accepted || courseStatus.find((c) => c.id === course.courseId).rejected}
                       onClick={() => handleAcceptReject(course.courseId, 'accept')}
                       variant="outlined"
-                      startIcon={<CheckCircleOutlineIcon />}
+                      startIcon={<CheckCircleOutlineIcon style={{paddingTop:'10%'}} />}
+                      size="small"
+                      style={{paddingBottom:'1%'}}
+
                     >
                       Accept
                     </Button>
@@ -334,7 +337,9 @@ const RequestCard = ({ employeeName, courses = [], onAccept, onReject }) => {
                       disabled={courseStatus.find((c) => c.id === course.courseId).accepted || courseStatus.find((c) => c.id === course.courseId).rejected}
                       onClick={() => handleAcceptReject(course.courseId, 'reject')}
                       variant="outlined"
-                      startIcon={<HighlightOffIcon />}
+                      startIcon={<HighlightOffIcon style={{paddingTop:'10%'}} />}
+                      size="small"
+                      style={{paddingBottom:'1%'}}
                     >
                       Reject
                     </Button>
