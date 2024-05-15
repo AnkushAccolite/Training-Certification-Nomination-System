@@ -7,15 +7,15 @@ const Requests = () => {
             id: 1, 
             employeeName: 'Employee 1', 
             courses: [
-                { courseId: 1, courseName: 'Course A', category: 'Category X', courseDuration: '2 weeks', accepted: false },
-                { courseId: 2, courseName: 'Course B', category: 'Category Y', courseDuration: '3 weeks', accepted: false }
+                { courseId: 1, courseName: 'Course A', category: 'Category X', courseDuration: '2 weeks', status: 'Pending' },
+                { courseId: 2, courseName: 'Course B', category: 'Category Y', courseDuration: '3 weeks', status: 'Pending' }
             ]
         },
         { 
             id: 2, 
             employeeName: 'Employee 2', 
             courses: [
-                { courseId: 3, courseName: 'Course C', category: 'Category Z', courseDuration: '4 weeks', accepted: false }
+                { courseId: 3, courseName: 'Course C', category: 'Category Z', courseDuration: '4 weeks', status: 'Pending' }
             ]
         }
         // Add more initial card data as needed
@@ -25,31 +25,14 @@ const Requests = () => {
         setCards(cards.filter(card => card.id !== employeeId));
     };
 
-    const handleAcceptCourse = (employeeId, courseId) => {
+    const handleAcceptReject = (employeeId, courseId, action) => {
         setCards(cards.map(card => {
             if (card.id === employeeId) {
                 return {
                     ...card,
                     courses: card.courses.map(course => {
                         if (course.courseId === courseId) {
-                            return { ...course, accepted: true };
-                        }
-                        return course;
-                    })
-                };
-            }
-            return card;
-        }));
-    };
-
-    const handleRejectCourse = (employeeId, courseId) => {
-        setCards(cards.map(card => {
-            if (card.id === employeeId) {
-                return {
-                    ...card,
-                    courses: card.courses.map(course => {
-                        if (course.courseId === courseId) {
-                            return { ...course, accepted: false };
+                            return { ...course, status: action === 'accept' ? 'Accepted' : 'Rejected' };
                         }
                         return course;
                     })
@@ -69,8 +52,8 @@ const Requests = () => {
                     employeeName={card.employeeName}
                     courses={card.courses}
                     onRemove={() => handleRemoveCard(card.id)}
-                    onAccept={(courseId) => handleAcceptCourse(card.id, courseId)}
-                    onReject={(courseId) => handleRejectCourse(card.id, courseId)}
+                    onAccept={(courseId) => handleAcceptReject(card.id, courseId, 'accept')}
+                    onReject={(courseId) => handleAcceptReject(card.id, courseId, 'reject')}
                 />
             ))}
         </div>
