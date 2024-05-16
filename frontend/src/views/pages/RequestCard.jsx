@@ -1,63 +1,84 @@
-import React, { useState } from 'react';
-import './RequestCard.css';
+import React, { useEffect, useState } from 'react';
+import '../../assets/css/RequestCard.css';
 import IconButton from '@mui/material/IconButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
-const RequestCard = ({ employeeName, courses = [], onAccept, onReject }) => {
-    const [courseStatus, setCourseStatus] = useState(courses.map(course => ({ id: course.courseId, accepted: false, rejected: false })));
-    const [collapsed, setCollapsed] = useState(true);
+const RequestCard = ({ employeeName, nominations = [], onAccept, onReject }) => {
+  const [collapsed, setCollapsed] = useState(true);
+  const [selectedRows, setSelectedRows] = useState([]);
 
-    const handleAccept = (courseId) => {
-        setCourseStatus(courseStatus.map(course => course.id === courseId ? { ...course, accepted: true, rejected: false } : course));
-    };
+  const handleToggleCollapse = () => {
+    setCollapsed(!collapsed);
+  };
 
-    const handleReject = (courseId) => {
-        setCourseStatus(courseStatus.map(course => course.id === courseId ? { ...course, accepted: false, rejected: true } : course));
-    };
+  const isSelected = (courseId) => selectedRows.includes(courseId);
 
-    const handleToggleCollapse = () => {
-        setCollapsed(!collapsed);
-    };
+  useEffect(() => {
+    console.log(nominations);
+  }, []);
 
-    return (
-        <div className="request-card">
-            <h3 onClick={handleToggleCollapse} style={{ display: 'flex', alignItems: 'center' }}>
-                {employeeName} {collapsed ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
-            </h3>
-            {!collapsed && (
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Course Name</th>
-                            <th>Category</th>
-                            <th>Duration</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {courses.map(course => (
-                            <tr key={course.courseId} className={`course-row ${courseStatus.find(c => c.id === course.courseId).accepted || courseStatus.find(c => c.id === course.courseId).rejected ? 'greyed-out' : ''}`}>
-                                <td>{course.courseName}</td>
-                                <td>{course.category}</td>
-                                <td>{course.courseDuration}</td>
-                                <td>
-                                    {!courseStatus.find(c => c.id === course.courseId).accepted && !courseStatus.find(c => c.id === course.courseId).rejected && (
-                                        <>
-                                            <button onClick={() => handleAccept(course.courseId)} className="accept-button">Accept</button>
-                                            <button onClick={() => handleReject(course.courseId)} className="reject-button">Reject</button>
-                                        </>
-                                    )}
-                                    {courseStatus.find(c => c.id === course.courseId).accepted && <p className="status accepted">Accepted</p>}
-                                    {courseStatus.find(c => c.id === course.courseId).rejected && <p className="status rejected">Rejected</p>}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
-        </div>
-    );
+  return (
+    <div className="request-card">
+      <h3 onClick={handleToggleCollapse} style={{ display: 'flex', alignItems: 'center' }}>
+        {employeeName} {collapsed ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
+      </h3>
+      {!collapsed && (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Course Name</TableCell>
+                <TableCell>Domain</TableCell>
+                <TableCell>Duration</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {nominations.map((course) => (
+                <TableRow key={course?.courseId} className={`course-row ${course?.approvalStatus !== 'PENDING' ? 'greyed-out' : ''}`}>
+                  <TableCell>{course?.courseName}</TableCell>
+                  <TableCell>{course?.domain}</TableCell>
+                  <TableCell>{course?.duration}</TableCell>
+                  <TableCell>
+                    {course?.approvalStatus === 'PENDING' && (
+                      <>
+                        <Button
+                          className={`accept-button ${isSelected(course?.courseId) ? 'highlighted' : ''}`}
+                          onClick={() => {
+                            onAccept(course?.courseId);
+                            console.log('--------', course?.courseId);
+                          }}
+                          variant="outlined"
+                          startIcon={<CheckCircleOutlineIcon />}
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          className={`reject-button ${isSelected(course?.courseId) ? 'highlighted' : ''}`}
+                          onClick={() => onReject(course?.courseId)}
+                          variant="outlined"
+                          startIcon={<HighlightOffIcon />}
+                        >
+                          Reject
+                        </Button>
+                      </>
+                    )}
+                    {course?.approvalStatus !== 'PENDING' && (
+                      <span className={`status ${course?.approvalStatus.toLowerCase()}`}>{course?.approvalStatus}</span>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </div>
+  );
 };
 
 export default RequestCard;
