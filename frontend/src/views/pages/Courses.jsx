@@ -289,7 +289,7 @@ function Courses() {
                     </Button>
                     <Button
                       variant="outlined"
-                      onClick={() => cancelNomination(row.id)}
+                      onClick={() => cancelNomination(row?.courseId)}
                       disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
                       style={{ marginLeft: '8px' }}
                     >
