@@ -7,11 +7,11 @@ import Stack from '@mui/material/Stack';
 
 const AuthFooter = () => (
   <Stack direction="row" justifyContent="space-between">
-    <Typography variant="subtitle2" component={Link} href="https://berrydashboard.io" target="_blank" underline="hover">
-      berrydashboard.io
+    <Typography variant="subtitle2" component={Link} href="#" target="_blank" underline="hover">
+      Bounteous x Accolite
     </Typography>
-    <Typography variant="subtitle2" component={Link} href="https://codedthemes.com" target="_blank" underline="hover">
-      &copy; codedthemes.com
+    <Typography variant="subtitle2" component={Link} href="#" target="_blank" underline="hover">
+      Training Courses and Certificate Nomination System
     </Typography>
   </Stack>
 );

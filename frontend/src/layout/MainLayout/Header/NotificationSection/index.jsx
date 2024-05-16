@@ -1,4 +1,4 @@
-import { useEffect, useRef} from 'react';
+import { useEffect, useRef } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -7,9 +7,7 @@ import { useTheme } from '@mui/material/styles';
 
 const NotificationSection = () => {
   const theme = useTheme();
-  /**
-   * anchorRef is used on different componets and specifying one type leads to other components throwing an error
-   * */
+
   const anchorRef = useRef(null);
 
   const prevOpen = useRef(open);
@@ -20,9 +18,7 @@ const NotificationSection = () => {
     prevOpen.current = open;
   }, [open]);
 
-  return (
-    <></>
-  );
+  return <></>;
 };
 
 export default NotificationSection;

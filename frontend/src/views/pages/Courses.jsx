@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
@@ -33,17 +32,17 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
+      width: 250
+    }
+  }
 };
 
-const names = ['All', 'Technical', 'Domain', 'Power','Process'];
+const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
 const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Assigned'];
 
 function getStyles(name, personName, theme) {
   return {
-    fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium,
+    fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
   };
 }
 
@@ -88,17 +87,13 @@ const initialRows = [
   createData(7, 'Domain', 4),
   createData(8, 'Technical', 2),
   createData(9, 'Domains', 2),
-  createData(10, 'Technical', 8),
+  createData(10, 'Technical', 8)
 ];
 
 function Courses() {
   const theme = useTheme();
 
-
-
   const currentMonthUppercase = currentMonth();
-
-
 
   const [selectedDomain, setSelectedDomain] = useState('All');
   const [selectedCourseIds, setSelectedCourseIds] = useState([]);
@@ -109,40 +104,35 @@ function Courses() {
   const [selectedMonth, setSelectedMonth] = useState(currentMonthUppercase);
   const [selectedStatus, setSelectedStatus] = useState('All');
 
-  const [approvedCourses,setApprovedCourses] = useState([]);
-  const [pendingCourses,setPendingCourses] = useState([]);
-  
-  
+  const [approvedCourses, setApprovedCourses] = useState([]);
+  const [pendingCourses, setPendingCourses] = useState([]);
+
   const navigate = useNavigate();
-  const auth = useSelector(state=>state?.auth);
+  const auth = useSelector((state) => state?.auth);
 
   const { courses, loading, error } = useCourses();
-  
-  
 
   useEffect(() => {
-    if(!(auth?.isAuthenticated))navigate("/login");
-    if(!localStorage.getItem("refresh")){
-      localStorage.setItem("refresh",true)
+    if (!auth?.isAuthenticated) navigate('/login');
+    if (!localStorage.getItem('refresh')) {
+      localStorage.setItem('refresh', true);
       navigate(0);
     }
-    const getNominations=async()=>{
+    const getNominations = async () => {
       const nominationCourses = await getNominationCourses(auth?.user?.empId);
 
-      setApprovedCourses(nominationCourses?.approvedCourses)
-      setPendingCourses(nominationCourses?.pendingCourses)
-    }
+      setApprovedCourses(nominationCourses?.approvedCourses);
+      setPendingCourses(nominationCourses?.pendingCourses);
+    };
     getNominations();
-
-
   }, []);
 
-  const getStatus = (id)=>{
+  const getStatus = (id) => {
     // console.log("pending",pendingCourses);
-      if(approvedCourses?.includes(id))return "Assigned"
-      else if(pendingCourses?.includes(id))return "Pending for Approval"
-      else return "Not Opted"
-  }
+    if (approvedCourses?.includes(id)) return 'Assigned';
+    else if (pendingCourses?.includes(id)) return 'Pending for Approval';
+    else return 'Not Opted';
+  };
 
   // const handleChange = (event) => {
   //   const {
@@ -171,31 +161,30 @@ function Courses() {
     });
   };
 
-  const nominateCourses = async() => {
+  const nominateCourses = async () => {
     try {
-      const payload={
-      "empName":auth?.user?.empName,
-      "empId":auth?.user?.empId,
-      "nominatedCourses":selectedCourseIds.map(cid=>{
-        return {"courseId":cid}
-      })
-    }
-    console.log("payload",payload)
-    const res=await axios.post("/nomination",payload);
-    navigate(0);
+      const payload = {
+        empName: auth?.user?.empName,
+        empId: auth?.user?.empId,
+        nominatedCourses: selectedCourseIds.map((cid) => {
+          return { courseId: cid };
+        })
+      };
+      console.log('payload', payload);
+      const res = await axios.post('/nomination', payload);
+      navigate(0);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
-  const cancelNomination = (courseId) => {
-    const updatedRows = rows.map((row) => {
-      if (row.id === courseId) {
-        return { ...row, status: 'Not Opted', statusColor: 'black' };
-      }
-      return row;
-    });
-    setRows(updatedRows);
+  const cancelNomination = async (courseId) => {
+    try {
+      const res = await axios.get(`/nomination/cancel?empId=${auth?.user?.empId}&courseId=${courseId}`);
+      navigate(0);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleMonthChange = (event) => {
@@ -210,15 +199,25 @@ function Courses() {
     setSelectedStatus(event.target.value);
   };
 
-  const filteredRows = courses.filter(course => {
-    if (selectedDomain === "All" && selectedStatus === "All") {
-      return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus
-    } else if (selectedDomain === "All") {
-      return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus && getStatus(course?.courseId)===selectedStatus; //&&
-    } else if (selectedStatus === "All") {
-      return course?.domain === selectedDomain && course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus;
-    }else {
-      return course?.domain === selectedDomain && course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus && getStatus(course?.courseId) === selectedStatus;
+  const filteredRows = courses.filter((course) => {
+    if (selectedDomain === 'All' && selectedStatus === 'All') {
+      return course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus;
+    } else if (selectedDomain === 'All') {
+      return (
+        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus &&
+        getStatus(course?.courseId) === selectedStatus
+      ); //&&
+    } else if (selectedStatus === 'All') {
+      return (
+        course?.domain === selectedDomain &&
+        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus
+      );
+    } else {
+      return (
+        course?.domain === selectedDomain &&
+        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus &&
+        getStatus(course?.courseId) === selectedStatus
+      );
     }
   });
 
@@ -257,15 +256,25 @@ function Courses() {
           <Stack direction="column" spacing={1} alignItems="center">
             <label htmlFor="demo-month-select">Filter By Month:</label>
             <FormControl sx={{ width: 100 }}>
-              <Select
-                labelId="demo-month-label"
-                id="demo-month-select"
-                value={selectedMonth}
-                onChange={handleMonthChange}
-              >
+              <Select labelId="demo-month-label" id="demo-month-select" value={selectedMonth} onChange={handleMonthChange}>
                 <MenuItem value="JANUARY">All</MenuItem>
-                {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
-                  <MenuItem key={month} value={month.toUpperCase()}>{month}</MenuItem>
+                {[
+                  'January',
+                  'February',
+                  'March',
+                  'April',
+                  'May',
+                  'June',
+                  'July',
+                  'August',
+                  'September',
+                  'October',
+                  'November',
+                  'December'
+                ].map((month) => (
+                  <MenuItem key={month} value={month.toUpperCase()}>
+                    {month}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -331,7 +340,10 @@ function Courses() {
               {filteredRows.map((row) => (
                 <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell padding="checkbox">
-                    <Checkbox checked={selectedCourseIds.includes(row?.courseId)} onChange={(e) => handleCheckboxChange(e, row?.courseId)} />
+                    <Checkbox
+                      checked={selectedCourseIds.includes(row?.courseId)}
+                      onChange={(e) => handleCheckboxChange(e, row?.courseId)}
+                    />
                   </TableCell>
                   <TableCell>{row?.courseName}</TableCell>
                   <TableCell>{row?.domain}</TableCell>
@@ -343,7 +355,12 @@ function Courses() {
                     <Button variant="contained" onClick={() => handleViewDetails(row)}>
                       View Details
                     </Button>
-                    <Button variant="contained" onClick={() => cancelNomination(row.id)} disabled={row.status !== 'Pending for Approval'} style={{ marginLeft: '8px' }}>
+                    <Button
+                      variant="contained"
+                      onClick={() => cancelNomination(row?.courseId)}
+                      disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
+                      style={{ marginLeft: '8px' }}
+                    >
                       Cancel
                     </Button>
                   </TableCell>
