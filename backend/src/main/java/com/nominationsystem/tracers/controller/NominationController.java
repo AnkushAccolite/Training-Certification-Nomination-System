@@ -23,6 +23,11 @@ public class NominationController {
         return ResponseEntity.ok(nomination);
     }
 
+    @GetMapping("/cancel")
+    public ResponseEntity<?> removeCourseFromAllNominations(@RequestParam String empId,@RequestParam String courseId) {
+        this.nominationService.removeCourseFromAllNominations(empId,courseId);
+        return ResponseEntity.ok().build();
+    }
     @GetMapping("/all")
     public ResponseEntity<List<Nomination>> getAllNominations() {
         List<Nomination> nominations = nominationService.getAllNominations();

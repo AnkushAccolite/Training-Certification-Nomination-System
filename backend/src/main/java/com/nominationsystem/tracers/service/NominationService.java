@@ -4,6 +4,7 @@ import com.nominationsystem.tracers.models.ApprovalStatus;
 import com.nominationsystem.tracers.models.NominatedCourseStatus;
 import com.nominationsystem.tracers.models.Employee;
 import com.nominationsystem.tracers.models.Nomination;
+import com.nominationsystem.tracers.repository.EmployeeRepository;
 import com.nominationsystem.tracers.repository.NominationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,9 @@ public class NominationService {
 
     @Autowired
     private NominationRepository nominationRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     @Autowired
     private EmployeeService employeeService;
@@ -39,6 +43,28 @@ public class NominationService {
         return allNominations.stream()
                 .filter(nomination -> managerId.equals(nomination.getManagerId()))
                 .collect(Collectors.toList());
+    }
+
+    public void removeCourseFromAllNominations(String empId,String courseId) {
+        List<Nomination> nominations = nominationRepository.findAll();
+        for (Nomination nomination : nominations) {
+            if(nomination.getEmpId().equals(empId)){
+                List<NominatedCourseStatus> nominatedCourses = nomination.getNominatedCourses();
+                nominatedCourses.removeIf(course -> course.getCourseId().equals(courseId));
+                if (nominatedCourses.isEmpty()) {
+                    nominationRepository.deleteById(nomination.getNominationId());
+                } else {
+                    nominationRepository.save(nomination);
+                }
+            }
+
+        }
+        Employee employee = employeeRepository.findByEmpId(empId);
+        if (employee != null) {
+            List<String> pendingCourses = employee.getPendingCourses();
+            pendingCourses.removeIf(course -> course.equals(courseId));
+            employeeRepository.save(employee);
+        }
     }
 
     public Nomination createNomination(Nomination nomination) {

@@ -178,14 +178,13 @@ function Courses() {
     }
   };
 
-  const cancelNomination = (courseId) => {
-    const updatedRows = rows.map((row) => {
-      if (row.id === courseId) {
-        return { ...row, status: 'Not Opted', statusColor: 'black' };
-      }
-      return row;
-    });
-    setRows(updatedRows);
+  const cancelNomination = async (courseId) => {
+    try {
+      const res = await axios.get(`/nomination/cancel?empId=${auth?.user?.empId}&courseId=${courseId}`);
+      navigate(0);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleMonthChange = (event) => {
@@ -358,7 +357,7 @@ function Courses() {
                     </Button>
                     <Button
                       variant="contained"
-                      onClick={() => cancelNomination(row.id)}
+                      onClick={() => cancelNomination(row?.courseId)}
                       disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
                       style={{ marginLeft: '8px' }}
                     >
