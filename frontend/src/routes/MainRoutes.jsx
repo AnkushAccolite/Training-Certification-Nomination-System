@@ -5,7 +5,6 @@ import Loadable from 'ui-component/Loadable';
 import EmployeeReport from 'views/pages/EmployeeReport';
 import CourseReport from 'views/pages/CourseReport';
 
-
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
 const Courses = Loadable(lazy(() => import('views/pages/Courses')));
 const Certifications = Loadable(lazy(() => import('views/pages/Certifications')));
@@ -78,11 +77,10 @@ const MainRoutes = {
           path:'AllCourses/add-course',
           element: <AddCourse />
         },
-       
-       
+
         {
           path: '/monthly-courses',
-          element: <MonthlyCourses />,
+          element: <MonthlyCourses />
         },
         // {
         //   path: '/MonthlyCourses/add-course',
@@ -98,7 +96,6 @@ const MainRoutes = {
         }
       ]
     }
-
   ]
 };
 

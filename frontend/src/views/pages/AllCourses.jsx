@@ -1,45 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button, Table, TableHead, TableBody, TableCell, TableRow, Select, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Checkbox } from '@mui/material';
-import AddCourse from './AddCourse';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
+import useCourses from 'hooks/useCourses';
+import currentMonth from 'utils/currentMonth';
+
 
 const AllCourses = () => {
   // Dummy data for courses (replace with actual data)
   const navigate = useNavigate();
   const auth = useSelector(state => state.auth);
-  const [courses, setCourses] = useState([]);
+  // const [courses, setCourses] = useState([]);
+  const { courses, loading, error } = useCourses();
 
 
   useEffect(() => {
     if (!(auth?.isAuthenticated && auth?.user?.role === "ADMIN")) navigate("/login");
 
-    const getCourses=async()=>{
-      try {
-        const {data}=await axios.get("/course");
-        // console.log("courses -> ",data)
-        setCourses(data);
-        
-      } catch (error) {
-        console.log(error?.message);
-      }
-    }
-    getCourses();
   }, []);
   const handleClick = () => {
-    navigate("/AllCourses/add-course")
+    navigate('/AllCourses/add-course');
   };
 
-  // Create a new Date object
-const currentDate = new Date();
-
-// Get the current month name
-const currentMonthName = currentDate.toLocaleString('default', { month: 'long' });
-
-// Convert the month name to uppercase
-const currentMonthUppercase = currentMonthName.toUpperCase();
+  const currentMonthUppercase =currentMonth();
 
   const [selectedDomain, setSelectedDomain] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All"); // State for selected status filter
@@ -84,12 +69,11 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
 
   const handleEditFieldChange = (event, fieldName) => {
     const { value } = event.target;
-    setEditFields(prevState => ({
+    setEditFields((prevState) => ({
       ...prevState,
       [fieldName]: value
     }));
   };
-
   // const [updatedCourse,setUpdatedCourse] = useState({});
   const saveEditedCourse = async() => {
     try {
@@ -121,7 +105,7 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
     if (event.target.checked) {
       setSelectedRows([...selectedRows, courseId]);
     } else {
-      setSelectedRows(selectedRows.filter(id => id !== courseId));
+      setSelectedRows(selectedRows.filter((id) => id !== courseId));
     }
   };
 
@@ -135,7 +119,6 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
   };
 
   const isSelected = (courseId) => selectedRows.indexOf(courseId) !== -1;
-
   const handleActivateButtonClick = async() => {
     try {
       const res = await axios.post(`/course/change-status?month=${selectedMonth}`,selectedRows)
@@ -152,8 +135,6 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
 
   const filteredCourses = courses.filter(course => {
     if (selectedDomain === "All" && selectedStatus === "All") {
-      return true;
-    } else if (selectedDomain === "All" && selectedStatus === "All") {
       return true;
     } else if (selectedDomain === "All") {
       return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === selectedStatus;
@@ -178,22 +159,18 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
     } else {
       return b?.courseName.localeCompare(a?.courseName);
     }
+    return 0;
   });
 
   return (
     <div>
       <h2>All Courses</h2>
-      
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
         {/* Domain filter */}
         <div style={{ flex: '1', marginRight: '10px' }}>
-          <label htmlFor="domainFilter">Filter by Domain:</label>
-          <Select
-            id="domainFilter"
-            value={selectedDomain}
-            onChange={handleDomainFilterChange}
-            style={{ width: '150px' }}
-          >
+          <label htmlFor="domainFilter" style={{ paddingRight: '1%' }}>Filter by Domain:</label>
+          <Select id="domainFilter" value={selectedDomain} onChange={handleDomainFilterChange} style={{ width: '150px' }}>
             <MenuItem value="All">All</MenuItem>
             <MenuItem value="Technical">Technical</MenuItem>
             <MenuItem value="Non-Technical">Non-Technical</MenuItem>
@@ -201,7 +178,6 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
             <MenuItem value="Process">Process</MenuItem>
           </Select>
         </div>
-
         {/* Status filter */}
         <div style={{ flex: '1', marginRight: '10px',marginLeft:"-5px" }}>
           <label htmlFor="statusFilter">Filter by Status:</label>
@@ -245,8 +221,6 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
         <Button variant="contained" onClick={handleClick} style={{ marginRight: '10px' }}>
           Add Course
         </Button>
-
-        {/* Activate Button */}
         <Button
           variant="contained"
           disabled={!isActivateButtonEnabled}
@@ -255,7 +229,7 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
           Change Status
         </Button>
       </div>
-      
+   
       {/* Table */}
       <Table style={{ backgroundColor: 'white' }}>
         <TableHead>
@@ -306,6 +280,7 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
                   </div>
                 )}
               </TableCell>
+
               <TableCell align="center">
                 {editingCourseId === course?.courseId ? (
                   <TextField
@@ -335,8 +310,12 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
               <TableCell align="center">
                 {editingCourseId === course?.courseId ? (
                   <>
-                    <Button variant="contained" onClick={saveEditedCourse}>Save</Button>
-                    <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>Cancel</Button>
+                    <Button variant="contained" onClick={saveEditedCourse}>
+                      Save
+                    </Button>
+                    <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
+                      Cancel
+                    </Button>
                   </>
                 ) : (
                   <>
