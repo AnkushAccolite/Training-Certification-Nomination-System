@@ -162,6 +162,37 @@ const AllCourses = () => {
     return 0;
   });
 
+  const allSelectedActive = selectedRows.every(courseId => sortedCourses.find(course => course.courseId === courseId)?.monthlyStatus?.find(monthStatus => monthStatus.month === selectedMonth)?.activationStatus === true);
+
+  const allSelectedInactive = selectedRows.every(courseId => sortedCourses.find(course => course.courseId === courseId)?.monthlyStatus?.find(monthStatus => monthStatus.month === selectedMonth)?.activationStatus === false);
+
+// Modify the button text and style logic
+let buttonText = 'Change Status';
+let buttonStyle = {
+  backgroundColor: 'blue', // Default background color
+  color: 'white', // Default text color
+};
+
+if (selectedRows.length === 0) {
+  buttonText = 'Activate';
+  buttonStyle.backgroundColor = 'green'; // Activate
+  buttonStyle.backgroundColor = 'light grey'; // Make button grey when disabled
+} else if (allSelectedActive) {
+  buttonText = 'Deactivate';
+  buttonStyle.backgroundColor = '#eb4034'; // Deactivate
+} else if (allSelectedInactive) {
+  buttonText = 'Activate';
+  buttonStyle.backgroundColor = '#3ea115'; // Activate
+} else {
+  buttonText = 'Invert Status';
+  buttonStyle.backgroundColor = '#3453cf'; // Invert Status
+}
+
+// Check if all selected rows are deselected manually
+if (selectedRows.length === 0 && allSelectedInactive) {
+  buttonStyle.backgroundColor = 'lightgrey'; // Make button light grey when all selected rows are deselected
+}
+
   return (
     <div>
       <h2>All Courses</h2>
@@ -225,10 +256,12 @@ const AllCourses = () => {
           variant="contained"
           disabled={!isActivateButtonEnabled}
           onClick={handleActivateButtonClick}
+          style={buttonStyle} // Apply buttonStyle here
         >
-          Change Status
+          {buttonText}
         </Button>
       </div>
+
    
       {/* Table */}
       <Table style={{ backgroundColor: 'white' }}>
@@ -328,7 +361,8 @@ const AllCourses = () => {
           ))}
         </TableBody>
       </Table>
-      {/* Course Details Dialog */}
+
+       {/* Course Details Dialog */}
       <Dialog open={showDetails} onClose={handleCloseDetails}>
         <DialogTitle>Course Details</DialogTitle>
         <DialogContent>

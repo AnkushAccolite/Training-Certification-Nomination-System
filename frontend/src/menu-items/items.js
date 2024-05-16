@@ -39,6 +39,15 @@ const items = {
           breadcrumbs: false
         },
         {
+          id: 'assigned-courses',
+          title: 'Assigned Courses',
+          type: 'item',
+          url: '/assigned-courses',
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          icon: icons.IconBook,
+          breadcrumbs: false
+        },
+        {
           id: 'courses-completed',
           title: 'Courses Completed',
           type: 'item',
