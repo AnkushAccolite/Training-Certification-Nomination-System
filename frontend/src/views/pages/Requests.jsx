@@ -2,88 +2,80 @@ import React, { useEffect, useState } from 'react';
 import RequestCard from './RequestCard';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import axios from '../../api/axios';
 
 const Requests = () => {
+  const auth = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
-    const auth = useSelector(state=>state.auth);
-    const navigate = useNavigate();
-    useEffect(()=>{
-        if(!(auth?.isAuthenticated && auth?.user?.role==="MANAGER"))navigate("/login");
-    },[])
+  const [requests, setRequests] = useState([]);
+  //   const [allCourses, setAllCourses] = useState([]);
 
-    const [cards, setCards] = useState([
-        { 
-            id: 1, 
-            employeeName: 'Employee 1', 
-            courses: [
-                { courseId: 1, courseName: 'Course A', category: 'Category X', courseDuration: '2 weeks', accepted: false },
-                { courseId: 2, courseName: 'Course B', category: 'Category Y', courseDuration: '3 weeks', accepted: false }
-            ]
-        },
-        { 
-            id: 2, 
-            employeeName: 'Employee 2', 
-            courses: [
-                { courseId: 3, courseName: 'Course C', category: 'Category Z', courseDuration: '4 weeks', accepted: false }
-            ]
-        }
-        // Add more initial card data as needed
-    ]);
+  useEffect(() => {
+    if (!(auth?.isAuthenticated && auth?.user?.role === 'MANAGER')) navigate('/login');
 
-    const handleRemoveCard = (employeeId) => {
-        setCards(cards.filter(card => card.id !== employeeId));
-    };
+    const getRequests = async () => {
+      try {
+        const { data: nominations } = await axios.get(`/nomination?managerId=${auth?.user?.empId}`);
+        const { data: courses } = await axios.get('/course');
 
-    const handleAcceptCourse = (employeeId, courseId) => {
-        setCards(cards.map(card => {
-            if (card.id === employeeId) {
-                return {
-                    ...card,
-                    courses: card.courses.map(course => {
-                        if (course.courseId === courseId) {
-                            return { ...course, accepted: true };
-                        }
-                        return course;
-                    })
-                };
+        const filteredNominations = nominations.filter((nomination) => {
+          return nomination.nominatedCourses.some((course) => course.approvalStatus === 'PENDING');
+        });
+
+        // Create a map of courses using courseId as the key
+        const courseMap = new Map(courses.map((course) => [course.courseId, course]));
+
+        // Iterate over nominations and add course details
+        filteredNominations.forEach((nomination) => {
+          nomination.nominatedCourses.forEach((nominatedCourse) => {
+            const courseId = nominatedCourse.courseId;
+            const courseDetails = courseMap.get(courseId);
+            if (courseDetails) {
+              // Add course details to nominatedCourse object
+              nominatedCourse.courseName = courseDetails.courseName;
+              nominatedCourse.duration = courseDetails.duration;
+              nominatedCourse.domain = courseDetails.domain;
             }
-            return card;
-        }));
+          });
+        });
+        setRequests(filteredNominations);
+      } catch (error) {
+        console.log(error);
+      }
     };
+    getRequests();
+  }, []);
 
-    const handleRejectCourse = (employeeId, courseId) => {
-        setCards(cards.map(card => {
-            if (card.id === employeeId) {
-                return {
-                    ...card,
-                    courses: card.courses.map(course => {
-                        if (course.courseId === courseId) {
-                            return { ...course, accepted: false };
-                        }
-                        return course;
-                    })
-                };
-            }
-            return card;
-        }));
-    };
+  const handleRemoveCard = (employeeId) => {
+    setCards(cards.filter((card) => card.id !== employeeId));
+  };
 
-    return (
-        <div className="requests">
-            <h2>Pending Requests</h2>
-            
-            {cards.map(card => (
-                <RequestCard
-                    key={card.id}
-                    employeeName={card.employeeName}
-                    courses={card.courses}
-                    onRemove={() => handleRemoveCard(card.id)}
-                    onAccept={(courseId) => handleAcceptCourse(card.id, courseId)}
-                    onReject={(courseId) => handleRejectCourse(card.id, courseId)}
-                />
-            ))}
-        </div>
-    );
+  const handleAcceptReject = async (nominationId, courseId, action) => {
+    try {
+      const res = await axios.post(`/nomination/${action}?nominationId=${nominationId}&courseId=${courseId}`);
+      navigate(0);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <div className="requests">
+      <h2>Pending Requests</h2>
+
+      {requests?.map((card) => (
+        <RequestCard
+          key={card?.nominationId}
+          employeeName={card?.empName}
+          nominations={card?.nominatedCourses}
+          onRemove={() => handleRemoveCard(card.id)}
+          onAccept={(courseId) => handleAcceptReject(card?.nominationId, courseId, 'approve')}
+          onReject={(courseId) => handleAcceptReject(card?.nominationId, courseId, 'reject')}
+        />
+      ))}
+    </div>
+  );
 };
 
 export default Requests;

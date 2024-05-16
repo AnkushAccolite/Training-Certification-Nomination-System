@@ -1,12 +1,9 @@
-import 'chart.js/auto';
+import 'chart.js/auto'; import 'chart.js/auto';
 import React, { useState, useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal, Typography, TextField, Rating } from '@mui/material'; // Import Modal, Typography, TextField, and Rating components from MUI
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal, Typography, TextField, Rating } from '@mui/material';
 import '../../App.css';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'; // Import Table components from MUI
-import cardImg from '../../assets/images/icons/image.png';
-import Typography from '@mui/material/Typography';
-import PieChartOutlineIcon from '@mui/icons-material/PieChartOutline';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Snackbar from '@mui/material/Snackbar';
@@ -14,16 +11,19 @@ import MuiAlert from '@mui/material/Alert';
 
 
 const AssignedCourses = () => {
-  const cardImageHeight = 180;
-
   const navigate = useNavigate();
-  const auth = useSelector(state=>state.auth);
+  const auth = useSelector(state => state.auth);
 
   useEffect(() => {
-    if(!(auth?.isAuthenticated))navigate("/login");
+    if (!(auth?.isAuthenticated)) navigate("/login");
   }, []);
 
   const [courses, setCourses] = useState([
+    { name: 'Course 1', status: 'start', duration: '1 hrs' },
+    { name: 'Course 2', status: 'start', duration: '2 hrs' },
+    { name: 'Course 3', status: 'completed', duration: '1 hrs' },
+    { name: 'Course 4', status: 'start', duration: '4 hrs' },
+    { name: 'Course 5', status: 'completed', duration: '2.5 hrs' },
     { name: 'Course 1', status: 'start', duration: '1' },
     { name: 'Course 2', status: 'start', duration: '2' },
     { name: 'Course 3', status: 'completed', duration: '1' },
@@ -31,6 +31,37 @@ const AssignedCourses = () => {
     { name: 'Course 5', status: 'completed', duration: '2.5' },
   ]);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false); // State variable for feedback dialog
+  const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' }); // State variable for storing feedback data
+  const [selectedCourseIndex, setSelectedCourseIndex] = useState(null); // State variable to store the index of the selected course
+
+  const handleSelfAssessmentClick = (index) => {
+    setSelectedCourseIndex(index); // Set the selected course index
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = (completed) => {
+    if (completed) {
+      const updatedCourses = [...courses];
+      updatedCourses[selectedCourseIndex].status = 'completed';
+      setCourses(updatedCourses);
+      setFeedbackData({ rating: 0, comments: '' }); // Clear feedback data
+      setModalOpen(false);
+      setFeedbackOpen(true);
+    } else {
+      setModalOpen(false);
+    }
+  };
+
+  const handleFeedbackClose = () => {
+    setFeedbackOpen(false);
+  };
+
+  const handleFeedbackSubmit = () => {
+    // Implement your logic to submit feedback
+    console.log(feedbackData); // For demonstration, log feedback data
+    setFeedbackOpen(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' });
@@ -84,11 +115,9 @@ const AssignedCourses = () => {
   }, [courses]);
 
   const getStatusColor = (status) => {
-    switch(status) {
+    switch (status) {
       case 'start':
         return '#3498db'; // Blue
-      case 'inprogress':
-        return '#f1c40f'; // Yellow
       case 'completed':
         return '#2ecc71'; // Green
       default:

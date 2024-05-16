@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import List from '@mui/material/List';
@@ -19,27 +18,22 @@ import Popper from '@mui/material/Popper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-// third-party
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
-// project imports
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
-import UpgradePlanCard from './UpgradePlanCard';
 import User1 from 'assets/images/users/user-round.svg';
-import {logout} from "../../../../store/actions"
-
-
+import { logout } from '../../../../store/actions';
 
 // assets
-import { IconLogout, IconSettings} from '@tabler/icons-react';
+import { IconLogout, IconSettings } from '@tabler/icons-react';
 
 // ==============================|| PROFILE MENU ||============================== //
 
 const ProfileSection = () => {
   const theme = useTheme();
   const customization = useSelector((state) => state.customization);
-  const auth = useSelector(state=>state.auth);
+  const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -155,7 +149,6 @@ const ProfileSection = () => {
                       </Stack>
                       <Typography variant="subtitle2">{auth?.user?.empId}</Typography>
                     </Stack>
-                    
                   </Box>
                   <PerfectScrollbar style={{ height: '100%', maxHeight: 'calc(100vh - 250px)', overflowX: 'hidden' }}>
                     <Box sx={{ p: 2, pt: 0 }}>
@@ -193,11 +186,14 @@ const ProfileSection = () => {
                           <ListItemIcon>
                             <IconLogout stroke={1.5} size="1.3rem" />
                           </ListItemIcon>
-                          <ListItemText onClick={()=>{
-                            dispatch(logout());
-                            localStorage.removeItem("refresh")
-                            navigate("/login")
-                          }} primary={<Typography variant="body2">Logout</Typography>} />
+                          <ListItemText
+                            onClick={() => {
+                              dispatch(logout());
+                              localStorage.removeItem('refresh');
+                              navigate('/login');
+                            }}
+                            primary={<Typography variant="body2">Logout</Typography>}
+                          />
                         </ListItemButton>
                       </List>
                     </Box>

@@ -4,38 +4,22 @@ import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
+import useCourses from 'hooks/useCourses';
+import currentMonth from 'utils/currentMonth';
 
 const MonthlyCourses = () => {
 
   const auth = useSelector(state => state.auth);
   const navigate = useNavigate();
-  const [courses, setCourses] = useState([]);
+  const { courses, loading, error } = useCourses();
 
   useEffect(() => {
     if (!(auth?.isAuthenticated && auth?.user?.role === "ADMIN")) navigate("/login");
 
-    const getCourses=async()=>{
-      try {
-        const {data}=await axios.get("/course");
-        setCourses(data);
-        console.log("monthly",data)
-      } catch (error) {
-        console.log(error?.message);
-      }
-    }
-    getCourses();
-
   }, []);
 
 
-    // Create a new Date object
-const currentDate = new Date();
-
-// Get the current month name
-const currentMonthName = currentDate.toLocaleString('default', { month: 'long' });
-
-// Convert the month name to uppercase
-const currentMonthUppercase = currentMonthName.toUpperCase();
+const currentMonthUppercase = currentMonth();
 
   const [sortingOrder, setSortingOrder] = useState('ascending');
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -47,9 +31,13 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
     setSortingOrder(sortingOrder === 'ascending' ? 'descending' : 'ascending');
   };
 
-  const deleteCourse = (id) => {
-    const updatedCourses = courses.filter(course => course.courseId !== id);
-    setCourses(updatedCourses);
+  const removeCourse = async(id) => {
+    try {
+      const res = await axios.post(`/course/change-status?month=${monthFilter}`,[id])
+      navigate(0);      
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const handleViewDetails = (course) => {
@@ -75,8 +63,16 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
     } else {
       return b?.courseName.localeCompare(a?.courseName);
     }
+    return true;
   });
 
+  const getArrow = (key) => {
+    // if (sortConfig.key === key) {
+    //   return sortConfig.direction === 'ascending' ? '▲' : '▼';
+    // }
+    return <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+    // return '▼';
+  };
 
 
   const filteredCourses = sortedCourses.filter(course => {
@@ -140,7 +136,7 @@ const currentMonthUppercase = currentMonthName.toUpperCase();
               <TableCell align="center">{course?.domain}</TableCell>
               {/* <TableCell align="center">{course.month}</TableCell> */}
               <TableCell align="center">
-                <Button variant="contained" onClick={() => deleteCourse(course.courseId)}>Delete</Button>
+                <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>Remove</Button>
                 <Button variant="contained" style={{ marginLeft: '10px' }} onClick={() => handleViewDetails(course)}>View Details</Button>
               </TableCell>
             </TableRow>
