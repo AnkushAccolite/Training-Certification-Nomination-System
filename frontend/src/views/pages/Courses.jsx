@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
-import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,7 +8,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { useTheme } from '@mui/material/styles';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -24,6 +22,7 @@ import useCourses from 'hooks/useCourses';
 import currentMonth from 'utils/currentMonth';
 import getNominationCourses from 'utils/getNominationCourses';
 import axios from '../../api/axios';
+import './Courses.css';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -38,61 +37,13 @@ const MenuProps = {
 };
 
 const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
-const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Assigned'];
-
-function getStyles(name, personName, theme) {
-  return {
-    fontWeight: personName.indexOf(name) === -1 ? theme.typography.fontWeightRegular : theme.typography.fontWeightMedium
-  };
-}
-
-function createData(index, category, duration, description) {
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const years = [2022, 2023, 2024, 2025];
-
-  let month, year;
-  switch (index % 4) {
-    case 0:
-      month = 'May';
-      year = 2024;
-      break;
-    case 1:
-      month = 'April';
-      year = 2024;
-      break;
-    case 2:
-      month = 'January';
-      year = 2025;
-      break;
-    case 3:
-      month = 'December';
-      year = 2024;
-      break;
-    default:
-      month = 'January';
-      year = 2024;
-      break;
-  }
-
-  return { id: index, name: `Course ${index}`, category, duration, month, year, status: 'Not Opted', statusColor: 'black', description };
-}
+const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Assigned', 'Completed'];
 
 const initialRows = [
-  createData(1, 'Technical', 4),
-  createData(2, 'Technical', 8),
-  createData(3, 'Domain', 3),
-  createData(4, 'Technical', 5),
-  createData(5, 'Power', 2),
-  createData(6, 'Power', 1.5),
-  createData(7, 'Domain', 4),
-  createData(8, 'Technical', 2),
-  createData(9, 'Domains', 2),
-  createData(10, 'Technical', 8)
+  // ... (existing initialRows data)
 ];
 
 function Courses() {
-  const theme = useTheme();
-
   const currentMonthUppercase = currentMonth();
 
   const [selectedDomain, setSelectedDomain] = useState('All');
@@ -128,18 +79,10 @@ function Courses() {
   }, []);
 
   const getStatus = (id) => {
-    // console.log("pending",pendingCourses);
     if (approvedCourses?.includes(id)) return 'Assigned';
     else if (pendingCourses?.includes(id)) return 'Pending for Approval';
     else return 'Not Opted';
   };
-
-  // const handleChange = (event) => {
-  //   const {
-  //     target: { value },
-  //   } = event;
-  //   setSelectedDomain(value);
-  // };
 
   const handleViewDetails = (course) => {
     setSelectedCourse(course);
@@ -198,6 +141,18 @@ function Courses() {
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
   };
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Pending for Approval':
+        return 'red';
+      case 'Assigned':
+        return 'green';
+      case 'Completed':
+        return 'blue';
+      default:
+        return 'black';
+    }
+  };
 
   const filteredRows = courses.filter((course) => {
     if (selectedDomain === 'All' && selectedStatus === 'All') {
@@ -206,7 +161,7 @@ function Courses() {
       return (
         course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus &&
         getStatus(course?.courseId) === selectedStatus
-      ); //&&
+      );
     } else if (selectedStatus === 'All') {
       return (
         course?.domain === selectedDomain &&
@@ -221,105 +176,82 @@ function Courses() {
     }
   });
 
-  // const filteredRows = courses?.filter(row => {
-  //   if (selectedMonth !== 'All') {
-  //     return row.month === selectedMonth && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
-  //   } else if (selectedYear !== 'All') {
-  //     return row.year === parseInt(selectedYear) && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
-  //   } else if (selectedMonth !== 'All') {
-  //     return row.month === selectedMonth && (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
-  //   } else {
-  //     return (personName === 'All' || row.category === personName) && (selectedStatus === 'All' || row.status === selectedStatus);
-  //   }
-  // });
-
   return (
     <div>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" marginBottom="20px">
-        <Stack direction="row" spacing={5} alignItems="center">
-          {/* <Stack direction="column" spacing={1} alignItems="center">
-            <label htmlFor="demo-year-select">Filter By Year:</label>
-            <FormControl sx={{ width: 100 }}>
-              <Select
-                labelId="demo-year-label"
-                id="demo-year-select"
-                value={selectedYear}
-                onChange={handleYearChange}
-              >
-                <MenuItem value="All">All</MenuItem>
-                {[2022, 2023, 2024, 2025].map((year) => (
-                  <MenuItem key={year} value={year}>{year}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack> */}
-          <Stack direction="column" spacing={1} alignItems="center">
-            <label htmlFor="demo-month-select">Filter By Month:</label>
-            <FormControl sx={{ width: 100 }}>
-              <Select labelId="demo-month-label" id="demo-month-select" value={selectedMonth} onChange={handleMonthChange}>
-                <MenuItem value="JANUARY">All</MenuItem>
-                {[
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December'
-                ].map((month) => (
-                  <MenuItem key={month} value={month.toUpperCase()}>
-                    {month}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-          <Stack direction="column" spacing={1} alignItems="center">
-            <label htmlFor="demo-category-select">Filter By Category:</label>
-            <FormControl sx={{ width: 100 }}>
-              <Select
-                labelId="demo-category-label"
-                id="demo-category-select"
-                value={selectedDomain}
-                onChange={handleDomainChange}
-                style={{ width: '100px' }}
-              >
-                {names.map((name) => (
-                  <MenuItem key={name} value={name} style={getStyles(name, selectedDomain, theme)}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-          <Stack direction="column" spacing={1} alignItems="center">
-            <label htmlFor="demo-status-select">Filter By Status:</label>
-            <FormControl sx={{ width: 100 }}>
-              <Select
-                labelId="demo-status-label"
-                id="demo-status-select"
-                value={selectedStatus}
-                onChange={handleStatusChange}
-                style={{ width: '100px' }}
-              >
-                {statuses.map((status) => (
-                  <MenuItem key={status} value={status} style={getStyles(status, selectedStatus, theme)}>
-                    {status}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-        </Stack>
+      <div className="filters">
+        <FormControl>
+          <Select
+            displayEmpty
+            value={selectedMonth}
+            onChange={handleMonthChange}
+            renderValue={(selected) => {
+              return 'Filter By Month';
+            }}
+            inputProps={{ 'aria-label': 'Without label' }}
+            sx={{ border: 'none', '&:focus': { backgroundColor: 'transparent' } }}
+          >
+            {[
+              'January',
+              'February',
+              'March',
+              'April',
+              'May',
+              'June',
+              'July',
+              'August',
+              'September',
+              'October',
+              'November',
+              'December'
+            ].map((month) => (
+              <MenuItem key={month} value={month.toUpperCase()}>
+                {month}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <div className="separator"></div>
+        <FormControl>
+          <Select
+            displayEmpty
+            value={selectedDomain}
+            onChange={handleDomainChange}
+            renderValue={(selected) => {
+              return 'Filter By Category';
+            }}
+            inputProps={{ 'aria-label': 'Without label' }}
+            sx={{ border: 'none', '&:focus': { backgroundColor: 'transparent' } }}
+          >
+            {names.map((name) => (
+              <MenuItem key={name} value={name}>
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <div className="separator"></div>
+        <FormControl>
+          <Select
+            displayEmpty
+            value={selectedStatus}
+            onChange={handleStatusChange}
+            renderValue={(selected) => {
+              return 'Filter By Status';
+            }}
+            inputProps={{ 'aria-label': 'Without label' }}
+            sx={{ border: 'none', '&:focus': { backgroundColor: 'transparent' } }}
+          >
+            {statuses.map((status) => (
+              <MenuItem key={status} value={status}>
+                {status}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <Button className="nominateBtn" variant="outlined" startIcon={<LocalLibraryIcon />} onClick={nominateCourses}>
           Nominate
         </Button>
-      </Stack>
+      </div>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
         <TableContainer component={Paper}>
@@ -330,8 +262,6 @@ function Courses() {
                 <TableCell>Course Name</TableCell>
                 <TableCell>Category</TableCell>
                 <TableCell>Duration(Hours)</TableCell>
-                {/* <TableCell>Month</TableCell> */}
-                {/* <TableCell>Year</TableCell> */}
                 <TableCell>Status</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
@@ -345,19 +275,21 @@ function Courses() {
                       onChange={(e) => handleCheckboxChange(e, row?.courseId)}
                     />
                   </TableCell>
+
+
                   <TableCell>{row?.courseName}</TableCell>
                   <TableCell>{row?.domain}</TableCell>
                   <TableCell>{row?.duration}</TableCell>
-                  {/* <TableCell>{row.month}</TableCell> */}
-                  {/* <TableCell>{row.year}</TableCell> */}
-                  <TableCell style={{ color: row.statusColor }}>{getStatus(row?.courseId)}</TableCell>
+                  <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)) }}>
+                    {getStatus(row?.courseId)}
+                  </TableCell>
                   <TableCell>
                     <Button variant="contained" onClick={() => handleViewDetails(row)}>
                       View Details
                     </Button>
                     <Button
-                      variant="contained"
-                      onClick={() => cancelNomination(row?.courseId)}
+                      variant="outlined"
+                      onClick={() => cancelNomination(row.id)}
                       disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
                       style={{ marginLeft: '8px' }}
                     >
