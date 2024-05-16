@@ -24,6 +24,8 @@ import getNominationCourses from 'utils/getNominationCourses';
 import axios from '../../api/axios';
 import './Courses.css';
 
+
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
@@ -185,7 +187,7 @@ function Courses() {
             value={selectedMonth}
             onChange={handleMonthChange}
             renderValue={(selected) => {
-              return 'Filter By Month';
+              return 'Month';
             }}
             inputProps={{ 'aria-label': 'Without label' }}
             sx={{ border: 'none', '&:focus': { backgroundColor: 'transparent' } }}
@@ -217,7 +219,7 @@ function Courses() {
             value={selectedDomain}
             onChange={handleDomainChange}
             renderValue={(selected) => {
-              return 'Filter By Category';
+              return 'Category';
             }}
             inputProps={{ 'aria-label': 'Without label' }}
             sx={{ border: 'none', '&:focus': { backgroundColor: 'transparent' } }}
@@ -236,7 +238,7 @@ function Courses() {
             value={selectedStatus}
             onChange={handleStatusChange}
             renderValue={(selected) => {
-              return 'Filter By Status';
+              return 'Status';
             }}
             inputProps={{ 'aria-label': 'Without label' }}
             sx={{ border: 'none', '&:focus': { backgroundColor: 'transparent' } }}
@@ -253,7 +255,7 @@ function Courses() {
         </Button>
       </div>
 
-      <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
+      <div style={{ paddingTop: '2%', marginTop: '50px' }}>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
