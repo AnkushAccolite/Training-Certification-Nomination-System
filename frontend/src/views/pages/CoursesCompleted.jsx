@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
+import { sizing } from '@mui/system';
 
 
 function createData(SNo, CourseName, Duration, DateOfCompletion) {
@@ -90,6 +91,8 @@ const CoursesCompleted = () => {
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#c32148', '#777777', '#842593', '#f88379', '#AF7AC5', '#9FE2BF', '#B3B6B7', '#E727B0'];
 
   const tableContainerStyles = {
+    maxHeight: '500px',
+    overflowY: 'auto',
     '&::-webkit-scrollbar': {
       width: '5px',
     },
@@ -106,13 +109,13 @@ const CoursesCompleted = () => {
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ flex: '0 0 75%', overflowY: 'auto', height: '100vh' }}>
+    <div  style={{ display: 'flex' }}>
+      <div style={{ flex: '0 0 70%', overflowY: 'auto', height: '100vh' }}>
         <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
           <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
         </Typography>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-          <CalendarTodayIcon />
+          {/* <CalendarTodayIcon /> */}
           <Typography variant="subtitle1" style={{ marginLeft: '10px' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker label="Start Date" value={startDate} onChange={handleStartDateChange} />
@@ -122,17 +125,17 @@ const CoursesCompleted = () => {
           </Typography>
         </div>
         <TableContainer component={Paper} sx={tableContainerStyles}>
-          <Table sx={{ minWidth: 850 }} aria-label="completed courses table">
+          <Table  aria-label="completed courses table">
             <TableHead>
               <TableRow>
-                <TableCell style={{ alignContent:'center'}}>S.No</TableCell>
-                <TableCell onClick={() => handleSort('CourseName')} style={{ alignContent:'center',cursor: 'pointer' }}>
+                <TableCell style={{textAlign:'center'}}>S.No</TableCell>
+                <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign:'center',cursor: 'pointer' }}>
                   Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
-                <TableCell onClick={() => handleSort('Duration')} style={{ alignContent:'center',cursor: 'pointer' }}>
+                <TableCell onClick={() => handleSort('Duration')} style={{ textAlign:'center',cursor: 'pointer' }}>
                   Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
-                <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ alignContent:'center',cursor: 'pointer' }}>
+                <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign:'center',cursor: 'pointer' }}>
                   Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
               </TableRow>
@@ -148,17 +151,17 @@ const CoursesCompleted = () => {
                 })
                 .map((row) => (
                   <TableRow key={row.SNo}>
-                    <TableCell style={{ alignContent:'center'}}>{row.SNo}</TableCell>
-                    <TableCell style={{ alignContent:'center'}}>{row.CourseName}</TableCell>
-                    <TableCell style={{ alignContent:'center'}}>{row.Duration}</TableCell>
-                    <TableCell style={{ alignContent:'center'}}>{row.DateOfCompletion}</TableCell>
+                    <TableCell style={{textAlign:'center'}}>{row.SNo}</TableCell>
+                    <TableCell style={{textAlign:'center'}}>{row.CourseName}</TableCell>
+                    <TableCell style={{textAlign:'center'}}>{row.Duration}</TableCell>
+                    <TableCell style={{textAlign:'center'}}>{row.DateOfCompletion}</TableCell>
                   </TableRow>
                 ))}
             </TableBody>
           </Table>
         </TableContainer>
       </div>
-      <div style={{ flex: '0 0 25%', position: 'sticky', top: 20 }}>
+      <div style={{ flex: '0 0 30%', position: 'sticky', top: 20 }}>
         <Typography variant="h4" style={{ textAlign: 'center', marginTop: '50%' }}>
           Courses Completed Per Month
         </Typography>

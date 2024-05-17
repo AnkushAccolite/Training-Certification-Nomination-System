@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, TableHead, TableBody, TableCell, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem } from '@mui/material';
+import { Button, Table, TableHead, TableBody, TableCell, TableRow, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
 import useCourses from 'hooks/useCourses';
 import currentMonth from 'utils/currentMonth';
+import './MonthlyCourses.css';
+import Tooltip from '@mui/material/Tooltip';
 
 const MonthlyCourses = () => {
 
@@ -18,8 +20,7 @@ const MonthlyCourses = () => {
 
   }, []);
 
-
-const currentMonthUppercase = currentMonth();
+  const currentMonthUppercase = currentMonth();
 
   const [sortingOrder, setSortingOrder] = useState('ascending');
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -31,10 +32,10 @@ const currentMonthUppercase = currentMonth();
     setSortingOrder(sortingOrder === 'ascending' ? 'descending' : 'ascending');
   };
 
-  const removeCourse = async(id) => {
+  const removeCourse = async (id) => {
     try {
-      const res = await axios.post(`/course/change-status?month=${monthFilter}`,[id])
-      navigate(0);      
+      const res = await axios.post(`/course/change-status?month=${monthFilter}`, [id])
+      navigate(0);
     } catch (error) {
       console.log(error)
     }
@@ -66,54 +67,51 @@ const currentMonthUppercase = currentMonth();
     return true;
   });
 
-  const getArrow = (key) => {
-    // if (sortConfig.key === key) {
-    //   return sortConfig.direction === 'ascending' ? '▲' : '▼';
-    // }
-    return <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-    // return '▼';
-  };
-
-
   const filteredCourses = sortedCourses.filter(course => {
     if (domainFilter === 'All') {
       return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === monthFilter)?.activationStatus
-    }else {
+    } else {
       return course?.domain === domainFilter && course?.monthlyStatus?.find(monthStatus => monthStatus?.month === monthFilter)?.activationStatus
     }
   });
 
   return (
     <div>
-      <div style={{ marginBottom: '10px' }}>
-        <label>Filter by Domain:</label>
-        <Select value={domainFilter} onChange={handleDomainFilterChange} style={{ marginLeft: '10px' }}>
-          <MenuItem value="All">All</MenuItem>
-          <MenuItem value="Technical">Technical</MenuItem>
-          <MenuItem value="Non-Technical">Non-Technical</MenuItem>
-          <MenuItem value="Power">Non-Technical</MenuItem>
-          <MenuItem value="Process">Non-Technical</MenuItem>
-        </Select>
+      <h2>Monthly Courses</h2>
 
-        <label style={{ marginLeft: '20px' }}>Filter by Month:</label>
-        <Select value={monthFilter} onChange={handleMonthFilterChange} style={{ marginLeft: '10px' }}>
-          <MenuItem value="JANUARY">January</MenuItem>
-            <MenuItem value="FEBRUARY">February</MenuItem>
-            <MenuItem value="MARCH">March</MenuItem>
-            <MenuItem value="APRIL">April</MenuItem>
-            <MenuItem value="MAY">May</MenuItem>
-            <MenuItem value="JUNE">June</MenuItem>
-            <MenuItem value="JULY">July</MenuItem>
-            <MenuItem value="AUGUST">August</MenuItem>
-            <MenuItem value="SEPTEMBER">September</MenuItem>
-            <MenuItem value="OCTOBER">October</MenuItem>
-            <MenuItem value="NOVEMBER">November</MenuItem>
-            <MenuItem value="DECEMBER">December</MenuItem>
-        </Select>
+      <div className="filter-container">
+        <div className="custom-select">
+          <Tooltip title="Domain">
+            <select value={domainFilter} onChange={handleDomainFilterChange} className="filter-input">
+              <option className="menu-item" value="All">All</option>
+              <option className="menu-item" value="Technical">Technical</option>
+              <option className="menu-item" value="Non-Technical">Non-Technical</option>
+              <option className="menu-item" value="Power">Power</option>
+              <option className="menu-item" value="Process">Process</option>
+            </select>
+          </Tooltip>
+        </div>
+        <div className="custom-select">
+          <Tooltip title="Month">
+            <select value={monthFilter} onChange={handleMonthFilterChange} className="filter-input">
+              <option className="menu-item" value="JANUARY">January</option>
+              <option className="menu-item" value="FEBRUARY">February</option>
+              <option className="menu-item" value="MARCH">March</option>
+              <option className="menu-item" value="APRIL">April</option>
+              <option className="menu-item" value="MAY">May</option>
+              <option className="menu-item" value="JUNE">June</option>
+              <option className="menu-item" value="JULY">July</option>
+              <option className="menu-item" value="AUGUST">August</option>
+              <option className="menu-item" value="SEPTEMBER">September</option>
+              <option className="menu-item" value="OCTOBER">October</option>
+              <option className="menu-item" value="NOVEMBER">November</option>
+              <option className="menu-item" value="DECEMBER">December</option>
+            </select>
+          </Tooltip>
+        </div>
       </div>
 
-      <h2>Monthly Courses</h2>
-      <Table sx={{ backgroundColor: 'white' }}>
+      <Table sx={{ backgroundColor: 'white', borderRadius: '20px', marginTop: '15px' }}>
         <TableHead>
           <TableRow>
             <TableCell align="center">
@@ -124,17 +122,15 @@ const currentMonthUppercase = currentMonth();
             </TableCell>
             <TableCell align="center">Duration</TableCell>
             <TableCell align="center">Domain</TableCell>
-            {/* <TableCell align="center">Month</TableCell> */}
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {filteredCourses.map(course => (
             <TableRow key={course?.courseId}>
-              <TableCell>{course?.courseName}</TableCell>
+              <TableCell align="center">{course?.courseName}</TableCell>
               <TableCell align="center">{course?.duration}</TableCell>
               <TableCell align="center">{course?.domain}</TableCell>
-              {/* <TableCell align="center">{course.month}</TableCell> */}
               <TableCell align="center">
                 <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>Remove</Button>
                 <Button variant="contained" style={{ marginLeft: '10px' }} onClick={() => handleViewDetails(course)}>View Details</Button>

@@ -1,40 +1,68 @@
 .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.course-card {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+  width: 200px; /* Adjust card width as needed */
+}
+
+.course-card img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 5px;
+}
+
+.course-card h3 {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.course-card button {
+  background-color: #4fc3f7;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
   .course-card {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 10px;
-    width: 200px; /* Adjust card width as needed */
+    width: calc(50% - 20px); /* Adjust card width for smaller screens */
   }
-  
-  .course-card img {
-    width: 100%;
-    height: auto;
-    margin-bottom: 5px;
-  }
-  
-  .course-card h3 {
-    font-size: 16px;
-    margin-bottom: 5px;
-  }
-  
-  .course-card button {
-    background-color: #4fc3f7;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  @media (max-width: 600px) {
-    .course-card {
-      width: calc(50% - 20px); /* Adjust card width for smaller screens */
-    }
-  }
+}
+
+/* Responsive CSS */
+.container {
+width: 100%;
+padding: 20px;
+}
+
+@media only screen and (min-width: 768px) {
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.courses-section {
+  flex: 0 0 70%;
+  max-width: 70%;
+}
+.pie-chart-section {
+  flex: 0 0 30%;
+  max-width: 30%;
+}
+}
+
+/* Responsive CSS */
+.container {
+width: 100%;
+padding: 20px;
+}
