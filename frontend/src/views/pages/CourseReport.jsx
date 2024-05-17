@@ -4,9 +4,6 @@ import { Bar, Pie } from 'react-chartjs-2';
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, MenuItem, Popover, List, ListItem, ListItemText } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import SearchIcon from '@mui/icons-material/Search';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import GetAppIcon from '@mui/icons-material/GetApp';
 import Autocomplete from '@mui/material/Autocomplete';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -15,7 +12,6 @@ import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import DownloadIcon from '@mui/icons-material/Download';
 import { Chart } from 'chart.js';
-import 'chartjs-plugin-datalabels'; // Import the plugin
 
 const CourseReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
@@ -24,7 +20,7 @@ const CourseReport = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
-  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); 
   const [courses, setCourses] = useState([
     { 
       courseId: 'C001', 
