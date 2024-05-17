@@ -98,7 +98,7 @@ const EmployeeReport = () => {
         {
           label: 'Completion Months',
           data: Object.values(completionCounts),
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#33FFCC', '#FF5733', '#66FF33', '#337DFF', '#AB33FF', '#FF33E3', '#33FFA8', '#FFBD33', '#33FFD8'],
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#D29CC5', '#FF5733', '#66FF33', '#337DFF', '#AB33FF', '#FF33E3', '#33FFA8', '#FFBD33', '#33FFD8'],
         },
       ],
     };
