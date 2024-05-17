@@ -5,6 +5,8 @@ import { Paper, Button, Table, TableBody, TableCell, TableContainer, TableHead, 
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
 const AssignedCourses = () => {
   const navigate = useNavigate();
@@ -34,6 +36,7 @@ const AssignedCourses = () => {
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' });
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleSelfAssessmentClick = (index) => {
     setSelectedCourseIndex(index);
@@ -57,11 +60,16 @@ const AssignedCourses = () => {
     setFeedbackOpen(false);
   };
 
-  const handleFeedbackSubmit = () => {
-    console.log(feedbackData);
-    setFeedbackOpen(false);
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
+  const handleFeedbackSubmit = () => {
+    // Implement your logic to submit feedback
+    console.log(feedbackData); // For demonstration, log feedback data
+    setFeedbackOpen(false);
+    setSnackbarOpen(true); // Open the Snackbar
+  };
 
   const countByStatus = () => {
     return courses.reduce((acc, course) => {
@@ -96,72 +104,72 @@ const AssignedCourses = () => {
     <div className="container">
       <div className="content-section" style={{ display: 'flex' }}>
         <div className="courses-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
-          <h2 style={{ paddingBottom: '20px' }}>Assigned Courses</h2>
+          <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Assigned Courses</h2>
           <div style={{ flex: '1', overflow: 'hidden' }}>
-  <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
-  <TableContainer
-      style={{ 
-        backgroundColor: 'white', 
-        borderRadius: '8px', 
-        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-        paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-        marginBottom: '-16px', // Compensate for the added padding to avoid double scrollbars
-      }} 
-      component={Paper} 
-      sx={{ 
-        maxHeight: '100%', 
-        overflowY: 'auto',
-        '&::-webkit-scrollbar': {
-          width: '6px', // Reduce width of the scrollbar
-          borderRadius: '3px', // Round scrollbar corners
-        },
-        '&::-webkit-scrollbar-track': {
-          backgroundColor: '#FFFFFF', // Background color of the scrollbar track
-        },
-        '&::-webkit-scrollbar-thumb': {
-          backgroundColor: '#fffff', // Color of the scrollbar thumb (handle)
-          borderRadius: '3px', // Round scrollbar thumb corners
-        },
-      }}
-    >
-              <Table stickyHeader>
-                <TableHead style={{ textAlign: 'center' }}>
-                  <TableRow>
-                    <TableCell style={{ textAlign: 'center' }}>Course Name</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>Duration(Hours)</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>Status</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {courses.map((course, index) => (
-                    <TableRow key={index}>
-                      <TableCell style={{ textAlign: 'center' }}>{course.name}</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>{course.duration}</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>
-                        <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(course.status) }}>
-                          {course.status === 'start' && 'Yet to Start'}
-                          {course.status === 'completed' && 'Completed'}
-                        </Typography>
-                      </TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>
-                        {course.status === 'start' && (
-                          <Button variant="contained" style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }} onClick={() => handleSelfAssessmentClick(index)}>
-                            Self Assessment
-                          </Button>
-                        )}
-                      </TableCell>
+            <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
+              <TableContainer
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                  paddingRight: '8px', // Adjust padding to accommodate scrollbar width
+                  marginBottom: '-16px', // Compensate for the added padding to avoid double scrollbars
+                }}
+                component={Paper}
+                sx={{
+                  maxHeight: '100%',
+                  overflowY: 'auto',
+                  '&::-webkit-scrollbar': {
+                    width: '6px', // Reduce width of the scrollbar
+                    borderRadius: '3px', // Round scrollbar corners
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#FFFFFF', // Background color of the scrollbar track
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
+                    borderRadius: '3px', // Round scrollbar thumb corners
+                  },
+                }}
+              >
+                <Table stickyHeader>
+                  <TableHead style={{ textAlign: 'center' }}>
+                    <TableRow>
+                      <TableCell style={{ textAlign: 'center' }}>Course Name</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>Duration(Hours)</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>Status</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
+                  </TableHead>
+                  <TableBody>
+                    {courses.map((course, index) => (
+                      <TableRow key={index}>
+                        <TableCell style={{ textAlign: 'center' }}>{course.name}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{course.duration}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>
+                          <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(course.status) }}>
+                            {course.status === 'start' && 'Yet to Start'}
+                            {course.status === 'completed' && 'Completed'}
+                          </Typography>
+                        </TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>
+                          {course.status === 'start' && (
+                            <Button variant="contained" style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }} onClick={() => handleSelfAssessmentClick(index)}>
+                              Self Assessment
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           </div>
         </div>
 
         <div className="pie-chart-section" style={{ flex: '0 1 30%', position: 'sticky', top: 20 }}>
-          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '30%' }}>
+          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '30%', marginBottom: '-20px' }}>
             Progress Tracker
           </Typography>
           <ResponsiveContainer width="100%" height={400}>
@@ -204,6 +212,17 @@ const AssignedCourses = () => {
           </div>
         </div>
       </Modal>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000} // Duration for the Snackbar to remain open (3 seconds)
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Thank you for submitting your feedback!
+        </MuiAlert>
+      </Snackbar>
+
 
       <Modal open={feedbackOpen} onClose={handleFeedbackClose}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '40px', outline: 'none', borderRadius: '8px', width: '80%', maxWidth: '500px' }}>

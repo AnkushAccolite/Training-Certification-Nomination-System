@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
@@ -10,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
-import { sizing } from '@mui/system';
 
 
 function createData(SNo, CourseName, Duration, DateOfCompletion) {
@@ -90,32 +87,13 @@ const CoursesCompleted = () => {
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#c32148', '#777777', '#842593', '#f88379', '#AF7AC5', '#9FE2BF', '#B3B6B7', '#E727B0'];
 
-  const tableContainerStyles = {
-    maxHeight: '500px',
-    overflowY: 'auto',
-    '&::-webkit-scrollbar': {
-      width: '5px',
-    },
-    '&::-webkit-scrollbar-track': {
-      backgroundColor: '#F2F4F4',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#B3B6B7',
-      borderRadius: '10px',
-    },
-    '&::-webkit-scrollbar-thumb:hover': {
-      backgroundColor: '#888888',
-    },
-  };
-
   return (
-    <div  style={{ display: 'flex' }}>
-      <div style={{ flex: '0 0 70%', overflowY: 'auto', height: '100vh' }}>
-        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
-          <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
+    <div style={{ display: 'flex', overflow: 'hidden' }}>
+      <div style={{ flex: '0 0 70%', overflowY: 'auto' , textAlign: 'center', marginTop:'18px'}}>
+        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px', color: '#424257'}}>
+          <span style={{ fontFamily: 'Arial', fontSize: '23px', marginRight: '10px' }}>Courses Completed</span>
         </Typography>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-          {/* <CalendarTodayIcon /> */}
           <Typography variant="subtitle1" style={{ marginLeft: '10px' }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker label="Start Date" value={startDate} onChange={handleStartDateChange} />
@@ -124,8 +102,33 @@ const CoursesCompleted = () => {
             </LocalizationProvider>
           </Typography>
         </div>
-        <TableContainer component={Paper} sx={tableContainerStyles}>
-          <Table  aria-label="completed courses table">
+        <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+        <TableContainer
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                  paddingRight: '8px', // Adjust padding to accommodate scrollbar width
+                  marginBottom: '-16px', // Compensate for the added padding to avoid double scrollbars
+                }}
+                component={Paper}
+                sx={{
+                  maxHeight: '100%',
+                  overflowY: 'auto',
+                  '&::-webkit-scrollbar': {
+                    width: '6px', // Reduce width of the scrollbar
+                    borderRadius: '3px', // Round scrollbar corners
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#FFFFFF', // Background color of the scrollbar track
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
+                    borderRadius: '3px', // Round scrollbar thumb corners
+                  },
+                }}
+              >
+          <Table aria-label="completed courses table">
             <TableHead>
               <TableRow>
                 <TableCell style={{textAlign:'center'}}>S.No</TableCell>
@@ -160,10 +163,11 @@ const CoursesCompleted = () => {
             </TableBody>
           </Table>
         </TableContainer>
+        </div>
       </div>
-      <div style={{ flex: '0 0 30%', position: 'sticky', top: 20 }}>
-        <Typography variant="h4" style={{ textAlign: 'center', marginTop: '50%' }}>
-          Courses Completed Per Month
+      <div style={{ flex: '0 0 30%', position: 'sticky', top: 20, marginBottom: '-70px', marginTop: '-150px' }}>
+        <Typography variant="h4" style={{ textAlign: 'center', marginTop: '70%', marginBottom: '-30px' }}>
+          Monthly Completion Status
         </Typography>
         <ResponsiveContainer width="100%" height="70%">
           <PieChart>
