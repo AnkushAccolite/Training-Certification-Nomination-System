@@ -1,18 +1,31 @@
-import 'chart.js/auto';
 import React, { useState, useRef } from 'react';
-import { Bar } from 'react-chartjs-2'; // Import Bar from react-chartjs-2
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, MenuItem, Popover, List, ListItem, ListItemText } from '@mui/material';
+import { Bar, Pie } from 'react-chartjs-2';
+import {
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+  MenuItem,
+  Popover,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import DescriptionIcon from '@mui/icons-material/Description';
-import Autocomplete from '@mui/material/Autocomplete';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable'; 
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'; 
-import * as XLSX from 'xlsx'; 
-import Papa from 'papaparse'; 
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import Papa from 'papaparse';
 
 const EmployeeReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
@@ -25,37 +38,37 @@ const EmployeeReport = () => {
   const chartRef = useRef(null);
 
   const [employees, setEmployees] = useState([
-    { 
-      empID: '001', 
-      name: 'John', 
-      category: ['Domain', 'Power', 'Technical'], 
-      coursesEnrolled: ['React', 'Node.js', 'Express'], 
-      completionMonth: [4, 5, 7] 
+    {
+      empID: '001',
+      name: 'John',
+      category: ['Domain', 'Power', 'Technical'],
+      coursesEnrolled: ['React', 'Node.js', 'Express'],
+      completionMonth: [4, 5, 7],
     },
-    { 
-      empID: '002', 
-      name: 'Jane', 
-      category: ['Domain', 'Power'], 
-      coursesEnrolled: ['Machine Learning', 'Python'], 
-      completionMonth: [5, 9] 
+    {
+      empID: '002',
+      name: 'Jane',
+      category: ['Domain', 'Power'],
+      coursesEnrolled: ['Machine Learning', 'Python'],
+      completionMonth: [5, 9],
     },
-    { 
-      empID: '003', 
-      name: 'Doe', 
-      category: ['Power', 'Technical'], 
-      coursesEnrolled: ['Sketch', 'Figma'], 
-      completionMonth: [6, 6] 
+    {
+      empID: '003',
+      name: 'Doe',
+      category: ['Power', 'Technical'],
+      coursesEnrolled: ['Sketch', 'Figma'],
+      completionMonth: [6, 6],
     },
-    { 
-      empID: '004', 
-      name: 'Smith', 
-      category: ['Domain', 'Technical'], 
-      coursesEnrolled: ['HTML', 'CSS'], 
-      completionMonth: [7, 10] 
+    {
+      empID: '004',
+      name: 'Smith',
+      category: ['Domain', 'Technical'],
+      coursesEnrolled: ['HTML', 'CSS'],
+      completionMonth: [7, 10],
     },
   ]);
 
-  const generateBarChartData = () => {
+  const generatePieChartData = () => {
     const completionCounts = {
       January: 0,
       February: 0,
@@ -68,81 +81,69 @@ const EmployeeReport = () => {
       September: 0,
       October: 0,
       November: 0,
-      December: 0
+      December: 0,
     };
-  
-    employees.forEach(employee => {
-      employee.completionMonth.forEach(month => {
-        const roundedMonth = parseInt(month); 
+
+    employees.forEach((employee) => {
+      employee.completionMonth.forEach((month) => {
+        const roundedMonth = parseInt(month);
         const monthName = new Date(0, roundedMonth - 1).toLocaleString('default', { month: 'long' });
         completionCounts[monthName]++;
       });
     });
-  
+
     const data = {
       labels: Object.keys(completionCounts),
       datasets: [
         {
           label: 'Completion Months',
           data: Object.values(completionCounts),
-          backgroundColor: '#4BC0C0'
-        }
-      ]
-    };
-  
-    const options = {
-      scales: {
-        y: {
-          ticks: {
-            stepSize: 1,
-            precision: 0 
-          }
-        }
-      }
+          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#33FFCC', '#FF5733', '#66FF33', '#337DFF', '#AB33FF', '#FF33E3', '#33FFA8', '#FFBD33', '#33FFD8'],
+        },
+      ],
     };
 
-    
-  
-    return { data, options };
+    return { data };
   };
-  
-const { data, options } = generateBarChartData();
-const handleGenerateReport = (format) => {
-  if (format === 'pdf') {
-    const doc = new jsPDF();
-    doc.setFontSize(20);
-    doc.text('Employee Report', 10, 10);
-    const chartCanvas = document.querySelector('canvas');
-    chartCanvas.style.backgroundColor = 'white';
-    const chartImage = chartCanvas.toDataURL('image/jpeg');
 
-    const tableData = employees.map((employee) => [
-      employee.empID,
-      employee.name,
-      employee.coursesEnrolled.join(', '),
-      employee.category.join(', '),
-      employee.completionMonth.map((month) =>
-        new Date(0, month - 1).toLocaleString('default', { month: 'long' })
-      ).join(', '),
-    ]);
+  const { data } = generatePieChartData();
 
-    doc.autoTable({
-      head: [['EmpID', 'Name', 'Courses', 'Category', 'Completion Month']],
-      body: tableData,
-      startY: 20,
-    });
-    doc.addImage(chartImage, 'JPEG', 10, doc.autoTable.previous.finalY + 10, 180, 100);
+  const handleGenerateReport = (format) => {
+    if (format === 'pdf') {
+      const doc = new jsPDF();
+      doc.setFontSize(20);
+      doc.text('Employee Report', 10, 10);
+      const chartCanvas = document.querySelector('canvas');
+      chartCanvas.style.backgroundColor = 'white';
+      const chartImage = chartCanvas.toDataURL('image/jpeg');
 
-    doc.save('employee_report.pdf');
-  } else if (format === 'xlsx') {
+      const tableData = employees.map((employee) => [
+        employee.empID,
+        employee.name,
+        employee.coursesEnrolled.join(', '),
+        employee.category.join(', '),
+        employee.completionMonth.map((month) =>
+          new Date(0, month - 1).toLocaleString('default', { month: 'long' })
+        ).join(', '),
+      ]);
+
+      doc.autoTable({
+        head: [['EmpID', 'Name', 'Courses', 'Category', 'Completion Month']],
+        body: tableData,
+        startY: 20,
+      });
+      doc.addImage(chartImage, 'JPEG', 60, doc.autoTable.previous.finalY + 10, 80, 80); 
+
+      doc.save('employee_report.pdf');
+    } else if (format === 'xlsx') {
       const tableData1 = employees.reduce((acc, employee) => {
         employee.completionMonth.forEach((month, index) => {
           acc.push({
-            'EmpID': employee.empID,
-            'Name': employee.name,
-            'Courses': employee.coursesEnrolled[index],
-            'Category': employee.category[index],
-            'Month': new Date(0, month - 1).toLocaleString('default', { month: 'long' })
+            EmpID: employee.empID,
+            Name: employee.name,
+            Courses: employee.coursesEnrolled[index],
+            Category: employee.category[index],
+            Month: new Date(0, month - 1).toLocaleString('default', { month: 'long' }),
           });
         });
         return acc;
@@ -153,16 +154,16 @@ const handleGenerateReport = (format) => {
       XLSX.utils.book_append_sheet(wb, ws, 'Employee Report');
       XLSX.writeFile(wb, 'employee_report.xlsx');
     } else if (format === 'csv') {
-      const tableData = employees.map(employee => [
+      const tableData = employees.map((employee) => [
         employee.empID,
         employee.name,
         employee.coursesEnrolled.join(', '),
-        employee.completionMonth.map(month => new Date(0, month - 1).toLocaleString('default', { month: 'long' })).join(', ')
+        employee.completionMonth.map((month) => new Date(0, month - 1).toLocaleString('default', { month: 'long' })).join(', '),
       ]);
 
       const csv = Papa.unparse({
-        fields: ['EmpID', 'Name', 'Courses', 'Completion Month'], 
-        data: tableData
+        fields: ['EmpID', 'Name', 'Courses', 'Completion Month'],
+        data: tableData,
       });
       const csvContent = `data:text/csv;charset=utf-8,${csv}`;
       const encodedUri = encodeURI(csvContent);
@@ -175,7 +176,7 @@ const handleGenerateReport = (format) => {
   };
 
   const handleSearch = () => {
-    const filteredEmployees = employees.filter(employee => {
+    const filteredEmployees = employees.filter((employee) => {
       const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
         const completionMonth = employee.completionMonth[index];
         if (
@@ -194,7 +195,7 @@ const handleGenerateReport = (format) => {
           acc.push({
             course,
             category: employee.category[index],
-            completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
+            completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' }),
           });
         }
         return acc;
@@ -216,54 +217,17 @@ const handleGenerateReport = (format) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div>
-        <Typography variant="h2" gutterBottom style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+      <div style={{ textAlign: 'center' }}>
+        <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
           Employee Report
-          <div>
-            <Button
-              variant="contained"
-              endIcon={<DownloadIcon />}
-              onClick={(event) => setDownloadAnchorEl(event.currentTarget)}
-            >
-              Download
-            </Button>
-            <Popover
-              open={Boolean(downloadAnchorEl)}
-              anchorEl={downloadAnchorEl}
-              onClose={() => setDownloadAnchorEl(null)}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-            >
-              <List>
-                <ListItem button onClick={() => handleGenerateReport('pdf')}>
-                  <ListItemText primary="Download as PDF" />
-                </ListItem>
-                <ListItem button onClick={() => handleGenerateReport('xlsx')}>
-                  <ListItemText primary="Download as XLSX" />
-                </ListItem>
-                <ListItem button onClick={() => handleGenerateReport('csv')}>
-                  <ListItemText primary="Download as CSV" />
-                </ListItem>
-              </List>
-            </Popover>
-          </div>
         </Typography>
-        <Typography variant="h3" gutterBottom>
-          Filter by:
-        </Typography>
-        <div style={{ display: 'flex', marginBottom: '30px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
           <TextField
             select
             label="Filter"
             value={selectedFilter}
             onChange={handleFilterChange}
-            style={{ width: '200px', marginRight: '10px' }}
+            style={{ width: '100px', marginRight: '10px' }}
           >
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
@@ -276,7 +240,7 @@ const handleGenerateReport = (format) => {
               label="Month"
               value={selectedMonth}
               onChange={(event) => setSelectedMonth(event.target.value)}
-              style={{ width: '200px', marginRight: '10px' }}
+              style={{ width: '100px', marginRight: '10px' }}
             >
               {Array.from({ length: 12 }, (_, index) => (
                 <MenuItem key={index + 1} value={(index + 1).toString()}>
@@ -291,7 +255,7 @@ const handleGenerateReport = (format) => {
               label="Quarter"
               value={selectedQuarter}
               onChange={(event) => setSelectedQuarter(event.target.value)}
-              style={{ width: '200px', marginRight: '10px' }}
+              style={{ width: '100px', marginRight: '10px' }}
             >
               <MenuItem value="Q1">Quarter 1 (Jan - Mar)</MenuItem>
               <MenuItem value="Q2">Quarter 2 (Apr - Jun)</MenuItem>
@@ -305,113 +269,150 @@ const handleGenerateReport = (format) => {
               label="Half Year"
               value={selectedQuarter}
               onChange={(event) => setSelectedQuarter(event.target.value)}
-              style={{ width: '200px', marginRight: '10px' }}
+              style={{ width: '100px', marginRight: '10px' }}
             >
               <MenuItem value="H1">First Half (Jan - Jun)</MenuItem>
               <MenuItem value="H2">Second Half (Jul - Dec)</MenuItem>
             </TextField>
           )}
           <Autocomplete
-            options={['Domain', 'Power', 'Technical','Process']}
+            options={['Domain', 'Power', 'Technical', 'Process']}
             value={selectedCategory}
             onChange={(event, newValue) => setSelectedCategory(newValue)}
-            renderInput={(params) => <TextField {...params} label="Category" style={{ width: '200px', marginRight: '10px' }} />}
+            renderInput={(params) => <TextField {...params} label="Category" style={{ width: '100px', marginRight: '10px' }} />}
           />
           <TextField
-            label="Search by Employee ID"
+            label="ID"
             value={searchQueryID}
             onChange={(e) => setSearchQueryID(e.target.value)}
-            style={{ width: '300px', marginRight: '10px' }}
+            style={{ width: '100px', marginRight: '10px' }}
           />
           <TextField
-            label="Search by Employee Name"
+            label="Name"
             value={searchQueryName}
             onChange={(e) => setSearchQueryName(e.target.value)}
-            style={{ width: '300px', marginRight: '10px' }}
+            style={{ width: '100px', marginRight: '10px' }}
           />
           <Button
             variant="contained"
             startIcon={<SearchIcon />}
             onClick={handleSearch}
+            style={{ marginRight: '10px' }}
           >
             Search
           </Button>
+          <Button
+            variant="contained"
+            endIcon={<DownloadIcon />}
+            onClick={(event) => setDownloadAnchorEl(event.currentTarget)}
+          >
+            Download
+          </Button>
+          <Popover
+            open={Boolean(downloadAnchorEl)}
+            anchorEl={downloadAnchorEl}
+            onClose={() => setDownloadAnchorEl(null)}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <List>
+              <ListItem button onClick={() => handleGenerateReport('pdf')}>
+                <ListItemText primary="Download as PDF" />
+              </ListItem>
+              <ListItem button onClick={() => handleGenerateReport('xlsx')}>
+                <ListItemText primary="Download as XLSX" />
+              </ListItem>
+              <ListItem button onClick={() => handleGenerateReport('csv')}>
+                <ListItemText primary="Download as CSV" />
+              </ListItem>
+            </List>
+          </Popover>
         </div>
-        
-        <TableContainer component={Paper}>
-          <Table aria-label="employee report table">
-            <TableHead>
-              <TableRow>
-                <TableCell>EmpID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Courses</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Completion Month</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {employees.map((employee) => {
-                const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
-                  const completionMonth = employee.completionMonth[index];
-                  if (
-                    (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
-                    (!selectedCategory || employee.category[index] === selectedCategory) &&
-                    (
-                      (!selectedQuarter) ||
-                      (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
-                      (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
-                      (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
-                      (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
-                      (selectedQuarter === 'H1' && (completionMonth >= 1 && completionMonth <= 6)) ||
-                      (selectedQuarter === 'H2' && (completionMonth >= 7 && completionMonth <= 12))
-                    )
-                  ) {
-                    acc.push({
-                      course,
-                      category: employee.category[index],
-                      completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
+
+        <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+          <div style={{ flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
+            <TableContainer component={Paper}>
+              <Table aria-label="employee report table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">EmpID</TableCell>
+                    <TableCell align="center">Name</TableCell>
+                    <TableCell align="center">Courses</TableCell>
+                    <TableCell align="center">Category</TableCell>
+                    <TableCell align="center">Completion Month</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {employees.map((employee) => {
+                    const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
+                      const completionMonth = employee.completionMonth[index];
+                      if (
+                        (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
+                        (!selectedCategory || employee.category[index] === selectedCategory) &&
+                        (
+                          (!selectedQuarter) ||
+                          (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
+                          (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
+                          (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
+                          (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
+                          (selectedQuarter === 'H1' && (completionMonth >= 1 && completionMonth <= 6)) ||
+                          (selectedQuarter === 'H2' && (completionMonth >= 7 && completionMonth <= 12))
+                        )
+                      ) {
+                        acc.push({
+                          course,
+                          category: employee.category[index],
+                          completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' }),
+                        });
+                      }
+                      return acc;
+                    }, []);
+
+                    let rows = [];
+                    matchingCourses.forEach((course, index) => {
+                      const completionMonth = course.completionMonth;
+                      if (index === 0) {
+                        rows.push(
+                          <TableRow key={`${employee.empID}-${course.course}`}>
+                            <TableCell align="center" rowSpan={matchingCourses.length}>{employee.empID}</TableCell>
+                            <TableCell align="center" rowSpan={matchingCourses.length}>{employee.name}</TableCell>
+                            <TableCell align="center">{course.course}</TableCell>
+                            <TableCell align="center">{course.category}</TableCell>
+                            <TableCell align="center">{completionMonth}</TableCell>
+                          </TableRow>
+                        );
+                      } else {
+                        rows.push(
+                          <TableRow key={`${employee.empID}-${course.course}`}>
+                            <TableCell align="center">{course.course}</TableCell>
+                            <TableCell align="center">{course.category}</TableCell>
+                            <TableCell align="center">{completionMonth}</TableCell>
+                          </TableRow>
+                        );
+                      }
                     });
-                  }
-                  return acc;
-                }, []);
 
-                let rows = [];
-                matchingCourses.forEach((course, index) => {
-                  const completionMonth = course.completionMonth;
-                  if (index === 0) {
-                    rows.push(
-                      <TableRow key={`${employee.empID}-${course.course}`}>
-                        <TableCell rowSpan={matchingCourses.length}>{employee.empID}</TableCell>
-                        <TableCell rowSpan={matchingCourses.length}>{employee.name}</TableCell>
-                        <TableCell>{course.course}</TableCell>
-                        <TableCell>{course.category}</TableCell>
-                        <TableCell>{completionMonth}</TableCell>
-                      </TableRow>
-                    );
-                  } else {
-                    rows.push(
-                      <TableRow key={`${employee.empID}-${course.course}`}>
-                        <TableCell>{course.course}</TableCell>
-                        <TableCell>{course.category}</TableCell>
-                        <TableCell>{completionMonth}</TableCell>
-                      </TableRow>
-                    );
-                  }
-                });
+                    return matchingCourses.length > 0 ? rows : null;
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
 
-                return matchingCourses.length > 0 ? rows : null;
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <div style={{ marginTop: '50px' }}>
-          <Typography variant="h4" gutterBottom>
-            Completion Months Chart
-          </Typography>
-          <div style={{ width: '600px', height: '400px', margin: 'auto' }}>
-    <Bar data={data} options={options} />
-  </div>
-
+          <div style={{ flex: '1 0 30%', position: 'sticky', top: '50px' }}>
+            <Typography variant="h4" gutterBottom>
+              Completion Months Chart
+            </Typography>
+            <div style={{ width: '100%', height: '300px' }}>
+              <Pie data={data} />
+            </div>
+          </div>
         </div>
       </div>
     </LocalizationProvider>
