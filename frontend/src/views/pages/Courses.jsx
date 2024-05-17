@@ -24,8 +24,6 @@ import getNominationCourses from 'utils/getNominationCourses';
 import axios from '../../api/axios';
 import './Courses.css';
 
-
-
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
@@ -33,27 +31,21 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
+      width: 250,
+    },
+  },
 };
 
 const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
 const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Assigned', 'Completed'];
-
-const initialRows = [
-  // ... (existing initialRows data)
-];
 
 function Courses() {
   const currentMonthUppercase = currentMonth();
 
   const [selectedDomain, setSelectedDomain] = useState('All');
   const [selectedCourseIds, setSelectedCourseIds] = useState([]);
-  const [rows, setRows] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
-  const [selectedYear, setSelectedYear] = useState('All');
   const [selectedMonth, setSelectedMonth] = useState(currentMonthUppercase);
   const [selectedStatus, setSelectedStatus] = useState('All');
 
@@ -78,7 +70,7 @@ function Courses() {
       setPendingCourses(nominationCourses?.pendingCourses);
     };
     getNominations();
-  }, []);
+  }, [auth, navigate]);
 
   const getStatus = (id) => {
     if (approvedCourses?.includes(id)) return 'Assigned';
@@ -113,7 +105,7 @@ function Courses() {
         empId: auth?.user?.empId,
         nominatedCourses: selectedCourseIds.map((cid) => {
           return { courseId: cid };
-        })
+        }),
       };
       console.log('payload', payload);
       const res = await axios.post('/nomination', payload);
@@ -143,6 +135,7 @@ function Courses() {
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
   };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'Pending for Approval':
@@ -181,16 +174,12 @@ function Courses() {
   return (
     <div>
       <div className="filters">
-        <FormControl>
+      <FormControl style={{ marginRight: '10px', marginLeft:'10px' , marginTop:'10px' }}>
           <Select
-            displayEmpty
             value={selectedMonth}
             onChange={handleMonthChange}
-            renderValue={(selected) => {
-              return 'Month';
-            }}
+            displayEmpty
             inputProps={{ 'aria-label': 'Without label' }}
-            sx={{ border: 'none', '&:focus': { backgroundColor: 'transparent' } }}
           >
             {[
               'January',
@@ -204,7 +193,7 @@ function Courses() {
               'September',
               'October',
               'November',
-              'December'
+              'December',
             ].map((month) => (
               <MenuItem key={month} value={month.toUpperCase()}>
                 {month}
@@ -213,8 +202,8 @@ function Courses() {
           </Select>
         </FormControl>
         <div className="separator"></div>
-        <FormControl>
-          <Select
+        <FormControl style={{ marginRight: '10px', marginTop:'10px' }}>
+        <Select
             displayEmpty
             value={selectedDomain}
             onChange={handleDomainChange}
@@ -222,7 +211,6 @@ function Courses() {
               return 'Category';
             }}
             inputProps={{ 'aria-label': 'Without label' }}
-            sx={{ border: 'none', '&:focus': { backgroundColor: 'transparent' } }}
           >
             {names.map((name) => (
               <MenuItem key={name} value={name}>
@@ -232,8 +220,8 @@ function Courses() {
           </Select>
         </FormControl>
         <div className="separator"></div>
-        <FormControl>
-          <Select
+        <FormControl style={{ marginRight: '10px',marginTop:'10px' }}>
+        <Select
             displayEmpty
             value={selectedStatus}
             onChange={handleStatusChange}
@@ -241,7 +229,6 @@ function Courses() {
               return 'Status';
             }}
             inputProps={{ 'aria-label': 'Without label' }}
-            sx={{ border: 'none', '&:focus': { backgroundColor: 'transparent' } }}
           >
             {statuses.map((status) => (
               <MenuItem key={status} value={status}>
@@ -250,12 +237,18 @@ function Courses() {
             ))}
           </Select>
         </FormControl>
-        <Button className="nominateBtn" variant="outlined" startIcon={<LocalLibraryIcon />} onClick={nominateCourses}>
-          Nominate
-        </Button>
+        <Button
+  className="nominateBtn"
+  variant="outlined"
+  startIcon={<LocalLibraryIcon />}
+  onClick={nominateCourses}
+  style={{ marginLeft: 'auto',marginRight:'10px' }} // This will move the button to the right
+>
+  Nominate
+</Button>
       </div>
 
-      <div style={{ paddingTop: '2%', marginTop: '50px' }}>
+      <div style={{ paddingTop: '2%', marginTop: '30px' }}>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
@@ -277,8 +270,6 @@ function Courses() {
                       onChange={(e) => handleCheckboxChange(e, row?.courseId)}
                     />
                   </TableCell>
-
-
                   <TableCell>{row?.courseName}</TableCell>
                   <TableCell>{row?.domain}</TableCell>
                   <TableCell>{row?.duration}</TableCell>
