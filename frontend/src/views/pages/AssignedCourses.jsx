@@ -180,11 +180,11 @@ const AssignedCourses = () => {
           <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
             Self Assessmenta
           </Typography>
-          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px', textAlign: 'center' }}>
+          {/* <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px', textAlign: 'center' }}> */}
           <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px', textAlign: 'center' }}>
             Have you completed the course?
           </Typography>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '25px' }}>
+          {/* <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '25px' }}> */}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '25px' }}>
             <Button variant="contained" style={{ width: '45%', backgroundColor: '#2ecc71', color: 'white', fontSize: '1rem' }} onClick={() => handleCloseModal(true)}>
               Yes
@@ -240,6 +240,5 @@ const AssignedCourses = () => {
       </Modal>
     </div>
   );
-};
-
+}
 export default AssignedCourses;
