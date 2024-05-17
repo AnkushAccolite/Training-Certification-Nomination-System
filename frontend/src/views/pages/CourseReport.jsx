@@ -11,7 +11,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import DownloadIcon from '@mui/icons-material/Download';
-import { Chart } from 'chart.js';
 
 const CourseReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
@@ -20,7 +19,7 @@ const CourseReport = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
-  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); 
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
   const [courses, setCourses] = useState([
     { 
       courseId: 'C001', 
@@ -77,6 +76,32 @@ const CourseReport = () => {
     { 
       courseId: 'C004', 
       name: 'Course 4', 
+      category: 'Domain', 
+      data: [
+        { 
+          employeesEnrolled: 25, 
+          employeesCompleted: 20, 
+          attendance: 80, 
+          completionMonth: 7 
+        }
+      ]
+    },
+    { 
+      courseId: 'C005', 
+      name: 'Course 5', 
+      category: 'Domain', 
+      data: [
+        { 
+          employeesEnrolled: 25, 
+          employeesCompleted: 20, 
+          attendance: 80, 
+          completionMonth: 7 
+        }
+      ]
+    },
+    { 
+      courseId: 'C006', 
+      name: 'Course 6', 
       category: 'Domain', 
       data: [
         { 
@@ -372,9 +397,32 @@ const CourseReport = () => {
           </Popover>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-          <div style={{ flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
-            <TableContainer component={Paper}>
+        <div style={{ display: 'flex', alignItems: 'flex-start',overflow: 'hidden' }}>
+          <div style={{ flex: '1 0 70%', height: 'calc(100vh - 270px)', overflowX: 'hidden', overflowY: 'auto' }}>
+            <TableContainer 
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+              paddingRight: '8px', 
+              marginBottom: '-16px', 
+            }}
+            component={Paper}
+            sx={{
+              maxHeight: '100%',
+              overflowY: 'auto',
+              '&::-webkit-scrollbar': {
+                width: '6px', 
+                borderRadius: '3px', 
+              },
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: '#FFFFFF',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#eee6ff', 
+                borderRadius: '3px',
+              },
+            }}>
               <Table aria-label="course report table">
                 <TableHead>
                   <TableRow>
@@ -442,7 +490,7 @@ const CourseReport = () => {
               </Table>
             </TableContainer>
           </div>
-          <div style={{ flex: '1 0 30%', position: 'sticky', top: '50px' }}>
+          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px' }}>
             <Typography variant="h4" gutterBottom>
               Course Attendance Chart
             </Typography>
@@ -473,4 +521,3 @@ const CourseReport = () => {
 };
 
 export default CourseReport;
-

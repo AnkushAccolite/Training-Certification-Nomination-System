@@ -335,9 +335,31 @@ const EmployeeReport = () => {
           </Popover>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-          <div style={{ flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
-            <TableContainer component={Paper}>
+        <div style={{ display: 'flex',flex: '1', overflow: 'hidden', alignItems: 'flex-start' }}>
+          <div style={{ height: 'calc(100vh - 270px)', flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
+            <TableContainer style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                  paddingRight: '8px', 
+                  marginBottom: '-16px', 
+                }}
+                component={Paper}
+                sx={{
+                  maxHeight: '100%',
+                  overflowY: 'auto',
+                  '&::-webkit-scrollbar': {
+                    width: '6px', 
+                    borderRadius: '3px', 
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#FFFFFF',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#eee6ff', 
+                    borderRadius: '3px',
+                  },
+                }}>
               <Table aria-label="employee report table">
                 <TableHead>
                   <TableRow>
@@ -405,7 +427,7 @@ const EmployeeReport = () => {
             </TableContainer>
           </div>
 
-          <div style={{ flex: '1 0 30%', position: 'sticky', top: '50px' }}>
+          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px' }}>
             <Typography variant="h4" gutterBottom>
               Completion Months Chart
             </Typography>
@@ -420,3 +442,8 @@ const EmployeeReport = () => {
 };
 
 export default EmployeeReport;
+
+
+
+
+
