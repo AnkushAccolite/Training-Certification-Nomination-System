@@ -1,0 +1,77 @@
+/* Filter container */
+.filter-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #e6e6e6;
+    border-radius: 25px;
+    padding: 12px 16px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    height: 50px;
+  }
+  
+  /* Filter input */
+  .filter-input {
+    flex: 1;
+    padding: 8px;
+    font-size: 14px;
+    border: none;
+    background-color: transparent;
+    outline: none;
+  }
+  
+  /* Dropdown menu items */
+  .filter-menu-item {
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Dropdown menu item hover */
+  .filter-menu-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* Hover text */
+  .filter-dropdown:hover .filter-dropdown-header::before {
+    content: attr(data-text);
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 2px 4px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 40px;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+  
+  .menu-item {
+    background-color: rgba(255, 255, 255, 0.5); /* Background color */
+    color: #141c38; /* Text color */
+    padding: 18px 22px; /* Padding around the text */
+    border-radius: 40px; /* Rounded corners */
+    border: 1px solid #cccccc; /* Border */
+  }
+  
+  .menu-item:hover {
+    background-color: #404adb; /* Background color on hover */
+  }
+  
+  .menu-item:focus {
+    outline: none; /* Remove outline on focus */
+  }
+  
+  /* Style the dropdown arrow */
+  .filter-input::-ms-expand {
+    display: none;
+  }
+
+
+
+  
+  
