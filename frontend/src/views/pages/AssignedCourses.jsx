@@ -1,14 +1,12 @@
-import 'chart.js/auto'; import 'chart.js/auto';
+import 'chart.js/auto';
 import React, { useState, useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal, Typography, TextField, Rating } from '@mui/material'; // Import Modal, Typography, TextField, and Rating components from MUI
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal, Typography, TextField, Rating } from '@mui/material';
 import '../../App.css';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-
 
 const AssignedCourses = () => {
   const navigate = useNavigate();
@@ -19,11 +17,6 @@ const AssignedCourses = () => {
   }, []);
 
   const [courses, setCourses] = useState([
-    { name: 'Course 1', status: 'start', duration: '1 hrs' },
-    { name: 'Course 2', status: 'start', duration: '2 hrs' },
-    { name: 'Course 3', status: 'completed', duration: '1 hrs' },
-    { name: 'Course 4', status: 'start', duration: '4 hrs' },
-    { name: 'Course 5', status: 'completed', duration: '2.5 hrs' },
     { name: 'Course 1', status: 'start', duration: '1' },
     { name: 'Course 2', status: 'start', duration: '2' },
     { name: 'Course 3', status: 'completed', duration: '1' },
@@ -32,49 +25,15 @@ const AssignedCourses = () => {
   ]);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [feedbackOpen, setFeedbackOpen] = useState(false); // State variable for feedback dialog
-  const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' }); // State variable for storing feedback data
-  const [selectedCourseIndex, setSelectedCourseIndex] = useState(null); // State variable to store the index of the selected course
-
-  const handleSelfAssessmentClick = (index) => {
-    setSelectedCourseIndex(index); // Set the selected course index
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = (completed) => {
-    if (completed) {
-      const updatedCourses = [...courses];
-      updatedCourses[selectedCourseIndex].status = 'completed';
-      setCourses(updatedCourses);
-      setFeedbackData({ rating: 0, comments: '' }); // Clear feedback data
-      setModalOpen(false);
-      setFeedbackOpen(true);
-    } else {
-      setModalOpen(false);
-    }
-  };
-
-  const handleFeedbackClose = () => {
-    setFeedbackOpen(false);
-  };
-
-  const handleFeedbackSubmit = () => {
-    // Implement your logic to submit feedback
-    console.log(feedbackData); // For demonstration, log feedback data
-    setFeedbackOpen(false);
-  const [modalOpen, setModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' });
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
+
   const handleSelfAssessmentClick = (index) => {
     setSelectedCourseIndex(index);
     setModalOpen(true);
-  };
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
   };
 
   const handleCloseModal = (completed) => {
@@ -99,6 +58,10 @@ const AssignedCourses = () => {
     console.log(feedbackData); // For demonstration, log feedback data
     setFeedbackOpen(false);
     setSnackbarOpen(true); // Open the Snackbar
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const countByStatus = () => {
@@ -174,14 +137,14 @@ const AssignedCourses = () => {
       </div>
 
       <Modal open={modalOpen} onClose={() => handleCloseModal(false)}>
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '25px', outline: 'none', borderRadius: '8px', width: '60%', maxWidth: '400px' }}>
-        <Typography variant="h4" gutterBottom style={{ fontSize: '20px', textAlign: 'center' }}>
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '40px', outline: 'none', borderRadius: '8px', width: '60%', maxWidth: '400px' }}>
+          <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
             Self Assessment
           </Typography>
-          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '17px', textAlign: 'center' }}>
+          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px', textAlign: 'center' }}>
             Have you completed the course?
           </Typography>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '25px' }}>
             <Button variant="contained" style={{ width: '45%', backgroundColor: '#2ecc71', color: 'white', fontSize: '1rem' }} onClick={() => handleCloseModal(true)}>
               Yes
             </Button>
@@ -195,11 +158,11 @@ const AssignedCourses = () => {
       <Modal open={feedbackOpen} onClose={handleFeedbackClose}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '40px', outline: 'none', borderRadius: '8px', width: '80%', maxWidth: '500px' }}>
           <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
-            Course Feedback 
+            Course Feedback
           </Typography>
           <div style={{ marginBottom: '20px', textAlign: 'center' }}>
             <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px' }}>
-              Rate the course: <span style={{ color: '#3453cf', fontWeight:'bold' }}>{courses[selectedCourseIndex]?.name}</span> {/* Display course name in blue */}
+              Rate the course: <span style={{ color: '#3453cf', fontWeight: 'bold' }}>{courses[selectedCourseIndex]?.name}</span> {/* Display course name in blue */}
             </Typography>
             <div style={{ display: 'inline-block' }}>
               <Rating
@@ -207,7 +170,7 @@ const AssignedCourses = () => {
                 value={feedbackData.rating}
                 onChange={(event, newValue) => setFeedbackData({ ...feedbackData, rating: newValue })}
                 aria-required
-                size="large"
+                size="large" // Set the size of the stars to large
               />
             </div>
           </div>
@@ -233,38 +196,52 @@ const AssignedCourses = () => {
       </Modal>
 
       <Snackbar
-  open={snackbarOpen}
-  autoHideDuration={3000} // Duration for the Snackbar to remain open (3 seconds)
-  onClose={handleSnackbarClose}
->
-  <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-    Thank you for submitting your feedback!
-  </MuiAlert>
-</Snackbar>
-
+        open={snackbarOpen}
+        autoHideDuration={3000} // Duration for the Snackbar to remain open (3 seconds)
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Thank you for submitting your feedback!
+        </MuiAlert>
+      </Snackbar>
 
       <div className="pie-chart-section">
+  <div style={{ marginLeft: '20px', marginRight: '20px', display: 'inline-block' }} className="pie-chart-container">
+    <h2 style={{ textAlign: 'center' }}>Progress Tracker</h2>
+    <Pie
+      data={pieData}
+      options={{
+        plugins: {
+          datalabels: {
+            color: 'white',
+            formatter: (value, context) => {
+              const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(0);
+              return `${percentage}%`;
+            },
+          },
+        },
+        legend: {
+          display: true,
+          position: 'bottom',
+        },
+        layout: {
+          padding: {
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: 20,
+          },
+        },
+        maintainAspectRatio: false, // Allow the chart to not maintain its aspect ratio
+        aspectRatio: 1, // Set the aspect ratio to 1:1 (width and height are equal)
+        responsive: true, // Allow the chart to be responsive
+      }}
+    />
+  </div>
+</div>
 
-        <div style={{ marginLeft: '20px', marginRight: '10px', display: 'inline-block' }} className="pie-chart-container">
-          <h2 style={{ textAlign: 'center' }}>Progress Tracker</h2>
-          <Pie data={pieData} options={{
-            plugins: {
-              datalabels: {
-                color: 'white',
-                formatter: (value, context) => {
-                  const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                  const percentage = ((value / total) * 100).toFixed(0);
-                  return `${percentage}%`;
-                },
-              },
-            },
-            legend: {
-              display: true,
-              position: 'bottom',
-            },
-          }} />
-        </div>
-      </div>
+
 
     </div>
   );
