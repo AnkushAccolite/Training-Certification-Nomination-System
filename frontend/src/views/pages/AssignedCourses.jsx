@@ -1,4 +1,4 @@
-import 'chart.js/auto'; import 'chart.js/auto';
+import 'chart.js/auto';
 import React, { useState, useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal, Typography, TextField, Rating } from '@mui/material'; // Import Modal, Typography, TextField, and Rating components from MUI
