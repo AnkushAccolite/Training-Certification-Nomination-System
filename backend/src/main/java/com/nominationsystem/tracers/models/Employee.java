@@ -9,8 +9,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Month;
+import java.util.*;
 
 @Getter
 @Setter
@@ -41,21 +41,16 @@ public class Employee {
 
     private List<String> courseIds = new ArrayList<>();
 
-    private List<String> pendingCourses = new ArrayList<>();
+    private ArrayList<EmployeeCourseStatus> pendingCourses = new ArrayList<>();
 
-    private List<String> approvedCourses = new ArrayList<>();
+    private ArrayList<EmployeeCourseStatus> approvedCourses = new ArrayList<>();
 
     private List<String> certificationIds = new ArrayList<>();
 
+    private ArrayList<EmployeeCourseStatus> completedCourses = new ArrayList<>();
+
     private String managerId;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
@@ -74,35 +69,24 @@ public class Employee {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public void removePendingCourseById(String courseId) {
+        Iterator<EmployeeCourseStatus> iterator = this.getPendingCourses().iterator();
+        while (iterator.hasNext()) {
+            EmployeeCourseStatus courseStatus = iterator.next();
+            if (courseStatus.getCourseId().equals(courseId)) {
+                iterator.remove();
+
+            }
+        }
+
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    // Method to check if a courseId is present in the pendingCourses
+//    public Boolean isPendingCoursePresent(String courseId) {
+//        return this.pendingCourses.stream().anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
+//    }
+//    public Boolean isApprrovedCoursePresent(String courseId) {
+//        return this.approvedCourses.stream().anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
+//    }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getEmpId() {
-        return empId;
-    }
-
-    public void setEmpId(String empId) {
-        this.empId = empId;
-    }
-
-    public List<String> getCourseIds() {
-        return courseIds;
-    }
-
-    public void setCourseIds(List<String> courseIds) {
-        this.courseIds = courseIds;
-    }
 }

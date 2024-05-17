@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Month;
 import java.util.List;
 
 @RestController
@@ -41,8 +42,8 @@ public class NominationController {
     }
 
     @PostMapping
-    public ResponseEntity<Nomination> createNomination(@RequestBody Nomination nomination) {
-        Nomination createdNomination = nominationService.createNomination(nomination);
+    public ResponseEntity<Nomination> createNomination(@RequestBody Nomination nomination,@RequestParam Month month) {
+        Nomination createdNomination = nominationService.createNomination(nomination,month);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdNomination);
     }
 
@@ -61,8 +62,9 @@ public class NominationController {
     @PostMapping("/{approveOrRejectAction}")
     public void approvePendingRequest(@PathVariable("approveOrRejectAction") String action,
                                       @RequestParam String nominationId,
-                                      @RequestParam String courseId) {
-        nominationService.takeActionOnPendingRequest(nominationId, courseId, action);
+                                      @RequestParam String courseId,
+                                      @RequestParam Month month) {
+        nominationService.takeActionOnPendingRequest(nominationId, courseId, action,month);
     }
 
 }

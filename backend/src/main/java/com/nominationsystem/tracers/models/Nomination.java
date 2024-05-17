@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
 import java.text.SimpleDateFormat;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +27,8 @@ public class Nomination {
     private String empId;
 
     private String managerId;
+
+    private Month month;
 
     private List<NominatedCourseStatus> nominatedCourses = new ArrayList<>();
 

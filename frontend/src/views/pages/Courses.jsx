@@ -31,9 +31,9 @@ const MenuProps = {
   PaperProps: {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
+      width: 250
+    }
+  }
 };
 
 const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
@@ -66,8 +66,13 @@ function Courses() {
     const getNominations = async () => {
       const nominationCourses = await getNominationCourses(auth?.user?.empId);
 
-      setApprovedCourses(nominationCourses?.approvedCourses);
-      setPendingCourses(nominationCourses?.pendingCourses);
+      // console.log('nominationCourses->', nominationCourses?.pendingCourses);
+
+      const pendingCourseIds = nominationCourses?.pendingCourses?.map((course) => course.courseId);
+      const approvedCourseIds = nominationCourses?.approvedCourses?.map((course) => course.courseId);
+
+      setPendingCourses(pendingCourseIds);
+      setApprovedCourses(approvedCourseIds);
     };
     getNominations();
   }, [auth, navigate]);
@@ -105,10 +110,10 @@ function Courses() {
         empId: auth?.user?.empId,
         nominatedCourses: selectedCourseIds.map((cid) => {
           return { courseId: cid };
-        }),
+        })
       };
       console.log('payload', payload);
-      const res = await axios.post('/nomination', payload);
+      const res = await axios.post(`/nomination?month=${selectedMonth}`, payload);
       navigate(0);
     } catch (error) {
       console.log(error);
@@ -174,36 +179,20 @@ function Courses() {
   return (
     <div>
       <div className="filters">
-      <FormControl style={{ marginRight: '10px', marginLeft:'10px' , marginTop:'10px' }}>
-          <Select
-            value={selectedMonth}
-            onChange={handleMonthChange}
-            displayEmpty
-            inputProps={{ 'aria-label': 'Without label' }}
-          >
-            {[
-              'January',
-              'February',
-              'March',
-              'April',
-              'May',
-              'June',
-              'July',
-              'August',
-              'September',
-              'October',
-              'November',
-              'December',
-            ].map((month) => (
-              <MenuItem key={month} value={month.toUpperCase()}>
-                {month}
-              </MenuItem>
-            ))}
+        <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
+          <Select value={selectedMonth} onChange={handleMonthChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
+            {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
+              (month) => (
+                <MenuItem key={month} value={month.toUpperCase()}>
+                  {month}
+                </MenuItem>
+              )
+            )}
           </Select>
         </FormControl>
         <div className="separator"></div>
-        <FormControl style={{ marginRight: '10px', marginTop:'10px' }}>
-        <Select
+        <FormControl style={{ marginRight: '10px', marginTop: '10px' }}>
+          <Select
             displayEmpty
             value={selectedDomain}
             onChange={handleDomainChange}
@@ -220,8 +209,8 @@ function Courses() {
           </Select>
         </FormControl>
         <div className="separator"></div>
-        <FormControl style={{ marginRight: '10px',marginTop:'10px' }}>
-        <Select
+        <FormControl style={{ marginRight: '10px', marginTop: '10px' }}>
+          <Select
             displayEmpty
             value={selectedStatus}
             onChange={handleStatusChange}
@@ -238,14 +227,14 @@ function Courses() {
           </Select>
         </FormControl>
         <Button
-  className="nominateBtn"
-  variant="outlined"
-  startIcon={<LocalLibraryIcon />}
-  onClick={nominateCourses}
-  style={{ marginLeft: 'auto',marginRight:'10px' }} // This will move the button to the right
->
-  Nominate
-</Button>
+          className="nominateBtn"
+          variant="outlined"
+          startIcon={<LocalLibraryIcon />}
+          onClick={nominateCourses}
+          style={{ marginLeft: 'auto', marginRight: '10px' }} // This will move the button to the right
+        >
+          Nominate
+        </Button>
       </div>
 
       <div style={{ paddingTop: '2%', marginTop: '30px' }}>
@@ -273,9 +262,7 @@ function Courses() {
                   <TableCell>{row?.courseName}</TableCell>
                   <TableCell>{row?.domain}</TableCell>
                   <TableCell>{row?.duration}</TableCell>
-                  <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)) }}>
-                    {getStatus(row?.courseId)}
-                  </TableCell>
+                  <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)) }}>{getStatus(row?.courseId)}</TableCell>
                   <TableCell>
                     <Button variant="contained" onClick={() => handleViewDetails(row)}>
                       View Details

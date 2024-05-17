@@ -1,14 +1,15 @@
 package com.nominationsystem.tracers.service;
 
-import com.nominationsystem.tracers.models.ApprovalStatus;
-import com.nominationsystem.tracers.models.NominatedCourseStatus;
-import com.nominationsystem.tracers.models.Employee;
+import com.nominationsystem.tracers.models.*;
+import com.nominationsystem.tracers.repository.CourseFeedbackRepository;
 import com.nominationsystem.tracers.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
 
 @Service
@@ -17,16 +18,14 @@ public class EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    // public Employee addEmployee(Employee employee) {
-    // String hashedPassword =
-    // utilityServices.encodePassword(employee.getHashPswd());
-    // employee.setHashPswd(hashedPassword);
-    // Employee save = this.employeeRepository.save(employee);
-    // return save;
-    // }
+    @Autowired
+    private CourseFeedbackRepository courseFeedbackRepository;
+
+    LocalDate currentDate = LocalDate.now();
+    Month currentMonth = currentDate.getMonth();
 
     public List<Employee> getAllEmployees() {
-        return this.employeeRepository.findAll();
+        return new ArrayList<>(this.employeeRepository.findAll());
     }
 
     public ResponseEntity<?> getEmpByEmail(@RequestBody Map<String, String> requestBody) {
@@ -36,35 +35,13 @@ public class EmployeeService {
         }
 
         Optional<Employee> employee = this.employeeRepository.findByEmail(email);
-        if (employee != null) {
-            return ResponseEntity.ok(employee);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-
+        return employee.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-
-    // public ResponseEntity<?> setAdmin(String email,Boolean isAdmin){
-    // Optional<Employee> employee = employeeRepository.findByEmail(email);
-    //
-    // if(employee != null) {
-    // employee.ifPresent(emp -> {
-    // emp.setIsAdmin(isAdmin);
-    // });
-    // employeeRepository.save(employee.get());
-    // return ResponseEntity.ok(employee.get());
-    // } else {
-    // return ResponseEntity.notFound().build();
-    // }
-    // }
 
     public ResponseEntity<?> setRole(String email, String role) {
         Optional<Employee> employee = employeeRepository.findByEmail(email);
-
-        if (employee != null) {
-            employee.ifPresent(emp -> {
-                emp.setRole(role);
-            });
+        if (employee.isPresent()) {
+            employee.get().setRole(role);
             employeeRepository.save(employee.get());
             return ResponseEntity.ok(employee.get());
         } else {
@@ -76,12 +53,13 @@ public class EmployeeService {
         List<String> courseIdList = Arrays.asList(courseIds.split(","));
 
         Optional<Employee> employee = employeeRepository.findByEmail(email);
-        if (employee != null) {
+        if (employee.isPresent()) {
             employee.ifPresent(emp -> {
                 if (emp.getCourseIds() != null) {
                     emp.getCourseIds().addAll(courseIdList);
-                } else
+                } else {
                     emp.setCourseIds(courseIdList);
+                }
             });
             employeeRepository.save(employee.get());
             return ResponseEntity.ok(employee.get());
@@ -94,50 +72,84 @@ public class EmployeeService {
         return this.employeeRepository.findByEmpId(empId);
     }
 
-    public void setCoursesNominatedByEmployee(String empId, List<NominatedCourseStatus> nominatedCourses) {
+    public void setCoursesNominatedByEmployee(String empId, List<NominatedCourseStatus> nominatedCourses, Month month) {
         Employee employee = this.employeeRepository.findByEmpId(empId);
 
-        List<String> approvedCourses = new ArrayList<>();
-        List<String> pendingCourses = new ArrayList<>();
+        List<EmployeeCourseStatus> approvedCourses = new ArrayList<>();
+        List<EmployeeCourseStatus> pendingCourses = new ArrayList<>();
 
         nominatedCourses.forEach(nominatedCourse -> {
-            if (nominatedCourse.getApprovalStatus().equals(ApprovalStatus.APPROVED))
-                approvedCourses.add(nominatedCourse.getCourseId());
-            else if (nominatedCourse.getApprovalStatus().equals(ApprovalStatus.PENDING))
-                pendingCourses.add(nominatedCourse.getCourseId());
+            if (nominatedCourse.getApprovalStatus().equals(ApprovalStatus.APPROVED)) {
+                EmployeeCourseStatus temp = new EmployeeCourseStatus(nominatedCourse.getCourseId(), month);
+                approvedCourses.add(temp);
+            } else if (nominatedCourse.getApprovalStatus().equals(ApprovalStatus.PENDING)) {
+                EmployeeCourseStatus temp1 = new EmployeeCourseStatus(nominatedCourse.getCourseId(), month);
+                pendingCourses.add(temp1);
+            }
         });
 
-        if (employee.getApprovedCourses() == null)
+        if (employee.getApprovedCourses() == null) {
             employee.setApprovedCourses(new ArrayList<>());
+        }
         employee.getApprovedCourses().addAll(approvedCourses);
 
-        if (employee.getPendingCourses() == null)
+        if (employee.getPendingCourses() == null) {
             employee.setPendingCourses(new ArrayList<>());
+        }
         employee.getPendingCourses().addAll(pendingCourses);
 
         this.employeeRepository.save(employee);
     }
 
-    public Map<String, List<String>> getCoursesNominatedByEmployee(String empId) {
+    public Map<String, List<EmployeeCourseStatus>> getCoursesNominatedByEmployee(String empId) {
         Employee employee = this.getEmployee(empId);
-        Map<String, List<String>> courseList = new HashMap<>();
+        Map<String, List<EmployeeCourseStatus>> courseList = new HashMap<>();
+
         courseList.put("approvedCourses", employee.getApprovedCourses());
         courseList.put("pendingCourses", employee.getPendingCourses());
+
         return courseList;
     }
 
-    public void updateCoursesNominatedByEmployee(String empId, String courseId, String action) {
+
+    public void updateCoursesNominatedByEmployee(String empId, String courseId, String action, Month month) {
         Employee employee = this.employeeRepository.findByEmpId(empId);
 
-        if (action.equals("approve")) {
-            employee.getPendingCourses().remove(courseId);
-            if (!employee.getApprovedCourses().contains(courseId))
-                employee.getApprovedCourses().add(courseId);
+        if ("approve".equals(action)) {
+            employee.removePendingCourseById(courseId);
+            employee.getApprovedCourses().add(new EmployeeCourseStatus(courseId, month));
+        } else if ("reject".equals(action)) {
+            employee.removePendingCourseById(courseId);
         }
-        else if (action.equals("reject")) {
-            employee.getPendingCourses().remove(courseId);
-        }
-        employeeRepository.save(employee);
+        this.employeeRepository.save(employee);
     }
 
+    public ResponseEntity<?> courseCompleted(String empId, String courseId, CourseFeedback courseFeedback) {
+        Employee employee = this.getEmployee(empId);
+
+        EmployeeCourseStatus employeeCourseStatus = new EmployeeCourseStatus(courseId, currentMonth);
+        if (employee.getCompletedCourses() != null) {
+            employee.getCompletedCourses().add(employeeCourseStatus);
+        } else {
+            ArrayList<EmployeeCourseStatus> temp = new ArrayList<>();
+            temp.add(employeeCourseStatus);
+            employee.setCompletedCourses(temp);
+        }
+        employeeRepository.save(employee);
+        this.courseFeedbackRepository.save(courseFeedback);
+
+        return ResponseEntity.ok().build();
+    }
+
+    // Rename the method correctly
+    public Boolean isApprovedCoursePresent(String courseId,String empId) {
+        return this.employeeRepository.findByEmpId(empId)
+                .getApprovedCourses().stream()
+                .anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
+    }
+    public Boolean isPendingCoursePresent(String courseId,String empId) {
+        return this.employeeRepository.findByEmpId(empId)
+                .getPendingCourses().stream()
+                .anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
+    }
 }

@@ -51,9 +51,9 @@ const Requests = () => {
     setCards(cards.filter((card) => card.id !== employeeId));
   };
 
-  const handleAcceptReject = async (nominationId, courseId, action) => {
+  const handleAcceptReject = async (nominationId, courseId, action, month) => {
     try {
-      const res = await axios.post(`/nomination/${action}?nominationId=${nominationId}&courseId=${courseId}`);
+      const res = await axios.post(`/nomination/${action}?nominationId=${nominationId}&courseId=${courseId}&month=${month}`);
       navigate(0);
     } catch (error) {
       console.log(error);
@@ -70,8 +70,8 @@ const Requests = () => {
           employeeName={card?.empName}
           nominations={card?.nominatedCourses}
           onRemove={() => handleRemoveCard(card.id)}
-          onAccept={(courseId) => handleAcceptReject(card?.nominationId, courseId, 'approve')}
-          onReject={(courseId) => handleAcceptReject(card?.nominationId, courseId, 'reject')}
+          onAccept={(courseId) => handleAcceptReject(card?.nominationId, courseId, 'approve', card?.month)}
+          onReject={(courseId) => handleAcceptReject(card?.nominationId, courseId, 'reject', card?.month)}
         />
       ))}
     </div>

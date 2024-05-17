@@ -1,16 +1,16 @@
 package com.nominationsystem.tracers.service;
 
-import com.nominationsystem.tracers.models.ApprovalStatus;
-import com.nominationsystem.tracers.models.NominatedCourseStatus;
-import com.nominationsystem.tracers.models.Employee;
-import com.nominationsystem.tracers.models.Nomination;
+import com.nominationsystem.tracers.models.*;
 import com.nominationsystem.tracers.repository.EmployeeRepository;
 import com.nominationsystem.tracers.repository.NominationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Month;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,22 +61,19 @@ public class NominationService {
         }
         Employee employee = employeeRepository.findByEmpId(empId);
         if (employee != null) {
-            List<String> pendingCourses = employee.getPendingCourses();
-            pendingCourses.removeIf(course -> course.equals(courseId));
-            employeeRepository.save(employee);
+            employee.removePendingCourseById(courseId);
         }
+        employeeRepository.save(employee);
     }
 
-    public Nomination createNomination(Nomination nomination) {
+    public Nomination createNomination(Nomination nomination, Month month) {
         Employee employee = employeeService.getEmployee(nomination.getEmpId());
         nomination.setManagerId(employee.getManagerId());
-
-        List<String> pendingCourses = employee.getPendingCourses() != null ? employee.getPendingCourses() : Collections.emptyList();
-        List<String> approvedCourses = employee.getApprovedCourses() != null ? employee.getApprovedCourses() : Collections.emptyList();
+        nomination.setMonth(month);
 
         List<NominatedCourseStatus> nominatedCourses = nomination.getNominatedCourses().stream()
-                .filter(nominatedCourse -> !pendingCourses.contains(nominatedCourse.getCourseId()) &&
-                        !approvedCourses.contains(nominatedCourse.getCourseId()))
+                .filter(nominatedCourse -> !employeeService.isPendingCoursePresent(nominatedCourse.getCourseId(),employee.getEmpId()) &&
+                        !employeeService.isApprovedCoursePresent(nominatedCourse.getCourseId(),employee.getEmpId()))
                 .map(nominatedCourse -> {
                     NominatedCourseStatus newNominatedCourse = new NominatedCourseStatus();
                     newNominatedCourse.setCourseId(nominatedCourse.getCourseId());
@@ -93,7 +90,7 @@ public class NominationService {
         }
 
         nomination.setNominatedCourses(nominatedCourses);
-        employeeService.setCoursesNominatedByEmployee(nomination.getEmpId(), nominatedCourses);
+        employeeService.setCoursesNominatedByEmployee(nomination.getEmpId(), nominatedCourses,month);
 
         return nominationRepository.save(nomination);
     }
@@ -115,7 +112,7 @@ public class NominationService {
         nominationRepository.deleteById(nominationId);
     }
 
-    public void takeActionOnPendingRequest(String nominationId, String courseId, String action) {
+    public void takeActionOnPendingRequest(String nominationId, String courseId, String action,Month month) {
         Nomination nomination = this.getNomination(nominationId);
 
         boolean updated = nomination.getNominatedCourses().stream()
@@ -131,7 +128,7 @@ public class NominationService {
                         default:
                             throw new IllegalArgumentException("Invalid action: " + action);
                     }
-                    employeeService.updateCoursesNominatedByEmployee(nomination.getEmpId(), courseId, action);
+                    employeeService.updateCoursesNominatedByEmployee(nomination.getEmpId(), courseId, action,nomination.getMonth());
                 })
                 .findAny()
                 .isPresent();

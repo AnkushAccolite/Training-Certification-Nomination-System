@@ -1,5 +1,7 @@
 package com.nominationsystem.tracers.controller;
 
+import com.nominationsystem.tracers.models.CourseFeedback;
+import com.nominationsystem.tracers.models.EmployeeCourseStatus;
 import com.nominationsystem.tracers.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +49,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/status")
-    public Map<String, List<String>> getCoursesNominatedByEmployee(@RequestParam String empId) {
+    public Map<String,List<EmployeeCourseStatus>> getCoursesNominatedByEmployee(@RequestParam String empId) {
         return this.employeeService.getCoursesNominatedByEmployee(empId);
+    }
+
+    @PostMapping("/courseCompleted")
+    public ResponseEntity<?> courseCompleted(@RequestParam String courseId, @RequestParam String empId, @RequestBody CourseFeedback courseFeedback){
+       return this.employeeService.courseCompleted(empId,courseId,courseFeedback);
     }
 
 }
