@@ -82,7 +82,16 @@ const items = {
           roles: ['ADMIN', 'USER', 'MANAGER'],
           icon: icons.IconFileCertificate,
           breadcrumbs: false
-        }
+        },
+        {
+          id: 'certification-assigned',
+          title: 'Certifications Enrolled',
+          type: 'item',
+          url: '/certifications-assigned',
+          icon: icons.IconFileCertificate,
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          breadcrumbs: false
+        },
       ]
     },
     {

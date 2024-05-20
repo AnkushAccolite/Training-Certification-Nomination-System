@@ -9,6 +9,7 @@ const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
 const Courses = Loadable(lazy(() => import('views/pages/Courses')));
 const Certifications = Loadable(lazy(() => import('views/pages/Certifications')));
 const AssignedCourses = Loadable(lazy(() => import('views/pages/AssignedCourses')));
+const AssignedCertifications = Loadable(lazy(() => import('views/pages/AssignedCertifications')))
 // const Status = Loadable(lazy(() => import('views/pages/Status')));
 const CoursesCompleted = Loadable(lazy(() => import('views/pages/CoursesCompleted')));
 const CertificationsCompleted = Loadable(lazy(() => import('views/pages/CertificationsCompleted')));
@@ -53,10 +54,6 @@ const MainRoutes = {
           path: 'assigned-courses',
           element: <AssignedCourses />
         },
-        // {
-        //   path: 'status',
-        //   element: <Status />
-        // },
         {
           path: 'courses-completed',
           element: <CoursesCompleted />
@@ -77,15 +74,10 @@ const MainRoutes = {
           path:'AllCourses/add-course',
           element: <AddCourse />
         },
-
         {
           path: '/monthly-courses',
           element: <MonthlyCourses />
         },
-        // {
-        //   path: '/MonthlyCourses/add-course',
-        //   element: <AddCourse />,
-        // }
         {
           path: 'employee-report',
           element: <EmployeeReport />
@@ -93,7 +85,11 @@ const MainRoutes = {
         {
           path: 'course-report',
           element: <CourseReport />
-        }
+        },
+        {
+          path: 'certifications-assigned',
+          element: <AssignedCertifications />
+        },
       ]
     }
   ]
