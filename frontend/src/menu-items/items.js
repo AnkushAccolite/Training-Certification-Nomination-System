@@ -113,13 +113,31 @@ const items = {
       ]
     },
     {
-      id: 'pending-requests',
+      id: 'Requests',
       title: 'Requests',
-      type: 'item',
-      url: '/pending-requests',
+      type: 'collapse',
+      icon: icons.IconFileDescription,
       roles: ['MANAGER'],
-      icon: icons.IconMessages,
-      breadcrumbs: false
+      children: [
+        {
+          id: 'course-request',
+          title: 'Course Enrollment Requests',
+          type: 'item',
+          url: '/course-requests',
+          roles: ['MANAGER'],
+          icon: icons.IconClipboardText,
+          breadcrumbs: false
+        },
+        {
+          id: 'certification-request',
+          title: 'Certification Application Requests',
+          type: 'item',
+          url: '/certification-request',
+          roles: ['MANAGER'],
+          icon: icons.IconClipboardText,
+          breadcrumbs: false
+        }
+      ]
     }
   ]
 };
