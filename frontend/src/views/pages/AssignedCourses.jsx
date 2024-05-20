@@ -1,18 +1,32 @@
 import 'chart.js/auto';
 import React, { useState, useEffect } from 'react';
-import { Paper, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal, Typography, TextField, Rating } from '@mui/material';
+import {
+  Paper,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Modal,
+  Typography,
+  TextField,
+  Rating
+} from '@mui/material';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const AssignedCourses = () => {
   const navigate = useNavigate();
-  const auth = useSelector(state => state.auth);
+  const auth = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!(auth?.isAuthenticated)) navigate("/login");
+    if (!auth?.isAuthenticated) navigate('/login');
   }, [auth, navigate]);
 
   const [courses, setCourses] = useState([
@@ -27,7 +41,7 @@ const AssignedCourses = () => {
     { name: 'Course 9', status: 'completed', duration: '2.5' },
     { name: 'Course 10', status: 'completed', duration: '2.5' },
     { name: 'Course 11', status: 'completed', duration: '2.5' },
-    { name: 'Course 12', status: 'completed', duration: '2.5' },
+    { name: 'Course 12', status: 'completed', duration: '2.5' }
   ]);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -35,6 +49,7 @@ const AssignedCourses = () => {
   const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' });
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const handleSelfAssessmentClick = (index) => {
     setSelectedCourseIndex(index);
@@ -69,6 +84,28 @@ const AssignedCourses = () => {
     setSnackbarOpen(true); // Open the Snackbar
   };
 
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedRows = [...courses].sort((a, b) => {
+    if (sortConfig.key) {
+      const aValue = a[sortConfig.key];
+      const bValue = b[sortConfig.key];
+      if (sortConfig.key === 'DateOfCompletion') {
+        return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
+      } else if (sortConfig.key === 'SNo') {
+        return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+      }
+      return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+    }
+    return 0;
+  });
+
   const countByStatus = () => {
     return courses.reduce((acc, course) => {
       acc[course.status] = (acc[course.status] || 0) + 1;
@@ -93,7 +130,7 @@ const AssignedCourses = () => {
     }
   };
 
-  const pieData = Object.keys(chartData).map(status => ({
+  const pieData = Object.keys(chartData).map((status) => ({
     name: status,
     value: chartData[status],
     percentage: ((chartData[status] / courses.length) * 100).toFixed(1) + '%'
@@ -112,7 +149,7 @@ const AssignedCourses = () => {
                   borderRadius: '8px',
                   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                   paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                  marginBottom: '-16px', // Compensate for the added padding to avoid double scrollbars
+                  marginBottom: '-16px' // Compensate for the added padding to avoid double scrollbars
                 }}
                 component={Paper}
                 sx={{
@@ -120,28 +157,37 @@ const AssignedCourses = () => {
                   overflowY: 'auto',
                   '&::-webkit-scrollbar': {
                     width: '6px', // Reduce width of the scrollbar
-                    borderRadius: '3px', // Round scrollbar corners
+                    borderRadius: '3px' // Round scrollbar corners
                   },
                   '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#FFFFFF', // Background color of the scrollbar track
+                    backgroundColor: '#FFFFFF' // Background color of the scrollbar track
                   },
                   '&::-webkit-scrollbar-thumb': {
                     backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
-                    borderRadius: '3px', // Round scrollbar thumb corners
-                  },
+                    borderRadius: '3px' // Round scrollbar thumb corners
+                  }
                 }}
               >
                 <Table stickyHeader>
                   <TableHead style={{ textAlign: 'center' }}>
                     <TableRow>
-                      <TableCell style={{ textAlign: 'center' }}>Course Name</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Duration(Hours)</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Status</TableCell>
+                      <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('name')}>
+                        Course Name
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('duration')}>
+                        Duration(Hours)
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('status')}>
+                        Status
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
                       <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {courses.map((course, index) => (
+                    {sortedRows.map((course, index) => (
                       <TableRow key={index}>
                         <TableCell style={{ textAlign: 'center' }}>{course.name}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{course.duration}</TableCell>
@@ -153,7 +199,11 @@ const AssignedCourses = () => {
                         </TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
                           {course.status === 'start' && (
-                            <Button variant="contained" style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }} onClick={() => handleSelfAssessmentClick(index)}>
+                            <Button
+                              variant="contained"
+                              style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }}
+                              onClick={() => handleSelfAssessmentClick(index)}
+                            >
                               Self Assessment
                             </Button>
                           )}
@@ -172,47 +222,59 @@ const AssignedCourses = () => {
             Progress Tracker
           </Typography>
           <ResponsiveContainer width="100%" height={400}>
-  <PieChart>
-    <Pie
-      data={pieData}
-      dataKey="value"
-      nameKey="name"
-      cx="50%"
-      cy="50%"
-      outerRadius={105}
-      fill="#8884D8"
-      labelLine={false} // Remove lines extending from the numbers
-      // Render custom label inside the pie chart
-      label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
-        const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
-        const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
-        return (
-          <text
-            x={x}
-            y={y}
-            fill="#fff" // Set text color to white
-            textAnchor={x > cx ? 'start' : 'end'}
-            dominantBaseline="central"
-          >
-            {`${Math.round(percent * 100)}%`} {/* Round the percentage value */}
-          </text>
-        );
-      }}
-    >
-      {pieData.map((entry, index) => (
-        <Cell key={`cell-${index}`} fill={getStatusColor(entry.name)} />
-      ))}
-    </Pie>
-    <Tooltip />
-  </PieChart>
-</ResponsiveContainer>
-
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={105}
+                fill="#8884D8"
+                labelLine={false} // Remove lines extending from the numbers
+                // Render custom label inside the pie chart
+                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                  const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
+                  const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+                  const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      fill="#fff" // Set text color to white
+                      textAnchor={x > cx ? 'start' : 'end'}
+                      dominantBaseline="central"
+                    >
+                      {`${Math.round(percent * 100)}%`} {/* Round the percentage value */}
+                    </text>
+                  );
+                }}
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={getStatusColor(entry.name)} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
       <Modal open={modalOpen} onClose={() => handleCloseModal(false)}>
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '40px', outline: 'none', borderRadius: '8px', width: '60%', maxWidth: '400px' }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'white',
+            padding: '40px',
+            outline: 'none',
+            borderRadius: '8px',
+            width: '60%',
+            maxWidth: '400px'
+          }}
+        >
           <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
             Self Assessment
           </Typography>
@@ -220,10 +282,18 @@ const AssignedCourses = () => {
             Have you completed the course?
           </Typography>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '25px' }}>
-            <Button variant="contained" style={{ width: '45%', backgroundColor: '#2ecc71', color: 'white', fontSize: '1rem' }} onClick={() => handleCloseModal(true)}>
+            <Button
+              variant="contained"
+              style={{ width: '45%', backgroundColor: '#2ecc71', color: 'white', fontSize: '1rem' }}
+              onClick={() => handleCloseModal(true)}
+            >
               Yes
             </Button>
-            <Button variant="contained" style={{ width: '45%', backgroundColor: '#e74c3c', color: 'white', fontSize: '1rem' }} onClick={() => handleCloseModal(false)}>
+            <Button
+              variant="contained"
+              style={{ width: '45%', backgroundColor: '#e74c3c', color: 'white', fontSize: '1rem' }}
+              onClick={() => handleCloseModal(false)}
+            >
               No
             </Button>
           </div>
@@ -240,15 +310,28 @@ const AssignedCourses = () => {
         </MuiAlert>
       </Snackbar>
 
-
       <Modal open={feedbackOpen} onClose={handleFeedbackClose}>
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '40px', outline: 'none', borderRadius: '8px', width: '80%', maxWidth: '500px' }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'white',
+            padding: '40px',
+            outline: 'none',
+            borderRadius: '8px',
+            width: '80%',
+            maxWidth: '500px'
+          }}
+        >
           <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
             Course Feedback
           </Typography>
           <div style={{ marginBottom: '20px', textAlign: 'center' }}>
             <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px' }}>
-              Rate the course: <span style={{ color: '#3453cf', fontWeight: 'bold' }}>{courses[selectedCourseIndex]?.name}</span> {/* Display course name in blue */}
+              Rate the course: <span style={{ color: '#3453cf', fontWeight: 'bold' }}>{courses[selectedCourseIndex]?.name}</span>{' '}
+              {/* Display course name in blue */}
             </Typography>
             <div style={{ display: 'inline-block' }}>
               <Rating
@@ -282,5 +365,5 @@ const AssignedCourses = () => {
       </Modal>
     </div>
   );
-}
+};
 export default AssignedCourses;

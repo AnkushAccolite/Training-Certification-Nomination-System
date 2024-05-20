@@ -14,7 +14,9 @@ const AssignedCertifications = Loadable(lazy(() => import('views/pages/AssignedC
 const CoursesCompleted = Loadable(lazy(() => import('views/pages/CoursesCompleted')));
 const CertificationsCompleted = Loadable(lazy(() => import('views/pages/CertificationsCompleted')));
 
-const Requests = Loadable(lazy(() => import('views/pages/Requests')));
+const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
+// const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
+const CertificationApplicationRequests = Loadable(lazy(() => import('views/pages/CertificationApplicationRequests')));
 const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
 const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
 
@@ -63,8 +65,8 @@ const MainRoutes = {
           element: <CertificationsCompleted />
         },
         {
-          path: 'pending-requests',
-          element: <Requests />
+          path: 'course-requests',
+          element: <CourseEnrollmentRequests />
         },
         {
           path: 'all-courses',
@@ -78,6 +80,14 @@ const MainRoutes = {
           path: '/monthly-courses',
           element: <MonthlyCourses />
         },
+        {
+          path: 'certification-request',
+          element: <CertificationApplicationRequests />
+        },
+        // {
+        //   path: '/MonthlyCourses/add-course',
+        //   element: <AddCourse />,
+        // }
         {
           path: 'employee-report',
           element: <EmployeeReport />

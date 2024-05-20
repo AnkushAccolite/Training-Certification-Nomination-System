@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Paper, Typography, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, FormControl,
-  Select, MenuItem
+  Paper,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  FormControl,
+  Select,
+  MenuItem
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -19,27 +27,27 @@ function createData(SNo, CourseName, Duration, DateOfCompletion) {
 }
 
 const rows = [
-  createData(1, 'Web Development', '2 ', '2024-04-15'),
-  createData(2, 'App Development', '3 ', '2024-05-01'),
-  createData(3, 'App Development', '3 ', '2024-03-01'),
-  createData(4, 'App Development', '3 ', '2024-12-01'),
-  createData(5, 'App Development', '3 ', '2024-12-01'),
-  createData(6, 'App Development', '3 ', '2024-04-01'),
-  createData(7, 'App Development', '3 ', '2024-01-01'),
-  createData(8, 'App Development', '3 ', '2024-02-01'),
-  createData(9, 'App Development', '3 ', '2024-05-01'),
-  createData(10, 'App Development', '3 ', '2024-06-01'),
-  createData(11, 'App Development', '3 ', '2024-07-01'),
-  createData(12, 'App Development', '3 ', '2024-08-01'),
-  createData(13, 'App Development', '3 ', '2024-09-01'),
-  createData(14, 'App Development', '3 ', '2024-10-01'),
+  createData(1, 'Web Development', '2 months', '2024-04-15'),
+  createData(2, 'App Development', '3 months', '2024-05-01'),
+  createData(3, 'App Development', '3 months', '2024-03-01'),
+  createData(4, 'App Development', '3 months', '2024-12-01'),
+  createData(5, 'App Development', '3 months', '2024-12-01'),
+  createData(6, 'App Development', '3 months', '2024-04-01'),
+  createData(7, 'App Development', '3 months', '2024-01-01'),
+  createData(8, 'App Development', '3 months', '2024-02-01'),
+  createData(9, 'App Development', '3 months', '2024-05-01'),
+  createData(10, 'App Development', '3 months', '2024-06-01'),
+  createData(11, 'App Development', '3 months', '2024-07-01'),
+  createData(12, 'App Development', '3 months', '2024-08-01'),
+  createData(13, 'App Development', '3 months', '2024-09-01'),
+  createData(14, 'App Development', '3 months', '2024-10-01')
 ];
 
 const CoursesCompleted = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  const [activeIndex, setActiveIndex] = useState(null); 
+  const [activeIndex, setActiveIndex] = useState(null);
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -63,6 +71,8 @@ const CoursesCompleted = () => {
       const bValue = b[sortConfig.key];
       if (sortConfig.key === 'DateOfCompletion') {
         return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
+      } else if (sortConfig.key === 'SNo') {
+        return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       }
       return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
     }
@@ -70,16 +80,16 @@ const CoursesCompleted = () => {
   });
 
   const navigate = useNavigate();
-  const auth = useSelector(state => state.auth);
+  const auth = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!(auth?.isAuthenticated)) navigate("/login");
+    if (!auth?.isAuthenticated) navigate('/login');
   }, [auth, navigate]);
 
   const getPieChartData = () => {
     const data = rows.reduce((acc, row) => {
       const month = dayjs(row.DateOfCompletion).format('MMM YYYY');
-      const existingMonth = acc.find(item => item.name === month);
+      const existingMonth = acc.find((item) => item.name === month);
       if (existingMonth) {
         existingMonth.value += 1;
       } else {
@@ -90,11 +100,24 @@ const CoursesCompleted = () => {
     return data;
   };
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#c32148', '#777777', '#842593', '#f88379', '#AF7AC5', '#9FE2BF', '#B3B6B7', '#E727B0'];
+  const COLORS = [
+    '#0088FE',
+    '#00C49F',
+    '#FFBB28',
+    '#FF8042',
+    '#c32148',
+    '#777777',
+    '#842593',
+    '#f88379',
+    '#AF7AC5',
+    '#9FE2BF',
+    '#B3B6B7',
+    '#E727B0'
+  ];
 
   return (
-    <div className="courses-completed-container">
-    <div className="left-panel">
+    <div className="courses-completed-container" style={{ overflowX: 'hidden' }}>
+    <div className="left-panel"  style={{ overflowX: 'hidden' }}>
       <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
         <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
       </Typography>
@@ -112,7 +135,7 @@ const CoursesCompleted = () => {
         </FormControl>
       </div>
       <div style={{ flex: '1', overflow: 'hidden' }}>
-            <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+            <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' , overflowX: 'hidden'}}>
       <TableContainer
       
            style={{
@@ -120,64 +143,67 @@ const CoursesCompleted = () => {
                   borderRadius: '8px',
                   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                   paddingRight: '8px', 
-                  marginBottom: '-16px', 
+                  marginBottom: '-16px',
+                  overflowX: 'hidden',
                 }}
                 component={Paper}
                 sx={{
                   maxHeight: '100%',
                   overflowY: 'auto',
                   '&::-webkit-scrollbar': {
-                    width: '6px', 
+                    width: '6px',
                     borderRadius: '3px',
                   },
                   '&::-webkit-scrollbar-track': {
                     backgroundColor: '#FFFFFF', 
                   },
                   '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#eee6ff',
+                    backgroundColor: '#eee6ff', 
                     borderRadius: '3px', 
                   },
                 }}
           >
-            <Table aria-label="completed courses table">
-              <TableHead>
-                <TableRow>
-                  <TableCell style={{textAlign:'center'}}>S.No</TableCell>
-                  <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign:'center',cursor: 'pointer' }}>
-                    Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                  </TableCell>
-                  <TableCell onClick={() => handleSort('Duration')} style={{ textAlign:'center',cursor: 'pointer' }}>
-                    Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                  </TableCell>
-                  <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign:'center',cursor: 'pointer' }}>
-                    Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                  </TableCell>
+        <Table aria-label="completed courses table">
+          <TableHead>
+            <TableRow>
+              <TableCell onClick={() => handleSort('SNo')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                S.No <ArrowDropDownIcon style={{ fontSize: '130%' }} /> 
+                </TableCell>
+              <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+              </TableCell>
+              <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+              </TableCell>
+              <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sortedRows
+              .filter((row) => {
+                if (!startDate && !endDate) return true;
+                const completionDate = dayjs(row.DateOfCompletion);
+                const afterStartDate = !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
+                const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
+                return afterStartDate && beforeEndDate;
+              })
+              .map((row) => (
+                <TableRow key={row.SNo}>
+                  <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {sortedRows
-                  .filter((row) => {
-                    if (!startDate && !endDate) return true;
-                    const completionDate = dayjs(row.DateOfCompletion);
-                    const afterStartDate = !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
-                    const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
-                    return afterStartDate && beforeEndDate;
-                  })
-                  .map((row) => (
-                    <TableRow key={row.SNo}>
-                      <TableCell style={{textAlign:'center'}}>{row.SNo}</TableCell>
-                      <TableCell style={{textAlign:'center'}}>{row.CourseName}</TableCell>
-                      <TableCell style={{textAlign:'center'}}>{row.Duration}</TableCell>
-                      <TableCell style={{textAlign:'center'}}>{row.DateOfCompletion}</TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      </div>
       </div>
     </div>
-    <div className="right-panel">
+    <div className="right-panel" style={{ overflowX: 'hidden' }}>
       <Typography variant="h4" style={{ textAlign: 'center', marginTop: '50%',marginBottom:'-30px' }}>
         Courses Completed Per Month
       </Typography>

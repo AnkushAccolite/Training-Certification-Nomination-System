@@ -365,7 +365,7 @@ const CourseReport = () => {
                 variant="outlined"
                 InputProps={{
                   ...params.InputProps,
-                  style: { paddingRight: '10px' }, // Match padding of other TextFields
+                  style: { paddingRight: '10px' }, 
                 }}
               />
             )}
@@ -435,6 +435,7 @@ const CourseReport = () => {
                   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                   paddingRight: '8px', 
                   marginBottom: '-16px', 
+                  
                 }}
                 component={Paper}
                 sx={{
