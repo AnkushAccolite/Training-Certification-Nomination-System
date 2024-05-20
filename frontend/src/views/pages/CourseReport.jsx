@@ -36,7 +36,7 @@ const CourseReport = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
-  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); 
   const [courses, setCourses] = useState([
     { 
       courseId: 'C001', 
@@ -169,7 +169,7 @@ const CourseReport = () => {
       data.datasets[0].backgroundColor.push(colors[index]);
     });
   
-    return data;
+    return  data;
   };
   const handleGenerateReport = (format) => {
     const doc = new jsPDF();
@@ -365,7 +365,7 @@ const CourseReport = () => {
                 variant="outlined"
                 InputProps={{
                   ...params.InputProps,
-                  style: { paddingRight: '10px' }, // Match padding of other TextFields
+                  style: { paddingRight: '10px' }, 
                 }}
               />
             )}
@@ -435,6 +435,7 @@ const CourseReport = () => {
                   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                   paddingRight: '8px', 
                   marginBottom: '-16px', 
+                  
                 }}
                 component={Paper}
                 sx={{
@@ -519,8 +520,8 @@ const CourseReport = () => {
               </Table>
             </TableContainer>
           </div>
-          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px' }}>
-            <Typography variant="h4" gutterBottom>
+          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px', marginLeft: '50px', marginRight: '-10px', marginTop:'20px' }}>
+            <Typography variant="h4" gutterBottom style={{marginLeft: '-70px'}}>
               Course Attendance Chart
             </Typography>
             <div style={{ width: '100%', height: '250px',marginTop:'10px' }}>

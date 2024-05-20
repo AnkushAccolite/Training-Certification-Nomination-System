@@ -208,7 +208,7 @@ const AllCourses = () => {
 
   return (
     <div>
-      <h2>All Courses</h2>
+      <h2 style={{textAlign:'center'}}>All Courses</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select
@@ -293,7 +293,7 @@ const AllCourses = () => {
         </Button>
       </div>
 
-      <div style={{ paddingTop: '2%', marginTop: '30px' }}>
+      <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
         {/* Table */}
         <Table style={{ backgroundColor: 'white' }}>
           <TableHead>

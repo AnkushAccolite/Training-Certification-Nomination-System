@@ -47,7 +47,7 @@ const CoursesCompleted = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  const [activeIndex, setActiveIndex] = useState(null); // Define activeIndex state
+  const [activeIndex, setActiveIndex] = useState(null);
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -116,134 +116,144 @@ const CoursesCompleted = () => {
   ];
 
   return (
-    <div className="courses-completed-container">
-      <div className="left-panel">
-        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
-          <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
-        </Typography>
-        <div className="course-filters">
-          <FormControl className="date-picker">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker label="Start Date" value={startDate} onChange={handleStartDateChange} />
-            </LocalizationProvider>
-          </FormControl>
-          <span className="date-separator"> - </span>
-          <FormControl className="date-picker">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker label="End Date" value={endDate} onChange={handleEndDateChange} />
-            </LocalizationProvider>
-          </FormControl>
-        </div>
-        <div style={{ flex: '1', overflow: 'hidden' }}>
-          <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
-            <TableContainer
-              style={{
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                marginBottom: '-16px' // Compensate for the added padding to avoid double scrollbars
-              }}
-              component={Paper}
-              sx={{
-                maxHeight: '100%',
-                overflowY: 'auto',
-                '&::-webkit-scrollbar': {
-                  width: '6px', // Reduce width of the scrollbar
-                  borderRadius: '3px' // Round scrollbar corners
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: '#FFFFFF' // Background color of the scrollbar track
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
-                  borderRadius: '3px' // Round scrollbar thumb corners
-                }
-              }}
-            >
-              <Table aria-label="completed courses table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell onClick={() => handleSort('SNo')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      S.No <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                    </TableCell>
-                    <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                    </TableCell>
-                    <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                    </TableCell>
-                    <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sortedRows
-                    .filter((row) => {
-                      if (!startDate && !endDate) return true;
-                      const completionDate = dayjs(row.DateOfCompletion);
-                      const afterStartDate =
-                        !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
-                      const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
-                      return afterStartDate && beforeEndDate;
-                    })
-                    .map((row) => (
-                      <TableRow key={row.SNo}>
-                        <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-        </div>
+    <div className="courses-completed-container" style={{ overflowX: 'hidden' }}>
+    <div className="left-panel"  style={{ overflowX: 'hidden' }}>
+      <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
+        <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
+      </Typography>
+      <div className="course-filters">
+        <FormControl className="date-picker">
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker label="Start Date" value={startDate} onChange={handleStartDateChange} />
+          </LocalizationProvider>
+        </FormControl>
+        <span className="date-separator"> - </span>
+        <FormControl className="date-picker">
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker label="End Date" value={endDate} onChange={handleEndDateChange} />
+          </LocalizationProvider>
+        </FormControl>
       </div>
-      <div className="right-panel">
-        <Typography variant="h4" style={{ textAlign: 'center', marginTop: '50%', marginBottom: '-30px' }}>
-          Courses Completed Per Month
-        </Typography>
-        <ResponsiveContainer width="100%" height="70%">
-          <PieChart>
-            <Pie
-              data={getPieChartData()}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="35%"
-              outerRadius={105}
-              fill="#8884d8"
-              labelLine={false}
-              label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-                const radius = innerRadius + (outerRadius - innerRadius) * 0.68; // Increase the radius multiplier to move labels towards the border
-                const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
-                const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
-                const percentage = Math.round(percent * 100);
-                const spaceAvailable = innerRadius < 20 || outerRadius - innerRadius > 30;
-                return spaceAvailable ? (
-                  <text x={x} y={y} fill="#fff" textAnchor="middle" dominantBaseline="central">
-                    {`${percentage}%`}
-                  </text>
-                ) : null;
-              }}
-              onMouseEnter={(e, entry) => setActiveIndex(entry.index)}
-              onMouseLeave={() => setActiveIndex(null)}
-              series={[
-                {
-                  highlightScope: { faded: 'global', highlighted: 'item' },
-                  faded: { innerRadius: 20, additionalRadius: -20, color: 'gray' }
-                }
-              ]}
-            >
-              {getPieChartData().map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={activeIndex === index ? 1 : 0.7} />
+      <div style={{ flex: '1', overflow: 'hidden' }}>
+            <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' , overflowX: 'hidden'}}>
+      <TableContainer
+      
+           style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                  paddingRight: '8px', 
+                  marginBottom: '-16px',
+                  overflowX: 'hidden',
+                }}
+                component={Paper}
+                sx={{
+                  maxHeight: '100%',
+                  overflowY: 'auto',
+                  '&::-webkit-scrollbar': {
+                    width: '6px',
+                    borderRadius: '3px',
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#FFFFFF', 
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#eee6ff', 
+                    borderRadius: '3px', 
+                  },
+                }}
+          >
+        <Table aria-label="completed courses table">
+          <TableHead>
+            <TableRow>
+              <TableCell style={{ textAlign: 'center' }}>S.No</TableCell>
+              <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+              </TableCell>
+              <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+              </TableCell>
+              <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sortedRows
+              .filter((row) => {
+                if (!startDate && !endDate) return true;
+                const completionDate = dayjs(row.DateOfCompletion);
+                const afterStartDate = !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
+                const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
+                return afterStartDate && beforeEndDate;
+              })
+              .map((row) => (
+                <TableRow key={row.SNo}>
+                  <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
+                </TableRow>
               ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
+          </TableBody>
+        </Table>
+      </TableContainer>
+      </div>
+      </div>
+    </div>
+    <div className="right-panel" style={{ overflowX: 'hidden' }}>
+      <Typography variant="h4" style={{ textAlign: 'center', marginTop: '50%',marginBottom:'-30px' }}>
+        Courses Completed Per Month
+      </Typography>
+        <ResponsiveContainer width="100%" height="70%">
+        <PieChart>
+  <Pie
+    data={getPieChartData()}
+    dataKey="value"
+    nameKey="name"
+    cx="50%"
+    cy="35%"
+    outerRadius={105}
+    fill="#8884d8"
+    labelLine={false}
+    label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+      const radius = innerRadius + (outerRadius - innerRadius) * 0.68; 
+      const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+      const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+      const percentage = Math.round(percent * 100);
+      const spaceAvailable = innerRadius < 20 || outerRadius - innerRadius > 30;
+      return spaceAvailable ? (
+        <text
+          x={x}
+          y={y}
+          fill="#fff"
+          textAnchor="middle"
+          dominantBaseline="central"
+        >
+          {`${percentage}%`}
+        </text>
+      ) : null;
+    }}
+    onMouseEnter={(e, entry) => setActiveIndex(entry.index)}
+    onMouseLeave={() => setActiveIndex(null)}
+    series={[
+      {
+        highlightScope: { faded: 'global', highlighted: 'item' },
+        faded: { innerRadius: 20, additionalRadius: -20, color: 'gray' },
+      },
+    ]}
+  >
+    {getPieChartData().map((entry, index) => (
+      <Cell
+        key={`cell-${index}`}
+        fill={COLORS[index % COLORS.length]}
+        fillOpacity={activeIndex === index ? 1 : 0.7}
+      />
+    ))}
+  </Pie>
+  <Tooltip />
+</PieChart>
+
         </ResponsiveContainer>
       </div>
     </div>
