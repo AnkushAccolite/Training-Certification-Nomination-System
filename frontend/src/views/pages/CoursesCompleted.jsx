@@ -19,27 +19,27 @@ function createData(SNo, CourseName, Duration, DateOfCompletion) {
 }
 
 const rows = [
-  createData(1, 'Web Development', '2 months', '2024-04-15'),
-  createData(2, 'App Development', '3 months', '2024-05-01'),
-  createData(3, 'App Development', '3 months', '2024-03-01'),
-  createData(4, 'App Development', '3 months', '2024-12-01'),
-  createData(5, 'App Development', '3 months', '2024-12-01'),
-  createData(6, 'App Development', '3 months', '2024-04-01'),
-  createData(7, 'App Development', '3 months', '2024-01-01'),
-  createData(8, 'App Development', '3 months', '2024-02-01'),
-  createData(9, 'App Development', '3 months', '2024-05-01'),
-  createData(10, 'App Development', '3 months', '2024-06-01'),
-  createData(11, 'App Development', '3 months', '2024-07-01'),
-  createData(12, 'App Development', '3 months', '2024-08-01'),
-  createData(13, 'App Development', '3 months', '2024-09-01'),
-  createData(14, 'App Development', '3 months', '2024-10-01'),
+  createData(1, 'Web Development', '2 ', '2024-04-15'),
+  createData(2, 'App Development', '3 ', '2024-05-01'),
+  createData(3, 'App Development', '3 ', '2024-03-01'),
+  createData(4, 'App Development', '3 ', '2024-12-01'),
+  createData(5, 'App Development', '3 ', '2024-12-01'),
+  createData(6, 'App Development', '3 ', '2024-04-01'),
+  createData(7, 'App Development', '3 ', '2024-01-01'),
+  createData(8, 'App Development', '3 ', '2024-02-01'),
+  createData(9, 'App Development', '3 ', '2024-05-01'),
+  createData(10, 'App Development', '3 ', '2024-06-01'),
+  createData(11, 'App Development', '3 ', '2024-07-01'),
+  createData(12, 'App Development', '3 ', '2024-08-01'),
+  createData(13, 'App Development', '3 ', '2024-09-01'),
+  createData(14, 'App Development', '3 ', '2024-10-01'),
 ];
 
 const CoursesCompleted = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-  const [activeIndex, setActiveIndex] = useState(null); // Define activeIndex state
+  const [activeIndex, setActiveIndex] = useState(null); 
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -119,62 +119,62 @@ const CoursesCompleted = () => {
                   backgroundColor: 'white',
                   borderRadius: '8px',
                   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                  paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                  marginBottom: '-16px', // Compensate for the added padding to avoid double scrollbars
+                  paddingRight: '8px', 
+                  marginBottom: '-16px', 
                 }}
                 component={Paper}
                 sx={{
                   maxHeight: '100%',
                   overflowY: 'auto',
                   '&::-webkit-scrollbar': {
-                    width: '6px', // Reduce width of the scrollbar
-                    borderRadius: '3px', // Round scrollbar corners
+                    width: '6px', 
+                    borderRadius: '3px',
                   },
                   '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#FFFFFF', // Background color of the scrollbar track
+                    backgroundColor: '#FFFFFF', 
                   },
                   '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
-                    borderRadius: '3px', // Round scrollbar thumb corners
+                    backgroundColor: '#eee6ff',
+                    borderRadius: '3px', 
                   },
                 }}
           >
-        <Table aria-label="completed courses table">
-          <TableHead>
-            <TableRow>
-              <TableCell style={{ textAlign: 'center' }}>S.No</TableCell>
-              <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-              </TableCell>
-              <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-              </TableCell>
-              <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedRows
-              .filter((row) => {
-                if (!startDate && !endDate) return true;
-                const completionDate = dayjs(row.DateOfCompletion);
-                const afterStartDate = !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
-                const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
-                return afterStartDate && beforeEndDate;
-              })
-              .map((row) => (
-                <TableRow key={row.SNo}>
-                  <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
+            <Table aria-label="completed courses table">
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{textAlign:'center'}}>S.No</TableCell>
+                  <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign:'center',cursor: 'pointer' }}>
+                    Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  </TableCell>
+                  <TableCell onClick={() => handleSort('Duration')} style={{ textAlign:'center',cursor: 'pointer' }}>
+                    Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  </TableCell>
+                  <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign:'center',cursor: 'pointer' }}>
+                    Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  </TableCell>
                 </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      </div>
+              </TableHead>
+              <TableBody>
+                {sortedRows
+                  .filter((row) => {
+                    if (!startDate && !endDate) return true;
+                    const completionDate = dayjs(row.DateOfCompletion);
+                    const afterStartDate = !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
+                    const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
+                    return afterStartDate && beforeEndDate;
+                  })
+                  .map((row) => (
+                    <TableRow key={row.SNo}>
+                      <TableCell style={{textAlign:'center'}}>{row.SNo}</TableCell>
+                      <TableCell style={{textAlign:'center'}}>{row.CourseName}</TableCell>
+                      <TableCell style={{textAlign:'center'}}>{row.Duration}</TableCell>
+                      <TableCell style={{textAlign:'center'}}>{row.DateOfCompletion}</TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
       </div>
     </div>
     <div className="right-panel">
@@ -193,7 +193,7 @@ const CoursesCompleted = () => {
     fill="#8884d8"
     labelLine={false}
     label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-      const radius = innerRadius + (outerRadius - innerRadius) * 0.68; // Increase the radius multiplier to move labels towards the border
+      const radius = innerRadius + (outerRadius - innerRadius) * 0.68; 
       const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
       const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
       const percentage = Math.round(percent * 100);

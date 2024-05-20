@@ -36,7 +36,7 @@ const CourseReport = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
-  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); 
   const [courses, setCourses] = useState([
     { 
       courseId: 'C001', 
@@ -169,7 +169,7 @@ const CourseReport = () => {
       data.datasets[0].backgroundColor.push(colors[index]);
     });
   
-    return data;
+    return  data;
   };
   const handleGenerateReport = (format) => {
     const doc = new jsPDF();
