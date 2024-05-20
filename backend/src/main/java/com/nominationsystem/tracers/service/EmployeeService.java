@@ -110,6 +110,7 @@ public class EmployeeService {
 
         courseList.put("approvedCourses", employee.getApprovedCourses());
         courseList.put("pendingCourses", employee.getPendingCourses());
+        courseList.put("completedCourses", employee.getCompletedCourses());
 
         return courseList;
     }

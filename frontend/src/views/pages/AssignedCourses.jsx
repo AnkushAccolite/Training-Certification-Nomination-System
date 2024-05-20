@@ -1,53 +1,109 @@
 import 'chart.js/auto';
 import 'chart.js/auto';
 import React, { useState, useEffect } from 'react';
-import { Paper, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal, Typography, TextField, Rating } from '@mui/material';
+import {
+  Paper,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Modal,
+  Typography,
+  TextField,
+  Rating
+} from '@mui/material';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import getNominationCourses from 'utils/getNominationCourses';
+import getAllCourses from 'utils/getAllCourses';
+import axios from '../../api/axios';
 
 const AssignedCourses = () => {
   const navigate = useNavigate();
-  const auth = useSelector(state => state.auth);
+  const auth = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!(auth?.isAuthenticated)) navigate("/login");
+    if (!auth?.isAuthenticated) navigate('/login');
   }, [auth, navigate]);
 
-  const [courses, setCourses] = useState([
-    { name: 'Course 1', status: 'start', duration: '1' },
-    { name: 'Course 2', status: 'start', duration: '2' },
-    { name: 'Course 3', status: 'completed', duration: '1' },
-    { name: 'Course 4', status: 'start', duration: '4' },
-    { name: 'Course 5', status: 'completed', duration: '2.5' },
-    { name: 'Course 6', status: 'completed', duration: '2.5' },
-    { name: 'Course 7', status: 'completed', duration: '2.5' },
-    { name: 'Course 8', status: 'completed', duration: '2.5' },
-    { name: 'Course 9', status: 'completed', duration: '2.5' },
-    { name: 'Course 10', status: 'completed', duration: '2.5' },
-    { name: 'Course 11', status: 'completed', duration: '2.5' },
-    { name: 'Course 12', status: 'completed', duration: '2.5' },
+  // const [courses, setCourses] = useState([
+  //   { name: 'Course 1', status: 'start', duration: '1' },
+  //   { name: 'Course 2', status: 'start', duration: '2' },
+  //   { name: 'Course 3', status: 'completed', duration: '1' },
+  //   { name: 'Course 4', status: 'start', duration: '4' },
+  //   { name: 'Course 5', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 6', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 7', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 8', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 9', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 10', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 11', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 12', status: 'completed', duration: '2.5' }
+  // ]);
 
-  ]);
+  const [courses, setCourses] = useState([]);
+
+  const [assignedCoursesStatus, setAssignedCoursesStatus] = useState({
+    approvedCourses: [],
+    completedCourses: []
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const nominationCourses = await getNominationCourses(auth?.user?.empId);
+        const approvedCourseIds = nominationCourses?.approvedCourses?.map((course) => course.courseId);
+        const completedCourseIds = nominationCourses?.completedCourses?.map((course) => course.courseId);
+
+        const allCourses = await getAllCourses();
+
+        setAssignedCoursesStatus({
+          approvedCourses: approvedCourseIds,
+          completedCourses: completedCourseIds
+        });
+
+        const temp = allCourses
+          .filter((item) => approvedCourseIds?.includes(item?.courseId) || completedCourseIds?.includes(item?.courseId))
+          .map((item) => ({
+            id: item?.courseId,
+            name: item?.courseName,
+            status: completedCourseIds?.includes(item?.courseId) ? 'completed' : 'start',
+            duration: item?.duration
+          }));
+        // console.log('temp-->', temp);
+
+        setCourses(temp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' });
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const handleSelfAssessmentClick = (index) => {
+  const handleSelfAssessmentClick = (id, index) => {
+    setSelectedCourseId(id);
     setSelectedCourseIndex(index);
     setModalOpen(true);
   };
 
   const handleCloseModal = (completed) => {
     if (completed) {
-      const updatedCourses = [...courses];
-      updatedCourses[selectedCourseIndex].status = 'completed';
-      setCourses(updatedCourses);
+      // const updatedCourses = [...courses];
+      // updatedCourses[selectedCourseIndex].status = 'completed';
+      // setCourses(updatedCourses);
       setFeedbackData({ rating: 0, comments: '' });
       setModalOpen(false);
       setFeedbackOpen(true);
@@ -64,11 +120,22 @@ const AssignedCourses = () => {
     setSnackbarOpen(false);
   };
 
-  const handleFeedbackSubmit = () => {
-    // Implement your logic to submit feedback
-    console.log(feedbackData); // For demonstration, log feedback data
-    setFeedbackOpen(false);
-    setSnackbarOpen(true); // Open the Snackbar
+  const handleFeedbackSubmit = async () => {
+    try {
+      const feedback = {
+        empId: auth?.user?.empId,
+        empName: auth?.user?.empName,
+        courseId: selectedCourseId,
+        rating: feedbackData?.rating,
+        comment: feedbackData?.comments
+      };
+      const res = await axios.post(`/course/completed?empId=${feedback.empId}&courseId=${selectedCourseId}`, feedback);
+      setFeedbackOpen(false);
+      setSnackbarOpen(true);
+      navigate(0);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const countByStatus = () => {
@@ -95,9 +162,10 @@ const AssignedCourses = () => {
     }
   };
 
-  const pieData = Object.keys(chartData).map(status => ({
+  const pieData = Object.keys(chartData).map((status) => ({
     name: status,
     value: chartData[status],
+    percentage: ((chartData[status] / courses.length) * 100).toFixed(1) + '%'
   }));
 
   return (
@@ -113,7 +181,7 @@ const AssignedCourses = () => {
                   borderRadius: '8px',
                   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                   paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                  marginBottom: '-16px', // Compensate for the added padding to avoid double scrollbars
+                  marginBottom: '-16px' // Compensate for the added padding to avoid double scrollbars
                 }}
                 component={Paper}
                 sx={{
@@ -121,15 +189,15 @@ const AssignedCourses = () => {
                   overflowY: 'auto',
                   '&::-webkit-scrollbar': {
                     width: '6px', // Reduce width of the scrollbar
-                    borderRadius: '3px', // Round scrollbar corners
+                    borderRadius: '3px' // Round scrollbar corners
                   },
                   '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#FFFFFF', // Background color of the scrollbar track
+                    backgroundColor: '#FFFFFF' // Background color of the scrollbar track
                   },
                   '&::-webkit-scrollbar-thumb': {
                     backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
-                    borderRadius: '3px', // Round scrollbar thumb corners
-                  },
+                    borderRadius: '3px' // Round scrollbar thumb corners
+                  }
                 }}
               >
                 <Table stickyHeader>
@@ -142,19 +210,23 @@ const AssignedCourses = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {courses.map((course, index) => (
+                    {courses?.map((course, index) => (
                       <TableRow key={index}>
-                        <TableCell style={{ textAlign: 'center' }}>{course.name}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{course.duration}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{course?.name}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
                           <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(course.status) }}>
-                            {course.status === 'start' && 'Yet to Start'}
-                            {course.status === 'completed' && 'Completed'}
+                            {course?.status === 'start' && 'Yet to Start'}
+                            {course?.status === 'completed' && 'Completed'}
                           </Typography>
                         </TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
-                          {course.status === 'start' && (
-                            <Button variant="contained" style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }} onClick={() => handleSelfAssessmentClick(index)}>
+                          {course?.status === 'start' && (
+                            <Button
+                              variant="contained"
+                              style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }}
+                              onClick={() => handleSelfAssessmentClick(course?.id, index)}
+                            >
                               Self Assessment
                             </Button>
                           )}
@@ -179,10 +251,27 @@ const AssignedCourses = () => {
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
-                cy="40%"
+                cy="50%"
                 outerRadius={105}
                 fill="#8884D8"
-                label
+                labelLine={false} // Remove lines extending from the numbers
+                // Render custom label inside the pie chart
+                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                  const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
+                  const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+                  const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      fill="#fff" // Set text color to white
+                      textAnchor={x > cx ? 'start' : 'end'}
+                      dominantBaseline="central"
+                    >
+                      {`${Math.round(percent * 100)}%`} {/* Round the percentage value */}
+                    </text>
+                  );
+                }}
               >
                 {pieData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={getStatusColor(entry.name)} />
@@ -195,7 +284,20 @@ const AssignedCourses = () => {
       </div>
 
       <Modal open={modalOpen} onClose={() => handleCloseModal(false)}>
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '40px', outline: 'none', borderRadius: '8px', width: '60%', maxWidth: '400px' }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'white',
+            padding: '40px',
+            outline: 'none',
+            borderRadius: '8px',
+            width: '60%',
+            maxWidth: '400px'
+          }}
+        >
           <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
             Self Assessment
           </Typography>
@@ -203,10 +305,18 @@ const AssignedCourses = () => {
             Have you completed the course?
           </Typography>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '25px' }}>
-            <Button variant="contained" style={{ width: '45%', backgroundColor: '#2ecc71', color: 'white', fontSize: '1rem' }} onClick={() => handleCloseModal(true)}>
+            <Button
+              variant="contained"
+              style={{ width: '45%', backgroundColor: '#2ecc71', color: 'white', fontSize: '1rem' }}
+              onClick={() => handleCloseModal(true)}
+            >
               Yes
             </Button>
-            <Button variant="contained" style={{ width: '45%', backgroundColor: '#e74c3c', color: 'white', fontSize: '1rem' }} onClick={() => handleCloseModal(false)}>
+            <Button
+              variant="contained"
+              style={{ width: '45%', backgroundColor: '#e74c3c', color: 'white', fontSize: '1rem' }}
+              onClick={() => handleCloseModal(false)}
+            >
               No
             </Button>
           </div>
@@ -223,15 +333,28 @@ const AssignedCourses = () => {
         </MuiAlert>
       </Snackbar>
 
-
       <Modal open={feedbackOpen} onClose={handleFeedbackClose}>
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '40px', outline: 'none', borderRadius: '8px', width: '80%', maxWidth: '500px' }}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'white',
+            padding: '40px',
+            outline: 'none',
+            borderRadius: '8px',
+            width: '80%',
+            maxWidth: '500px'
+          }}
+        >
           <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
             Course Feedback
           </Typography>
           <div style={{ marginBottom: '20px', textAlign: 'center' }}>
             <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px' }}>
-              Rate the course: <span style={{ color: '#3453cf', fontWeight: 'bold' }}>{courses[selectedCourseIndex]?.name}</span> {/* Display course name in blue */}
+              Rate the course: <span style={{ color: '#3453cf', fontWeight: 'bold' }}>{courses[selectedCourseIndex]?.name}</span>{' '}
+              {/* Display course name in blue */}
             </Typography>
             <div style={{ display: 'inline-block' }}>
               <Rating
@@ -257,7 +380,7 @@ const AssignedCourses = () => {
             <Button variant="contained" color="primary" onClick={handleFeedbackSubmit} disabled={feedbackData.rating === 0}>
               Submit
             </Button>
-            <Button variant="contained" onClick={handleFeedbackClose} style={{ marginLeft: '10px' }}>
+            <Button variant="contained" onClick={handleFeedbackSubmit} style={{ marginLeft: '10px' }}>
               Skip
             </Button>
           </div>
@@ -265,5 +388,5 @@ const AssignedCourses = () => {
       </Modal>
     </div>
   );
-}
+};
 export default AssignedCourses;

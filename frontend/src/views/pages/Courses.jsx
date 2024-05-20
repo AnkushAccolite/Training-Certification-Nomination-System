@@ -51,6 +51,7 @@ function Courses() {
 
   const [approvedCourses, setApprovedCourses] = useState([]);
   const [pendingCourses, setPendingCourses] = useState([]);
+  const [completedCourses, setCompletedCourses] = useState([]);
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
@@ -70,17 +71,20 @@ function Courses() {
 
       const pendingCourseIds = nominationCourses?.pendingCourses?.map((course) => course.courseId);
       const approvedCourseIds = nominationCourses?.approvedCourses?.map((course) => course.courseId);
+      const completedCourseIds = nominationCourses?.completedCourses?.map((course) => course.courseId);
 
       setPendingCourses(pendingCourseIds);
       setApprovedCourses(approvedCourseIds);
+      setCompletedCourses(completedCourseIds);
     };
     getNominations();
   }, [auth, navigate]);
 
   const getStatus = (id) => {
+    if (completedCourses?.includes(id)) return 'Completed';
     if (approvedCourses?.includes(id)) return 'Assigned';
-    else if (pendingCourses?.includes(id)) return 'Pending for Approval';
-    else return 'Not Opted';
+    if (pendingCourses?.includes(id)) return 'Pending for Approval';
+    return 'Not Opted';
   };
 
   const handleViewDetails = (course) => {

@@ -19,7 +19,9 @@ public class CourseFeedback {
 
     private  String empName;
 
+    private  String courseId;
+
     private int rating;
 
-    private String comments;
+    private String comment;
 }

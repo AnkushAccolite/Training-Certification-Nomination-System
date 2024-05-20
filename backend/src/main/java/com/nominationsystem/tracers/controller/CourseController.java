@@ -1,6 +1,7 @@
 package com.nominationsystem.tracers.controller;
 
 import com.nominationsystem.tracers.models.Course;
+import com.nominationsystem.tracers.models.CourseFeedback;
 import com.nominationsystem.tracers.service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,11 @@ public class CourseController {
     public void changeMonthlyCourseStatus(@RequestParam String month,
             @RequestBody List<String> courseIds) {
         this.courseService.changeMonthlyCourseStatus(courseIds, month);
+    }
+
+    @PostMapping("/completed")
+    public void completeCourse(@RequestParam String empId, @RequestParam String courseId, @RequestBody CourseFeedback courseFeedback){
+        this.courseService.completeCourse(empId,courseId,courseFeedback);
     }
 
 }
