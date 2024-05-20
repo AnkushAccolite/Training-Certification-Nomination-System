@@ -166,7 +166,9 @@ const CoursesCompleted = () => {
         <Table aria-label="completed courses table">
           <TableHead>
             <TableRow>
-              <TableCell style={{ textAlign: 'center' }}>S.No</TableCell>
+              <TableCell onClick={() => handleSort('SNo')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                S.No <ArrowDropDownIcon style={{ fontSize: '130%' }} /> 
+                </TableCell>
               <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
                 Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
               </TableCell>
