@@ -98,7 +98,7 @@ const CoursesCompleted = () => {
       <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
         <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
       </Typography>
-      <div className="filters">
+      <div className="course-filters">
         <FormControl className="date-picker">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker label="Start Date" value={startDate} onChange={handleStartDateChange} />

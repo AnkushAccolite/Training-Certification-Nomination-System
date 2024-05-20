@@ -14,7 +14,7 @@
     top: 20px;
   }
   
-  .filters {
+  .course-filters{
     position: relative;
     display: flex;
     align-items: center;
@@ -28,24 +28,24 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  .filters .MuiFormControl-root.date-picker {
+  .course-filters .MuiFormControl-root.date-picker {
     min-width: 120px;
   }
   
-  .filters .date-separator {
+  .course-filters .date-separator {
     width: auto;
     padding: 0 10px;
   }
   
-  .filters .MuiOutlinedInput-notchedOutline {
+  .course-filters .MuiOutlinedInput-notchedOutline {
     border: none;
   }
   
-  .filters .MuiSelect-root:focus {
+  .course-filters.MuiSelect-root:focus {
     background-color: transparent;
   }
   
-  .filters .MuiInputBase-input {
+  .course-filters .MuiInputBase-input {
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 15px;
