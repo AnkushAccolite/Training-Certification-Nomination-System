@@ -1,5 +1,4 @@
 import 'chart.js/auto';
-import 'chart.js/auto';
 import React, { useState, useEffect } from 'react';
 import { Paper, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal, Typography, TextField, Rating } from '@mui/material';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
@@ -29,7 +28,6 @@ const AssignedCourses = () => {
     { name: 'Course 10', status: 'completed', duration: '2.5' },
     { name: 'Course 11', status: 'completed', duration: '2.5' },
     { name: 'Course 12', status: 'completed', duration: '2.5' },
-
   ]);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -98,6 +96,7 @@ const AssignedCourses = () => {
   const pieData = Object.keys(chartData).map(status => ({
     name: status,
     value: chartData[status],
+    percentage: ((chartData[status] / courses.length) * 100).toFixed(1) + '%'
   }));
 
   return (
@@ -169,28 +168,46 @@ const AssignedCourses = () => {
         </div>
 
         <div className="pie-chart-section" style={{ flex: '0 1 30%', position: 'sticky', top: 20 }}>
-          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '30%', marginBottom: '-20px' }}>
+          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '45%', marginBottom: '-60px', fontSize: '18px' }}>
             Progress Tracker
           </Typography>
           <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="40%"
-                outerRadius={105}
-                fill="#8884D8"
-                label
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={getStatusColor(entry.name)} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+  <PieChart>
+    <Pie
+      data={pieData}
+      dataKey="value"
+      nameKey="name"
+      cx="50%"
+      cy="50%"
+      outerRadius={105}
+      fill="#8884D8"
+      labelLine={false} // Remove lines extending from the numbers
+      // Render custom label inside the pie chart
+      label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
+        const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+        const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+        return (
+          <text
+            x={x}
+            y={y}
+            fill="#fff" // Set text color to white
+            textAnchor={x > cx ? 'start' : 'end'}
+            dominantBaseline="central"
+          >
+            {`${Math.round(percent * 100)}%`} {/* Round the percentage value */}
+          </text>
+        );
+      }}
+    >
+      {pieData.map((entry, index) => (
+        <Cell key={`cell-${index}`} fill={getStatusColor(entry.name)} />
+      ))}
+    </Pie>
+    <Tooltip />
+  </PieChart>
+</ResponsiveContainer>
+
         </div>
       </div>
 
