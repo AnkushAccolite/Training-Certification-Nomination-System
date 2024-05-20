@@ -165,7 +165,7 @@ public class EmployeeService {
                     EmployeeReportTemplate report = new EmployeeReportTemplate();
                     report.setEmpId(emp.getEmpId());
                     report.setEmpName(emp.getEmpName());
-                    report.setCompletedCourses(this.getDetailsOfCourseByEmployee(emp.getPendingCourses()));
+                    report.setCompletedCourses(this.getDetailsOfCourseByEmployee(emp.getCompletedCourses()));
                     employeeReport.add(report);
                 });
         return employeeReport;
