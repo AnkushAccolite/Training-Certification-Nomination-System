@@ -78,7 +78,6 @@ const EmployeeReport = () => {
           .filter((employee) => employee?.coursesEnrolled?.length !== 0);
 
         setEmployees(temp);
-        console.log('sssss', temp);
       } catch (error) {
         console.log(error);
       }
