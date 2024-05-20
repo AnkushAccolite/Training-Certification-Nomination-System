@@ -115,7 +115,6 @@ public class EmployeeService {
         return courseList;
     }
 
-
     public void updateCoursesNominatedByEmployee(String empId, String courseId, String action, Month month) {
         Employee employee = this.employeeRepository.findByEmpId(empId);
 
@@ -146,12 +145,13 @@ public class EmployeeService {
     }
 
     // Rename the method correctly
-    public Boolean isApprovedCoursePresent(String courseId,String empId) {
+    public Boolean isApprovedCoursePresent(String courseId, String empId) {
         return this.employeeRepository.findByEmpId(empId)
                 .getApprovedCourses().stream()
                 .anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
     }
-    public Boolean isPendingCoursePresent(String courseId,String empId) {
+
+    public Boolean isPendingCoursePresent(String courseId, String empId) {
         return this.employeeRepository.findByEmpId(empId)
                 .getPendingCourses().stream()
                 .anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
@@ -162,16 +162,17 @@ public class EmployeeService {
         List<EmployeeReportTemplate> employeeReport = new ArrayList<>();
 
         employees.forEach(emp -> {
-                    EmployeeReportTemplate report = new EmployeeReportTemplate();
-                    report.setEmpId(emp.getEmpId());
-                    report.setEmpName(emp.getEmpName());
-                    report.setCompletedCourses(this.getDetailsOfCourseByEmployee(emp.getCompletedCourses()));
-                    employeeReport.add(report);
-                });
+            EmployeeReportTemplate report = new EmployeeReportTemplate();
+            report.setEmpId(emp.getEmpId());
+            report.setEmpName(emp.getEmpName());
+            report.setCompletedCourses(this.getDetailsOfCourseByEmployee(emp.getCompletedCourses()));
+            employeeReport.add(report);
+        });
         return employeeReport;
     }
 
-    public ArrayList<EmployeeReportCourseDetails> getDetailsOfCourseByEmployee(ArrayList<EmployeeCourseStatus> courseList) {
+    public ArrayList<EmployeeReportCourseDetails> getDetailsOfCourseByEmployee(
+            ArrayList<EmployeeCourseStatus> courseList) {
         ArrayList<EmployeeReportCourseDetails> courseDetailsList = new ArrayList<>();
 
         courseList.forEach(course -> {
