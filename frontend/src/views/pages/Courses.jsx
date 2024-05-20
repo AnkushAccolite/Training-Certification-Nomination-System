@@ -178,7 +178,7 @@ function Courses() {
 
   return (
     <div>
-      <h2>Available Courses</h2>
+      <h2 style={{textAlign:'center'}}>Available Courses</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select value={selectedMonth} onChange={handleMonthChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
@@ -238,7 +238,7 @@ function Courses() {
         </Button>
       </div>
 
-      <div style={{ paddingTop: '2%', marginTop: '30px' }}>
+      <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>

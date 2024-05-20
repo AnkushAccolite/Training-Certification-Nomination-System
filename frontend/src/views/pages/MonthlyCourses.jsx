@@ -92,7 +92,7 @@ const MonthlyCourses = () => {
 
   return (
     <div>
-      <h2>Monthly Courses</h2>
+      <h2 style={{textAlign:'center'}}>Monthly Courses</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select

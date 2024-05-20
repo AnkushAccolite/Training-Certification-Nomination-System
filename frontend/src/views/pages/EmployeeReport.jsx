@@ -447,7 +447,7 @@ const EmployeeReport = () => {
             </TableContainer>
           </div>
 
-          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px' }}>
+          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px', marginRight:'40px' }}>
             <Typography variant="h4" gutterBottom>
               Completion Months Chart
             </Typography>

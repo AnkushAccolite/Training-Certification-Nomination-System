@@ -519,8 +519,8 @@ const CourseReport = () => {
               </Table>
             </TableContainer>
           </div>
-          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px' }}>
-            <Typography variant="h4" gutterBottom>
+          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px', marginLeft: '50px', marginRight: '-10px', marginTop:'20px' }}>
+            <Typography variant="h4" gutterBottom style={{marginLeft: '-70px'}}>
               Course Attendance Chart
             </Typography>
             <div style={{ width: '100%', height: '250px',marginTop:'10px' }}>
