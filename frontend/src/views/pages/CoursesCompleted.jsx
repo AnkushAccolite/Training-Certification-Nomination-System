@@ -14,7 +14,6 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import './CoursesCompleted.css';
 
-
 function createData(SNo, CourseName, Duration, DateOfCompletion) {
   return { SNo, CourseName, Duration, DateOfCompletion };
 }
