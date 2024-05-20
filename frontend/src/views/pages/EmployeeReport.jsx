@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
+import 'chart.js/auto';
 import {
   Button,
   Paper,
@@ -26,6 +27,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
+import './EmployeeReport.css';
 
 const EmployeeReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
@@ -83,7 +85,6 @@ const EmployeeReport = () => {
       November: 0,
       December: 0,
     };
-
     employees.forEach((employee) => {
       employee.completionMonth.forEach((month) => {
         const roundedMonth = parseInt(month);
@@ -98,7 +99,11 @@ const EmployeeReport = () => {
         {
           label: 'Completion Months',
           data: Object.values(completionCounts),
-          backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#D29CC5', '#FF5733', '#66FF33', '#337DFF', '#AB33FF', '#FF33E3', '#33FFA8', '#FFBD33', '#33FFD8'],
+          backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#D29CC5', '#FF5733', 
+            '#66FF33', '#337DFF', '#AB33FF', '#FF33E3', '#33FFA8', 
+            '#FFBD33', '#33FFD8',
+          ],
         },
       ],
     };
@@ -218,16 +223,16 @@ const EmployeeReport = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div style={{ textAlign: 'center' }}>
-        <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
+      <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
           Employee Report
         </Typography>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
+        <div className="employee-report-filters">
           <TextField
             select
             label="Filter"
             value={selectedFilter}
             onChange={handleFilterChange}
-            style={{ width: '100px', marginRight: '10px' }}
+            style={{ marginRight: '10px' }}
           >
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
@@ -240,7 +245,7 @@ const EmployeeReport = () => {
               label="Month"
               value={selectedMonth}
               onChange={(event) => setSelectedMonth(event.target.value)}
-              style={{ width: '100px', marginRight: '10px' }}
+              style={{ marginRight: '10px' }}
             >
               {Array.from({ length: 12 }, (_, index) => (
                 <MenuItem key={index + 1} value={(index + 1).toString()}>
@@ -255,7 +260,7 @@ const EmployeeReport = () => {
               label="Quarter"
               value={selectedQuarter}
               onChange={(event) => setSelectedQuarter(event.target.value)}
-              style={{ width: '100px', marginRight: '10px' }}
+              style={{ marginRight: '10px' }}
             >
               <MenuItem value="Q1">Quarter 1 (Jan - Mar)</MenuItem>
               <MenuItem value="Q2">Quarter 2 (Apr - Jun)</MenuItem>
@@ -269,7 +274,7 @@ const EmployeeReport = () => {
               label="Half Year"
               value={selectedQuarter}
               onChange={(event) => setSelectedQuarter(event.target.value)}
-              style={{ width: '100px', marginRight: '10px' }}
+              style={{ marginRight: '10px' }}
             >
               <MenuItem value="H1">First Half (Jan - Jun)</MenuItem>
               <MenuItem value="H2">Second Half (Jul - Dec)</MenuItem>
@@ -279,19 +284,33 @@ const EmployeeReport = () => {
             options={['Domain', 'Power', 'Technical', 'Process']}
             value={selectedCategory}
             onChange={(event, newValue) => setSelectedCategory(newValue)}
-            renderInput={(params) => <TextField {...params} label="Category" style={{ width: '100px', marginRight: '10px' }} />}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Category"
+                style={{ marginRight: '10px' }}
+                fullWidth
+                variant="outlined"
+                InputProps={{
+                  ...params.InputProps,
+                  style: { paddingRight: '10px' }, // Match padding of other TextFields
+                }}
+              />
+            )}
+            clearOnEscape={false}
+            clearIcon={null}
           />
           <TextField
-            label="ID"
+            label="Search by ID"
             value={searchQueryID}
             onChange={(e) => setSearchQueryID(e.target.value)}
-            style={{ width: '100px', marginRight: '10px' }}
+            style={{ marginRight: '10px' }}
           />
           <TextField
-            label="Name"
+            label="Search by Name"
             value={searchQueryName}
             onChange={(e) => setSearchQueryName(e.target.value)}
-            style={{ width: '100px', marginRight: '10px' }}
+            style={{ marginRight: '10px' }}
           />
           <Button
             variant="contained"
@@ -305,6 +324,7 @@ const EmployeeReport = () => {
             variant="contained"
             endIcon={<DownloadIcon />}
             onClick={(event) => setDownloadAnchorEl(event.currentTarget)}
+            style={{ marginRight: '10px' }}
           >
             Download
           </Button>
@@ -323,20 +343,20 @@ const EmployeeReport = () => {
           >
             <List>
               <ListItem button onClick={() => handleGenerateReport('pdf')}>
-                <ListItemText primary="Download as PDF" />
+                <ListItemText primary="PDF" />
               </ListItem>
               <ListItem button onClick={() => handleGenerateReport('xlsx')}>
-                <ListItemText primary="Download as XLSX" />
+                <ListItemText primary="Excel" />
               </ListItem>
               <ListItem button onClick={() => handleGenerateReport('csv')}>
-                <ListItemText primary="Download as CSV" />
+                <ListItemText primary="CSV" />
               </ListItem>
             </List>
           </Popover>
         </div>
 
         <div style={{ display: 'flex',flex: '1', overflow: 'hidden', alignItems: 'flex-start' }}>
-          <div style={{ height: 'calc(100vh - 270px)', flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
+          <div style={{ height: 'calc(100vh - 290px)', flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
             <TableContainer style={{
                   backgroundColor: 'white',
                   borderRadius: '8px',
@@ -431,7 +451,7 @@ const EmployeeReport = () => {
             <Typography variant="h4" gutterBottom>
               Completion Months Chart
             </Typography>
-            <div style={{ width: '100%', height: '300px' }}>
+            <div style={{ width: '100%', height: '290px' }}>
               <Pie data={data} />
             </div>
           </div>

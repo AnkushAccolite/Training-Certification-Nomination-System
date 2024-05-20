@@ -1,16 +1,33 @@
-import 'chart.js/auto';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, MenuItem, Popover, List, ListItem, ListItemText } from '@mui/material';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import SearchIcon from '@mui/icons-material/Search';
+import 'chart.js/auto';
+import {
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+  MenuItem,
+  Popover,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import SearchIcon from '@mui/icons-material/Search';
+import DownloadIcon from '@mui/icons-material/Download';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
-import DownloadIcon from '@mui/icons-material/Download';
+import './EmployeeReport.css';
 
 const CourseReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
@@ -118,9 +135,7 @@ const CourseReport = () => {
     return Math.round((completed / enrolled) * 100);
   };
 
-  useEffect(() => {
-    handleSearch(); 
-  }, [selectedMonth, selectedQuarter, selectedCategory, searchQueryID, searchQueryName]);
+ 
 
   const generateChartData = () => {
     const colors = [
@@ -283,13 +298,13 @@ const CourseReport = () => {
         <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
           Course Report
         </Typography>
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
+        <div className="employee-report-filters">
           <TextField
             select
             label="Filter"
             value={selectedFilter}
             onChange={handleFilterChange}
-            style={{ width: '100px', marginRight: '10px' }}
+            style={{ marginRight: '10px' }}
           >
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
@@ -302,7 +317,7 @@ const CourseReport = () => {
               label="Month"
               value={selectedMonth}
               onChange={(event) => setSelectedMonth(event.target.value)}
-              style={{ width: '100px', marginRight: '10px' }}
+              style={{ marginRight: '10px' }}
             >
               {Array.from({ length: 12 }, (_, index) => (
                 <MenuItem key={index + 1} value={(index + 1).toString()}>
@@ -317,7 +332,7 @@ const CourseReport = () => {
               label="Quarter"
               value={selectedQuarter}
               onChange={(event) => setSelectedQuarter(event.target.value)}
-              style={{ width: '100px', marginRight: '10px' }}
+              style={{ marginRight: '10px' }}
             >
               <MenuItem value="Q1">Quarter 1 (Jan - Mar)</MenuItem>
               <MenuItem value="Q2">Quarter 2 (Apr - Jun)</MenuItem>
@@ -331,7 +346,7 @@ const CourseReport = () => {
               label="Half Year"
               value={selectedQuarter}
               onChange={(event) => setSelectedQuarter(event.target.value)}
-              style={{ width: '100px', marginRight: '10px' }}
+              style={{ marginRight: '10px' }}
             >
               <MenuItem value="H1">First Half (Jan - Jun)</MenuItem>
               <MenuItem value="H2">Second Half (Jul - Dec)</MenuItem>
@@ -341,19 +356,33 @@ const CourseReport = () => {
             options={['Domain', 'Power', 'Technical', 'Process']}
             value={selectedCategory}
             onChange={(event, newValue) => setSelectedCategory(newValue)}
-            renderInput={(params) => <TextField {...params} label="Category" style={{ width: '100px', marginRight: '10px' }} />}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Category"
+                style={{ marginRight: '10px' }}
+                fullWidth
+                variant="outlined"
+                InputProps={{
+                  ...params.InputProps,
+                  style: { paddingRight: '10px' }, // Match padding of other TextFields
+                }}
+              />
+            )}
+            clearOnEscape={false}
+            clearIcon={null}
           />
           <TextField
-            label="ID"
+            label="Search by ID"
             value={searchQueryID}
             onChange={(e) => setSearchQueryID(e.target.value)}
-            style={{ width: '100px', marginRight: '10px' }}
+            style={{ marginRight: '10px' }}
           />
           <TextField
-            label="Name"
+            label="Search by Name"
             value={searchQueryName}
             onChange={(e) => setSearchQueryName(e.target.value)}
-            style={{ width: '100px', marginRight: '10px' }}
+            style={{ marginRight: '10px' }}
           />
           <Button
             variant="contained"
@@ -367,6 +396,7 @@ const CourseReport = () => {
             variant="contained"
             endIcon={<DownloadIcon />}
             onClick={(event) => setDownloadAnchorEl(event.currentTarget)}
+            style={{ marginRight: '10px' }}
           >
             Download
           </Button>
@@ -385,44 +415,43 @@ const CourseReport = () => {
           >
             <List>
               <ListItem button onClick={() => handleGenerateReport('pdf')}>
-                <ListItemText primary="Download as PDF" />
+                <ListItemText primary="PDF" />
               </ListItem>
               <ListItem button onClick={() => handleGenerateReport('xlsx')}>
-                <ListItemText primary="Download as XLSX" />
+                <ListItemText primary="Excel" />
               </ListItem>
               <ListItem button onClick={() => handleGenerateReport('csv')}>
-                <ListItemText primary="Download as CSV" />
+                <ListItemText primary="CSV" />
               </ListItem>
             </List>
           </Popover>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'flex-start',overflow: 'hidden' }}>
-          <div style={{ flex: '1 0 70%', height: 'calc(100vh - 270px)', overflowX: 'hidden', overflowY: 'auto' }}>
-            <TableContainer 
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-              paddingRight: '8px', 
-              marginBottom: '-16px', 
-            }}
-            component={Paper}
-            sx={{
-              maxHeight: '100%',
-              overflowY: 'auto',
-              '&::-webkit-scrollbar': {
-                width: '6px', 
-                borderRadius: '3px', 
-              },
-              '&::-webkit-scrollbar-track': {
-                backgroundColor: '#FFFFFF',
-              },
-              '&::-webkit-scrollbar-thumb': {
-                backgroundColor: '#eee6ff', 
-                borderRadius: '3px',
-              },
-            }}>
+        <div style={{ display: 'flex',flex: '1', overflow: 'hidden', alignItems: 'flex-start' }}>
+          <div style={{ height: 'calc(100vh - 290px)', flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
+            <TableContainer style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                  paddingRight: '8px', 
+                  marginBottom: '-16px', 
+                }}
+                component={Paper}
+                sx={{
+                  maxHeight: '100%',
+                  overflowY: 'auto',
+                  '&::-webkit-scrollbar': {
+                    width: '6px', 
+                    borderRadius: '3px', 
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#FFFFFF',
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#eee6ff', 
+                    borderRadius: '3px',
+                  },
+                }}>
               <Table aria-label="course report table">
                 <TableHead>
                   <TableRow>
@@ -494,7 +523,7 @@ const CourseReport = () => {
             <Typography variant="h4" gutterBottom>
               Course Attendance Chart
             </Typography>
-            <div style={{ width: '100%', height: '300px' }}>
+            <div style={{ width: '100%', height: '250px',marginTop:'10px' }}>
               <Pie
                 data={generateChartData()}
                 options={{

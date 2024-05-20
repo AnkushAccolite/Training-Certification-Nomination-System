@@ -178,6 +178,7 @@ function Courses() {
 
   return (
     <div>
+      <h2>Available Courses</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select value={selectedMonth} onChange={handleMonthChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
