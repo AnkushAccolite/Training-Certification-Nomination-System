@@ -11,6 +11,7 @@ import './allcourses.css';
 import { width } from '@mui/system';
 
 
+
 const AllCourses = () => {
   // Dummy data for courses (replace with actual data)
   const navigate = useNavigate();
@@ -199,7 +200,7 @@ if (selectedRows.length === 0) {
 
   return (
     <div>
-    <h2>All Courses</h2>
+    <h2 style={{textAlign:'center'}}>All Courses</h2>
     <div className="filters">
     <FormControl style={{ marginRight: '10px', marginLeft:'10px' , marginTop:'10px' }}>
         <Select
