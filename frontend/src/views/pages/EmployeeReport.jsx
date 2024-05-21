@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 import {
@@ -16,7 +16,7 @@ import {
   Popover,
   List,
   ListItem,
-  ListItemText,
+  ListItemText
 } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -27,7 +27,13 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
+
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import axios from '../../api/axios';
+
 import './EmployeeReport.css';
+
 
 const EmployeeReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
@@ -39,36 +45,50 @@ const EmployeeReport = () => {
   const [downloadAnchorEl, setDownloadAnchorEl] = useState(null);
   const chartRef = useRef(null);
 
-  const [employees, setEmployees] = useState([
-    {
-      empID: '001',
-      name: 'John',
-      category: ['Domain', 'Power', 'Technical'],
-      coursesEnrolled: ['React', 'Node.js', 'Express'],
-      completionMonth: [4, 5, 7],
-    },
-    {
-      empID: '002',
-      name: 'Jane',
-      category: ['Domain', 'Power'],
-      coursesEnrolled: ['Machine Learning', 'Python'],
-      completionMonth: [5, 9],
-    },
-    {
-      empID: '003',
-      name: 'Doe',
-      category: ['Power', 'Technical'],
-      coursesEnrolled: ['Sketch', 'Figma'],
-      completionMonth: [6, 6],
-    },
-    {
-      empID: '004',
-      name: 'Smith',
-      category: ['Domain', 'Technical'],
-      coursesEnrolled: ['HTML', 'CSS'],
-      completionMonth: [7, 10],
-    },
+  const navigate = useNavigate();
+  const auth = useSelector((state) => state?.auth);
+
+  const [months, setMonths] = useState([
+    'JANUARY',
+    'FEBRUARY',
+    'MARCH',
+    'APRIL',
+    'MAY',
+    'JUNE',
+    'JULY',
+    'AUGUST',
+    'SEPTEMBER',
+    'OCTOBER',
+    'NOVEMBER',
+    'DECEMBER'
   ]);
+
+  const [employees, setEmployees] = useState([]);
+
+  useEffect(() => {
+    if (!auth?.isAuthenticated) navigate('/login');
+
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get('/employee/employeeReport');
+
+        const temp = data
+          ?.map((item) => ({
+            empID: item?.empId,
+            name: item?.empName,
+            category: item?.completedCourses?.map((course) => course?.category),
+            coursesEnrolled: item?.completedCourses?.map((course) => course?.courseName),
+            completionMonth: item?.completedCourses?.map((course) => months.indexOf(course?.month) + 1)
+          }))
+          .filter((employee) => employee?.coursesEnrolled?.length !== 0);
+
+        setEmployees(temp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [auth, navigate]);
 
   const generatePieChartData = () => {
     const completionCounts = {
@@ -83,9 +103,10 @@ const EmployeeReport = () => {
       September: 0,
       October: 0,
       November: 0,
-      December: 0,
+      December: 0
     };
-    employees.forEach((employee) => {
+
+    employees?.forEach((employee) => {
       employee.completionMonth.forEach((month) => {
         const roundedMonth = parseInt(month);
         const monthName = new Date(0, roundedMonth - 1).toLocaleString('default', { month: 'long' });
@@ -122,33 +143,31 @@ const EmployeeReport = () => {
       chartCanvas.style.backgroundColor = 'white';
       const chartImage = chartCanvas.toDataURL('image/jpeg');
 
-      const tableData = employees.map((employee) => [
+      const tableData = employees?.map((employee) => [
         employee.empID,
         employee.name,
         employee.coursesEnrolled.join(', '),
         employee.category.join(', '),
-        employee.completionMonth.map((month) =>
-          new Date(0, month - 1).toLocaleString('default', { month: 'long' })
-        ).join(', '),
+        employee.completionMonth.map((month) => new Date(0, month - 1).toLocaleString('default', { month: 'long' })).join(', ')
       ]);
 
       doc.autoTable({
         head: [['EmpID', 'Name', 'Courses', 'Category', 'Completion Month']],
         body: tableData,
-        startY: 20,
+        startY: 20
       });
-      doc.addImage(chartImage, 'JPEG', 60, doc.autoTable.previous.finalY + 10, 80, 80); 
+      doc.addImage(chartImage, 'JPEG', 60, doc.autoTable.previous.finalY + 10, 80, 80);
 
       doc.save('employee_report.pdf');
     } else if (format === 'xlsx') {
-      const tableData1 = employees.reduce((acc, employee) => {
+      const tableData1 = employees?.reduce((acc, employee) => {
         employee.completionMonth.forEach((month, index) => {
           acc.push({
             EmpID: employee.empID,
             Name: employee.name,
             Courses: employee.coursesEnrolled[index],
             Category: employee.category[index],
-            Month: new Date(0, month - 1).toLocaleString('default', { month: 'long' }),
+            Month: new Date(0, month - 1).toLocaleString('default', { month: 'long' })
           });
         });
         return acc;
@@ -159,16 +178,16 @@ const EmployeeReport = () => {
       XLSX.utils.book_append_sheet(wb, ws, 'Employee Report');
       XLSX.writeFile(wb, 'employee_report.xlsx');
     } else if (format === 'csv') {
-      const tableData = employees.map((employee) => [
+      const tableData = employees?.map((employee) => [
         employee.empID,
         employee.name,
         employee.coursesEnrolled.join(', '),
-        employee.completionMonth.map((month) => new Date(0, month - 1).toLocaleString('default', { month: 'long' })).join(', '),
+        employee.completionMonth.map((month) => new Date(0, month - 1).toLocaleString('default', { month: 'long' })).join(', ')
       ]);
 
       const csv = Papa.unparse({
         fields: ['EmpID', 'Name', 'Courses', 'Completion Month'],
-        data: tableData,
+        data: tableData
       });
       const csvContent = `data:text/csv;charset=utf-8,${csv}`;
       const encodedUri = encodeURI(csvContent);
@@ -181,26 +200,24 @@ const EmployeeReport = () => {
   };
 
   const handleSearch = () => {
-    const filteredEmployees = employees.filter((employee) => {
+    const filteredEmployees = employees?.filter((employee) => {
       const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
         const completionMonth = employee.completionMonth[index];
         if (
           (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
           (!selectedCategory || employee.category[index] === selectedCategory) &&
-          (
-            (!selectedQuarter) ||
+          (!selectedQuarter ||
             (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
             (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
             (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
             (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
-            (selectedQuarter === 'H1' && (completionMonth >= 1 && completionMonth <= 6)) ||
-            (selectedQuarter === 'H2' && (completionMonth >= 7 && completionMonth <= 12))
-          )
+            (selectedQuarter === 'H1' && completionMonth >= 1 && completionMonth <= 6) ||
+            (selectedQuarter === 'H2' && completionMonth >= 7 && completionMonth <= 12))
         ) {
           acc.push({
             course,
             category: employee.category[index],
-            completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' }),
+            completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
           });
         }
         return acc;
@@ -209,7 +226,7 @@ const EmployeeReport = () => {
       return (
         (!searchQueryName || employee.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
         (!searchQueryID || employee.empID.toLowerCase().includes(searchQueryID.toLowerCase())) &&
-        (matchingCourses.length > 0)
+        matchingCourses.length > 0
       );
     });
 
@@ -312,12 +329,7 @@ const EmployeeReport = () => {
             onChange={(e) => setSearchQueryName(e.target.value)}
             style={{ marginRight: '10px' }}
           />
-          <Button
-            variant="contained"
-            startIcon={<SearchIcon />}
-            onClick={handleSearch}
-            style={{ marginRight: '10px' }}
-          >
+          <Button variant="contained" startIcon={<SearchIcon />} onClick={handleSearch} style={{ marginRight: '10px' }}>
             Search
           </Button>
           <Button
@@ -334,11 +346,11 @@ const EmployeeReport = () => {
             onClose={() => setDownloadAnchorEl(null)}
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'right',
+              horizontal: 'right'
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: 'right',
+              horizontal: 'right'
             }}
           >
             <List>
@@ -391,26 +403,24 @@ const EmployeeReport = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {employees.map((employee) => {
+                  {employees?.map((employee) => {
                     const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
                       const completionMonth = employee.completionMonth[index];
                       if (
                         (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
                         (!selectedCategory || employee.category[index] === selectedCategory) &&
-                        (
-                          (!selectedQuarter) ||
+                        (!selectedQuarter ||
                           (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
                           (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
                           (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
                           (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
-                          (selectedQuarter === 'H1' && (completionMonth >= 1 && completionMonth <= 6)) ||
-                          (selectedQuarter === 'H2' && (completionMonth >= 7 && completionMonth <= 12))
-                        )
+                          (selectedQuarter === 'H1' && completionMonth >= 1 && completionMonth <= 6) ||
+                          (selectedQuarter === 'H2' && completionMonth >= 7 && completionMonth <= 12))
                       ) {
                         acc.push({
                           course,
                           category: employee.category[index],
-                          completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' }),
+                          completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
                         });
                       }
                       return acc;
@@ -422,8 +432,12 @@ const EmployeeReport = () => {
                       if (index === 0) {
                         rows.push(
                           <TableRow key={`${employee.empID}-${course.course}`}>
-                            <TableCell align="center" rowSpan={matchingCourses.length}>{employee.empID}</TableCell>
-                            <TableCell align="center" rowSpan={matchingCourses.length}>{employee.name}</TableCell>
+                            <TableCell align="center" rowSpan={matchingCourses.length}>
+                              {employee.empID}
+                            </TableCell>
+                            <TableCell align="center" rowSpan={matchingCourses.length}>
+                              {employee.name}
+                            </TableCell>
                             <TableCell align="center">{course.course}</TableCell>
                             <TableCell align="center">{course.category}</TableCell>
                             <TableCell align="center">{completionMonth}</TableCell>
@@ -462,8 +476,3 @@ const EmployeeReport = () => {
 };
 
 export default EmployeeReport;
-
-
-
-
-

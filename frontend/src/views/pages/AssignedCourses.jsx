@@ -19,7 +19,11 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+
+import getNominationCourses from 'utils/getNominationCourses';
+import getAllCourses from 'utils/getAllCourses';
+import axios from '../../api/axios';
+
 
 const AssignedCourses = () => {
   const navigate = useNavigate();
@@ -29,38 +33,80 @@ const AssignedCourses = () => {
     if (!auth?.isAuthenticated) navigate('/login');
   }, [auth, navigate]);
 
-  const [courses, setCourses] = useState([
-    { name: 'Course 1', status: 'start', duration: '1' },
-    { name: 'Course 2', status: 'start', duration: '2' },
-    { name: 'Course 3', status: 'completed', duration: '1' },
-    { name: 'Course 4', status: 'start', duration: '4' },
-    { name: 'Course 5', status: 'completed', duration: '2.5' },
-    { name: 'Course 6', status: 'completed', duration: '2.5' },
-    { name: 'Course 7', status: 'completed', duration: '2.5' },
-    { name: 'Course 8', status: 'completed', duration: '2.5' },
-    { name: 'Course 9', status: 'completed', duration: '2.5' },
-    { name: 'Course 10', status: 'completed', duration: '2.5' },
-    { name: 'Course 11', status: 'completed', duration: '2.5' },
-    { name: 'Course 12', status: 'completed', duration: '2.5' }
-  ]);
+  // const [courses, setCourses] = useState([
+  //   { name: 'Course 1', status: 'start', duration: '1' },
+  //   { name: 'Course 2', status: 'start', duration: '2' },
+  //   { name: 'Course 3', status: 'completed', duration: '1' },
+  //   { name: 'Course 4', status: 'start', duration: '4' },
+  //   { name: 'Course 5', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 6', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 7', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 8', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 9', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 10', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 11', status: 'completed', duration: '2.5' },
+  //   { name: 'Course 12', status: 'completed', duration: '2.5' }
+  // ]);
+
+  const [courses, setCourses] = useState([]);
+
+  const [assignedCoursesStatus, setAssignedCoursesStatus] = useState({
+    approvedCourses: [],
+    completedCourses: []
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const nominationCourses = await getNominationCourses(auth?.user?.empId);
+        const approvedCourseIds = nominationCourses?.approvedCourses?.map((course) => course.courseId);
+        const completedCourseIds = nominationCourses?.completedCourses?.map((course) => course.courseId);
+
+        const allCourses = await getAllCourses();
+
+        setAssignedCoursesStatus({
+          approvedCourses: approvedCourseIds,
+          completedCourses: completedCourseIds
+        });
+
+        const temp = allCourses
+          .filter((item) => approvedCourseIds?.includes(item?.courseId) || completedCourseIds?.includes(item?.courseId))
+          .map((item) => ({
+            id: item?.courseId,
+            name: item?.courseName,
+            status: completedCourseIds?.includes(item?.courseId) ? 'completed' : 'start',
+            duration: item?.duration
+          }));
+        // console.log('temp-->', temp);
+
+        setCourses(temp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
 
   const [modalOpen, setModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' });
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-  const handleSelfAssessmentClick = (index) => {
+  const handleSelfAssessmentClick = (id, index) => {
+    setSelectedCourseId(id);
     setSelectedCourseIndex(index);
     setModalOpen(true);
   };
 
   const handleCloseModal = (completed) => {
     if (completed) {
-      const updatedCourses = [...courses];
-      updatedCourses[selectedCourseIndex].status = 'completed';
-      setCourses(updatedCourses);
+      // const updatedCourses = [...courses];
+      // updatedCourses[selectedCourseIndex].status = 'completed';
+      // setCourses(updatedCourses);
       setFeedbackData({ rating: 0, comments: '' });
       setModalOpen(false);
       setFeedbackOpen(true);
@@ -77,11 +123,22 @@ const AssignedCourses = () => {
     setSnackbarOpen(false);
   };
 
-  const handleFeedbackSubmit = () => {
-    // Implement your logic to submit feedback
-    console.log(feedbackData); // For demonstration, log feedback data
-    setFeedbackOpen(false);
-    setSnackbarOpen(true); // Open the Snackbar
+  const handleFeedbackSubmit = async () => {
+    try {
+      const feedback = {
+        empId: auth?.user?.empId,
+        empName: auth?.user?.empName,
+        courseId: selectedCourseId,
+        rating: feedbackData?.rating,
+        comment: feedbackData?.comments
+      };
+      const res = await axios.post(`/course/completed?empId=${feedback.empId}&courseId=${selectedCourseId}`, feedback);
+      setFeedbackOpen(false);
+      setSnackbarOpen(true);
+      navigate(0);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleSort = (key) => {
@@ -187,22 +244,22 @@ const AssignedCourses = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {sortedRows.map((course, index) => (
+                    {courses?.map((course, index) => (
                       <TableRow key={index}>
-                        <TableCell style={{ textAlign: 'center' }}>{course.name}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{course.duration}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{course?.name}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
                           <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(course.status) }}>
-                            {course.status === 'start' && 'Yet to Start'}
-                            {course.status === 'completed' && 'Completed'}
+                            {course?.status === 'start' && 'Yet to Start'}
+                            {course?.status === 'completed' && 'Completed'}
                           </Typography>
                         </TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
-                          {course.status === 'start' && (
+                          {course?.status === 'start' && (
                             <Button
                               variant="contained"
                               style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }}
-                              onClick={() => handleSelfAssessmentClick(index)}
+                              onClick={() => handleSelfAssessmentClick(course?.id, index)}
                             >
                               Self Assessment
                             </Button>
@@ -357,7 +414,7 @@ const AssignedCourses = () => {
             <Button variant="contained" color="primary" onClick={handleFeedbackSubmit} disabled={feedbackData.rating === 0}>
               Submit
             </Button>
-            <Button variant="contained" onClick={handleFeedbackClose} style={{ marginLeft: '10px' }}>
+            <Button variant="contained" onClick={handleFeedbackSubmit} style={{ marginLeft: '10px' }}>
               Skip
             </Button>
           </div>

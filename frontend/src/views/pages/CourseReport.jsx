@@ -27,7 +27,15 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
+import DownloadIcon from '@mui/icons-material/Download';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import items from 'menu-items/items';
+import axios from '../../api/axios';
+import { TwelveMp } from '@mui/icons-material';
+
 import './EmployeeReport.css';
+
 
 const CourseReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
@@ -36,106 +44,67 @@ const CourseReport = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
-  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); 
-  const [courses, setCourses] = useState([
-    { 
-      courseId: 'C001', 
-      name: 'Course 1', 
-      category: 'Power', 
-      data: [
-        { 
-          employeesEnrolled: 10, 
-          employeesCompleted: 6, 
-          attendance: 60, 
-          completionMonth: 4 
-        },
-        { 
-          employeesEnrolled: 20, 
-          employeesCompleted: 15, 
-          attendance: 75, 
-          completionMonth: 8 
-        }
-      ]
-    },
-    { 
-      courseId: 'C002', 
-      name: 'Course 2', 
-      category: 'Process', 
-      data: [
-        { 
-          employeesEnrolled: 15, 
-          employeesCompleted: 12, 
-          attendance: 80, 
-          completionMonth: 5 
-        },
-        { 
-          employeesEnrolled: 10, 
-          employeesCompleted: 9, 
-          attendance: 90, 
-          completionMonth: 8 
-        }
 
-      ]
-    },
-    { 
-      courseId: 'C003', 
-      name: 'Course 3', 
-      category: 'Technical', 
-      data: [
-        { 
-          employeesEnrolled: 20, 
-          employeesCompleted: 18, 
-          attendance: 90, 
-          completionMonth: 4 
-        }
-      ]
-    },
-    { 
-      courseId: 'C004', 
-      name: 'Course 4', 
-      category: 'Domain', 
-      data: [
-        { 
-          employeesEnrolled: 25, 
-          employeesCompleted: 20, 
-          attendance: 80, 
-          completionMonth: 7 
-        }
-      ]
-    },
-    { 
-      courseId: 'C005', 
-      name: 'Course 5', 
-      category: 'Domain', 
-      data: [
-        { 
-          employeesEnrolled: 25, 
-          employeesCompleted: 20, 
-          attendance: 80, 
-          completionMonth: 7 
-        }
-      ]
-    },
-    { 
-      courseId: 'C006', 
-      name: 'Course 6', 
-      category: 'Domain', 
-      data: [
-        { 
-          employeesEnrolled: 25, 
-          employeesCompleted: 20, 
-          attendance: 80, 
-          completionMonth: 7 
-        }
-      ]
-    },
-  ]);
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
+=======
+
+  const navigate = useNavigate();
+  const auth = useSelector((state) => state?.auth);
+
+  const [courses, setCourses] = useState([]);
 
   const calculateAttendance = (completed, enrolled) => {
     return Math.round((completed / enrolled) * 100);
   };
 
- 
+  const [months, setMonths] = useState([
+    'JANUARY',
+    'FEBRUARY',
+    'MARCH',
+    'APRIL',
+    'MAY',
+    'JUNE',
+    'JULY',
+    'AUGUST',
+    'SEPTEMBER',
+    'OCTOBER',
+    'NOVEMBER',
+    'DECEMBER'
+  ]);
+
+  useEffect(() => {
+    if (!auth?.isAuthenticated) navigate('/login');
+
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get('course/courseReport');
+
+        const temp = data
+          ?.map((item) => ({
+            courseId: item?.courseId,
+            name: item?.courseName,
+            category: item?.category,
+            monthlyDetails: item?.monthlyDetails?.map(employee => ({
+              employeesEnrolled: employee?.employeesEnrolled,
+              employeesCompleted: employee?.employeesCompleted,
+              attendance: employee?.attendance,
+              completionMonth: months.indexOf(employee?.month) + 1
+            }))
+          }))
+          .filter(course => course?.monthlyDetails?.length !== 0);
+
+        setCourses(temp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [auth, navigate]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [selectedMonth, selectedQuarter, selectedCategory, searchQueryID, searchQueryName]);
+
 
   const generateChartData = () => {
     const colors = [
@@ -150,7 +119,7 @@ const CourseReport = () => {
       'rgba(255, 206, 86, 0.6)',
       'rgba(75, 192, 192, 0.6)',
     ];
-  
+
     const data = {
       labels: [],
       datasets: [
@@ -160,49 +129,52 @@ const CourseReport = () => {
         },
       ],
     };
-  
+
     courses.forEach((course, index) => {
-      const totalAttendance = course.data.reduce((acc, cur) => acc + calculateAttendance(cur.employeesCompleted, cur.employeesEnrolled), 0);
-      const averageAttendance = Math.round(totalAttendance / course.data.length);
+      const totalAttendance = course.monthlyDetails.reduce((acc, cur) => acc + calculateAttendance(cur.employeesCompleted, cur.employeesEnrolled), 0);
+      const averageAttendance = Math.round(totalAttendance / course.monthlyDetails.length);
       data.labels.push(course.name);
       data.datasets[0].data.push(averageAttendance);
       data.datasets[0].backgroundColor.push(colors[index]);
     });
-  
-    return  data;
+
+    return data;
+
   };
   const handleGenerateReport = (format) => {
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text('Course Report', 10, 10);
-  
+
     const tableData = courses.map(course => {
-      return course.data.map(data => [
+      return course.monthlyDetails.map(data => [
         course.courseId,
         course.name,
         course.category,
         data.employeesEnrolled,
         data.employeesCompleted,
-        `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
+        // `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
+        `${data.attendance}%`,
         getMonthName(data.completionMonth)
       ]);
     }).flat();
-  
+
     const tableData1 = courses.map(course => {
-      return course.data.map(data => ({
+      return course.monthlyDetails.map(data => ({
         'Course ID': course.courseId,
         'Name': course.name,
         'Category': course.category,
         'Employees Enrolled': data.employeesEnrolled,
         'Employees Completed': data.employeesCompleted,
-        'Attendance': `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
+        // 'Attendance': `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
+        'Attendance': `${data.attendance}%`,
         'Completion Month': getMonthName(data.completionMonth)
       }));
     }).flat();
-  
+
     const chartCanvas = document.querySelector('canvas');
     const chartImage = chartCanvas.toDataURL('image/jpeg');
-  
+
     switch (format) {
       case 'pdf':
         doc.autoTable({
@@ -210,9 +182,9 @@ const CourseReport = () => {
           body: tableData,
           startY: 20
         });
-  
-        
-        doc.addImage(chartImage, 'JPEG', 60, doc.autoTable.previous.finalY + 10, 80, 80); 
+
+
+        doc.addImage(chartImage, 'JPEG', 60, doc.autoTable.previous.finalY + 10, 80, 80);
         doc.save('course_report.pdf');
         break;
       case 'excel':
@@ -244,7 +216,7 @@ const CourseReport = () => {
 
   const handleSearch = () => {
     const filteredCourses = courses.filter(course => {
-      const matchingEmployees = course.data.reduce((acc, data,index) => {
+      const matchingEmployees = course.monthlyDetails.reduce((acc, data, index) => {
         const completionMonth = data.completionMonth[index];
         if (
           (!selectedMonth || data.completionMonth.toString() === selectedMonth) &&
@@ -268,17 +240,17 @@ const CourseReport = () => {
         }
         return acc;
       }, []);
-  
+
       return (
         (!searchQueryName || course.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
         (!searchQueryID || course.courseId.toLowerCase().includes(searchQueryID.toLowerCase())) &&
         (matchingEmployees.length > 0)
       );
     });
-  
+
     setCourses(filteredCourses);
   };
-  
+
 
   const handleFilterChange = (event) => {
     setSelectedFilter(event.target.value);
@@ -294,7 +266,7 @@ const CourseReport = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-<div style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center' }}>
         <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
           Course Report
         </Typography>
@@ -456,7 +428,7 @@ const CourseReport = () => {
               <Table aria-label="course report table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center">Course ID</TableCell>
+                    {/* <TableCell align="center">Course ID</TableCell> */}
                     <TableCell align="center">Name</TableCell>
                     <TableCell align="center">Category</TableCell>
                     <TableCell align="center">Employees Enrolled</TableCell>
@@ -467,7 +439,7 @@ const CourseReport = () => {
                 </TableHead>
                 <TableBody>
                   {courses.map((course) => {
-                    const matchingCourses = course.data.filter((data) => {
+                    const matchingCourses = course.monthlyDetails.filter((data) => {
                       const completionMonth = getMonthName(data.completionMonth);
                       return (
                         (!selectedMonth || data.completionMonth.toString() === selectedMonth) &&
@@ -490,12 +462,13 @@ const CourseReport = () => {
                         if (index === 0) {
                           return (
                             <TableRow key={`${course.courseId}_${index}`}>
-                              <TableCell align="center" rowSpan={matchingCourses.length}>{course.courseId}</TableCell>
+                              {/* <TableCell align="center" rowSpan={matchingCourses.length}>{course.courseId}</TableCell> */}
                               <TableCell align="center" rowSpan={matchingCourses.length}>{course.name}</TableCell>
                               <TableCell align="center" rowSpan={matchingCourses.length}>{course.category}</TableCell>
                               <TableCell align="center">{data.employeesEnrolled}</TableCell>
                               <TableCell align="center">{data.employeesCompleted}</TableCell>
-                              <TableCell align="center">{`${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`}</TableCell>
+                              {/* <TableCell align="center">{`${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`}</TableCell> */}
+                              <TableCell align="center">{`${data.attendance}%`}</TableCell>
                               <TableCell align="center">{completionMonth}</TableCell>
                             </TableRow>
                           );
@@ -504,7 +477,8 @@ const CourseReport = () => {
                             <TableRow key={`${course.courseId}_${index}`}>
                               <TableCell align="center">{data.employeesEnrolled}</TableCell>
                               <TableCell align="center">{data.employeesCompleted}</TableCell>
-                              <TableCell align="center">{`${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`}</TableCell>
+                              {/* <TableCell align="center">{`${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`}</TableCell> */}
+                              <TableCell align="center">{`${data.attendance}%`}</TableCell>
                               <TableCell align="center">{completionMonth}</TableCell>
                             </TableRow>
                           );
@@ -530,11 +504,11 @@ const CourseReport = () => {
                 options={{
                   plugins: {
                     datalabels: {
-                      display: true, 
+                      display: true,
                       formatter: (value, ctx) => {
                         return ctx.chart.data.labels[ctx.dataIndex] + '\n' + value + '%';
                       },
-                      color: '#fff', 
+                      color: '#fff',
                       font: {
                         weight: 'bold'
                       }
@@ -546,7 +520,7 @@ const CourseReport = () => {
           </div>
         </div>
       </div>
-      </LocalizationProvider>
+    </LocalizationProvider>
   );
 };
 
