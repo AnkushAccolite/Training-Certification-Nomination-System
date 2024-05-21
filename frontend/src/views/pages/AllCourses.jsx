@@ -285,7 +285,7 @@ if (selectedRows.length === 0) {
         </Button>
       </div>
 
-      <div style={{ paddingTop: '2%', marginTop: '30px' }}>
+      <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
       {/* Table */}
       <Table style={{ backgroundColor: 'white' }}>
        

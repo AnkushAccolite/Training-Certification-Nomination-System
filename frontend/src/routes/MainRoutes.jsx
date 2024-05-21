@@ -4,6 +4,7 @@ import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import EmployeeReport from 'views/pages/EmployeeReport';
 import CourseReport from 'views/pages/CourseReport';
+import CertificationsReport from 'views/pages/CertificationsReport';
 
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
 const Courses = Loadable(lazy(() => import('views/pages/Courses')));
@@ -95,6 +96,10 @@ const MainRoutes = {
         {
           path: 'course-report',
           element: <CourseReport />
+        },
+        {
+          path: 'certification-report',
+          element: <CertificationsReport />
         },
         {
           path: 'certifications-assigned',
