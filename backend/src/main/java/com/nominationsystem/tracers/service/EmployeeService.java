@@ -19,6 +19,9 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Autowired
+    private CourseService courseService;
+
+    @Autowired
     private CourseFeedbackRepository courseFeedbackRepository;
 
     LocalDate currentDate = LocalDate.now();
@@ -107,10 +110,10 @@ public class EmployeeService {
 
         courseList.put("approvedCourses", employee.getApprovedCourses());
         courseList.put("pendingCourses", employee.getPendingCourses());
+        courseList.put("completedCourses", employee.getCompletedCourses());
 
         return courseList;
     }
-
 
     public void updateCoursesNominatedByEmployee(String empId, String courseId, String action, Month month) {
         Employee employee = this.employeeRepository.findByEmpId(empId);
@@ -142,14 +145,45 @@ public class EmployeeService {
     }
 
     // Rename the method correctly
-    public Boolean isApprovedCoursePresent(String courseId,String empId) {
+    public Boolean isApprovedCoursePresent(String courseId, String empId) {
         return this.employeeRepository.findByEmpId(empId)
                 .getApprovedCourses().stream()
                 .anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
     }
-    public Boolean isPendingCoursePresent(String courseId,String empId) {
+
+    public Boolean isPendingCoursePresent(String courseId, String empId) {
         return this.employeeRepository.findByEmpId(empId)
                 .getPendingCourses().stream()
                 .anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
+    }
+
+    public List<EmployeeReportTemplate> getEmployeeReport() {
+        List<Employee> employees = this.getAllEmployees();
+        List<EmployeeReportTemplate> employeeReport = new ArrayList<>();
+
+        employees.forEach(emp -> {
+            EmployeeReportTemplate report = new EmployeeReportTemplate();
+            report.setEmpId(emp.getEmpId());
+            report.setEmpName(emp.getEmpName());
+            report.setCompletedCourses(this.getDetailsOfCourseByEmployee(emp.getCompletedCourses()));
+            employeeReport.add(report);
+        });
+        return employeeReport;
+    }
+
+    public ArrayList<EmployeeReportCourseDetails> getDetailsOfCourseByEmployee(
+            ArrayList<EmployeeCourseStatus> courseList) {
+        ArrayList<EmployeeReportCourseDetails> courseDetailsList = new ArrayList<>();
+
+        courseList.forEach(course -> {
+            EmployeeReportCourseDetails courseDetails = new EmployeeReportCourseDetails();
+            Course courseData = courseService.getCourseById(course.getCourseId());
+
+            courseDetails.setCourseName(courseData.getCourseName());
+            courseDetails.setCategory(courseData.getDomain());
+            courseDetails.setMonth(course.getMonth());
+            courseDetailsList.add(courseDetails);
+        });
+        return courseDetailsList;
     }
 }

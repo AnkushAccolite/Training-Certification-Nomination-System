@@ -32,19 +32,19 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import Google from 'assets/images/icons/social-google.svg';
-import axios from '../../../../api/axios';
+import axios from 'axios';
 
-import { login,logout } from '../../../../store/actions';
+import { login, logout } from '../../../../store/actions';
 import { useNavigate } from 'react-router-dom';
 import parseUser from 'utils/parseUser';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
-const AuthLogin = ({...others }) => {
+const AuthLogin = ({ ...others }) => {
   const theme = useTheme();
   const matchDownSM = useMediaQuery(theme.breakpoints.down('md'));
   const customization = useSelector((state) => state.customization);
-  const auth = useSelector(state=>state.auth);
+  const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [checked, setChecked] = useState(true);
@@ -62,32 +62,30 @@ const AuthLogin = ({...others }) => {
     event.preventDefault();
   };
 
-  const submit=async(values)=>{
-    
-    try{
-      const credentials={"username":values.email,"password":values.password};
-      const res=await axios.post("/auth/signin",credentials);
+  const submit = async (values) => {
+    try {
+      const credentials = { username: values.email, password: values.password };
+      const res = await axios.post('http://localhost:8080/auth/signin', credentials);
 
-      const token=res.data.token;
+      const token = res.data.token;
+      localStorage.setItem('token', token);
 
       const user = parseUser(token);
       // const user={"email":decoded.email,"role":decoded.role[0]}
 
       // console.log("tokennn->",res.data.token);
       // console.log("decoded->",user);
-      dispatch(login(user,token));
-      
-      navigate("/courses")
+      dispatch(login(user, token));
 
-      console.log("Auth --> ",auth);
-      
+      navigate('/courses');
 
-    }catch(err){
+      console.log('Auth --> ', auth);
+    } catch (err) {
       console.log(err);
     }
-    
-    console.log(values)
-  }
+
+    console.log(values);
+  };
 
   return (
     <>
@@ -165,10 +163,14 @@ const AuthLogin = ({...others }) => {
         })}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={(e)=>{
-           e.preventDefault() 
-           submit(values);
-          }} {...others}>
+          <form
+            noValidate
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit(values);
+            }}
+            {...others}
+          >
             <FormControl fullWidth error={Boolean(touched.email && errors.email)} sx={{ ...theme.typography.customInput }}>
               <InputLabel htmlFor="outlined-adornment-email-login">Email Address / Username</InputLabel>
               <OutlinedInput

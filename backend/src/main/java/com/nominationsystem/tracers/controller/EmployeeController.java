@@ -2,6 +2,7 @@ package com.nominationsystem.tracers.controller;
 
 import com.nominationsystem.tracers.models.CourseFeedback;
 import com.nominationsystem.tracers.models.EmployeeCourseStatus;
+import com.nominationsystem.tracers.models.EmployeeReportTemplate;
 import com.nominationsystem.tracers.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +57,11 @@ public class EmployeeController {
     @PostMapping("/courseCompleted")
     public ResponseEntity<?> courseCompleted(@RequestParam String courseId, @RequestParam String empId, @RequestBody CourseFeedback courseFeedback){
        return this.employeeService.courseCompleted(empId,courseId,courseFeedback);
+    }
+
+    @GetMapping("/employeeReport")
+    public List<EmployeeReportTemplate> getEmployeeReport() {
+        return this.employeeService.getEmployeeReport();
     }
 
 }
