@@ -118,6 +118,15 @@ const items = {
           roles: ['ADMIN'],
           icon: icons.IconClipboardText,
           breadcrumbs: false
+        },
+        {
+          id: 'certification-report',
+          title: 'Certification Report',
+          type: 'item',
+          url: '/certification-report',
+          roles: ['ADMIN'],
+          icon: icons.IconClipboardText,
+          breadcrumbs: false
         }
       ]
     },
