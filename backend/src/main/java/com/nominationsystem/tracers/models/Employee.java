@@ -80,6 +80,15 @@ public class Employee {
         }
 
     }
+    public void removeAssignedCourseById(String courseId) {
+        Iterator<EmployeeCourseStatus> iterator = this.getApprovedCourses().iterator();
+        while (iterator.hasNext()) {
+            EmployeeCourseStatus courseStatus = iterator.next();
+            if (courseStatus.getCourseId().equals(courseId)) {
+                iterator.remove();
+            }
+        }
+    }
 
     // Method to check if a courseId is present in the pendingCourses
 //    public Boolean isPendingCoursePresent(String courseId) {
