@@ -1,0 +1,66 @@
+.employee-report-filters {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: rgb(247, 247, 247);
+    border-radius: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .employee-report-filters .MuiFormControl-root {
+    width: 150px; /* Adjusted width */
+    margin-bottom: 5px;
+  }
+  
+  .employee-report-filters .MuiOutlinedInput-notchedOutline {
+    border: none;
+  }
+  
+  .employee-report-filters .MuiSelect-root:focus {
+    background-color: transparent;
+  }
+  
+  .employee-report-filters .MuiSelect-root {
+    width: 100%; /* Set to 100% to fill the FormControl width */
+  }
+  
+  .employee-report-filters .MuiSelect-icon {
+    color: inherit;
+  }
+  .employee-report-filters .MuiInputLabel-root {
+    font-weight: bold; /* Make labels bold */
+  }
+  .employee-report-filters .MuiOutlinedInput-input {
+    padding-top: 8px; /* Adjusted padding for height */
+    padding-bottom: 8px; /* Adjusted padding for height */
+  }
+  
+  .employee-report-filters .MuiSelect-select {
+    padding-top: 8px; /* Adjusted padding for height */
+    padding-bottom: 8px; /* Adjusted padding for height */
+  }
+  
+  .employee-report-filters .MuiMenuItem-root {
+    font-size: 14px;
+    
+  }
+  
+  .employee-report-filters .MuiAutocomplete-root {
+    width: 180px; 
+    /* Adjusted width */
+  }
+  
+  .employee-report-filters .MuiAutocomplete-inputRoot {
+    padding-top: 3px; /* Adjusted padding for height */
+    padding-bottom: 3px; /* Adjusted padding for height */
+  }
+  
+  .employee-report-filters .MuiAutocomplete-input {
+    padding: 0;
+  }
+  

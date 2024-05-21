@@ -1,0 +1,87 @@
+/* global.css */
+
+/* Set default font and font size */
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  /* Set a default margin and padding for all elements */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Apply a smooth transition to all elements */
+  .transition-all {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Add hover effect to buttons */
+  .button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Add a subtle box-shadow to cards */
+  .card {
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style links */
+  a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Style headings */
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 10px;
+  }
+  
+  /* Style paragraphs */
+  p {
+    margin-bottom: 20px;
+  }
+  
+  /* Style form elements */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Style form submit buttons */
+  input[type="submit"] {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  input[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  

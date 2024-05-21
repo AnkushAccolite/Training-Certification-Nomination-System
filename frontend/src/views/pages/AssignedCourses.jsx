@@ -1,5 +1,4 @@
 import 'chart.js/auto';
-import 'chart.js/auto';
 import React, { useState, useEffect } from 'react';
 import {
   Paper,
@@ -20,9 +19,11 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+
 import getNominationCourses from 'utils/getNominationCourses';
 import getAllCourses from 'utils/getAllCourses';
 import axios from '../../api/axios';
+
 
 const AssignedCourses = () => {
   const navigate = useNavigate();
@@ -86,12 +87,14 @@ const AssignedCourses = () => {
     fetchData();
   }, []);
 
+
   const [modalOpen, setModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' });
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const handleSelfAssessmentClick = (id, index) => {
     setSelectedCourseId(id);
@@ -137,6 +140,28 @@ const AssignedCourses = () => {
       console.log(err);
     }
   };
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedRows = [...courses].sort((a, b) => {
+    if (sortConfig.key) {
+      const aValue = a[sortConfig.key];
+      const bValue = b[sortConfig.key];
+      if (sortConfig.key === 'DateOfCompletion') {
+        return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
+      } else if (sortConfig.key === 'SNo') {
+        return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+      }
+      return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+    }
+    return 0;
+  });
 
   const countByStatus = () => {
     return courses.reduce((acc, course) => {
@@ -203,9 +228,18 @@ const AssignedCourses = () => {
                 <Table stickyHeader>
                   <TableHead style={{ textAlign: 'center' }}>
                     <TableRow>
-                      <TableCell style={{ textAlign: 'center' }}>Course Name</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Duration(Hours)</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Status</TableCell>
+                      <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('name')}>
+                        Course Name
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('duration')}>
+                        Duration(Hours)
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('status')}>
+                        Status
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
                       <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
@@ -241,7 +275,7 @@ const AssignedCourses = () => {
         </div>
 
         <div className="pie-chart-section" style={{ flex: '0 1 30%', position: 'sticky', top: 20 }}>
-          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '30%', marginBottom: '-20px' }}>
+          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '45%', marginBottom: '-60px', fontSize: '18px' }}>
             Progress Tracker
           </Typography>
           <ResponsiveContainer width="100%" height={400}>

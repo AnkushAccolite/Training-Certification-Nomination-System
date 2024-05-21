@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
 
-const Requests = () => {
+const CourseEnrollmentRequests = () => {
   const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
@@ -78,4 +78,4 @@ const Requests = () => {
   );
 };
 
-export default Requests;
+export default CourseEnrollmentRequests;

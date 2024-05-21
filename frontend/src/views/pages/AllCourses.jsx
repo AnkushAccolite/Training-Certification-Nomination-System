@@ -6,6 +6,10 @@ import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
 import useCourses from 'hooks/useCourses';
 import currentMonth from 'utils/currentMonth';
+import FormControl from '@mui/material/FormControl';
+import './allcourses.css';
+import { width } from '@mui/system';
+
 
 
 const AllCourses = () => {
@@ -37,6 +41,12 @@ const AllCourses = () => {
   const [isActivateButtonEnabled, setIsActivateButtonEnabled] = useState(false);
   const [sortingOrder, setSortingOrder] = useState('ascending');
 
+
+
+
+  const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
+const statuses = ['All', 'Active', 'Inactive'];
+
   const handleDomainFilterChange = (event) => {
     const { value } = event.target;
     setSelectedDomain(value === "All" ? "All" : value);
@@ -44,9 +54,10 @@ const AllCourses = () => {
 
   const handleStatusFilterChange = (event) => {
     const { value } = event.target;
-    setSelectedStatus(value === "All" ? "All" : value);
+    console.log("Selected Status:", value);
+    setSelectedStatus(value);
   };
-
+  
   const handleMonthFilterChange = (event) => {
     const { value } = event.target;
     setSelectedMonth(value === "All" ? "All" : value);
@@ -137,17 +148,14 @@ const AllCourses = () => {
     if (selectedDomain === "All" && selectedStatus === "All") {
       return true;
     } else if (selectedDomain === "All") {
-      return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === selectedStatus;
+      return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === (selectedStatus === 'Active');
     } else if (selectedStatus === "All") {
       return course?.domain === selectedDomain;
-    } else if (selectedDomain === "All") {
-      return course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === selectedStatus;
-    } else if (selectedStatus === "All") {
-      return course?.domain === selectedDomain;
-    }else {
-      return course?.domain === selectedDomain && course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === selectedStatus;
+    } else {
+      return course?.domain === selectedDomain && course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === (selectedStatus === 'Active');
     }
   });
+  
 
   const handleSortingOrderChange = () => {
     setSortingOrder(sortingOrder === 'ascending' ? 'descending' : 'ascending');
@@ -166,17 +174,18 @@ const AllCourses = () => {
 
   const allSelectedInactive = selectedRows.every(courseId => sortedCourses.find(course => course.courseId === courseId)?.monthlyStatus?.find(monthStatus => monthStatus.month === selectedMonth)?.activationStatus === false);
 
-// Modify the button text and style logic
+
 let buttonText = 'Change Status';
 let buttonStyle = {
   backgroundColor: 'blue', // Default background color
   color: 'white', // Default text color
+  marginRight:'30px',
+  width:'100px'
 };
 
 if (selectedRows.length === 0) {
   buttonText = 'Activate';
-  buttonStyle.backgroundColor = 'green'; // Activate
-  buttonStyle.backgroundColor = 'light grey'; // Make button grey when disabled
+  buttonStyle.backgroundColor = 'lightgrey'; // Make button grey when disabled
 } else if (allSelectedActive) {
   buttonText = 'Deactivate';
   buttonStyle.backgroundColor = '#eb4034'; // Deactivate
@@ -184,85 +193,99 @@ if (selectedRows.length === 0) {
   buttonText = 'Activate';
   buttonStyle.backgroundColor = '#3ea115'; // Activate
 } else {
-  buttonText = 'Invert Status';
+  buttonText = 'Invert ';
   buttonStyle.backgroundColor = '#3453cf'; // Invert Status
 }
 
-// Check if all selected rows are deselected manually
-if (selectedRows.length === 0 && allSelectedInactive) {
-  buttonStyle.backgroundColor = 'lightgrey'; // Make button light grey when all selected rows are deselected
-}
 
   return (
     <div>
-      <h2>All Courses</h2>
-
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-        {/* Domain filter */}
-        <div style={{ flex: '1', marginRight: '10px' }}>
-          <label htmlFor="domainFilter" style={{ paddingRight: '1%' }}>Filter by Domain:</label>
-          <Select id="domainFilter" value={selectedDomain} onChange={handleDomainFilterChange} style={{ width: '150px' }}>
-            <MenuItem value="All">All</MenuItem>
-            <MenuItem value="Technical">Technical</MenuItem>
-            <MenuItem value="Non-Technical">Non-Technical</MenuItem>
-            <MenuItem value="Power">Power</MenuItem>
-            <MenuItem value="Process">Process</MenuItem>
-          </Select>
-        </div>
-        {/* Status filter */}
-        <div style={{ flex: '1', marginRight: '10px',marginLeft:"-5px" }}>
-          <label htmlFor="statusFilter">Filter by Status:</label>
-          <Select
-            id="statusFilter"
-            value={selectedStatus}
-            onChange={handleStatusFilterChange}
-            style={{ width: '150px' }}
-          >
-            <MenuItem value="All">All</MenuItem>
-            <MenuItem value={true}>Active</MenuItem>
-            <MenuItem value={false}>Inactive</MenuItem>
-          </Select>
-        </div>
-
-        {/* Month filter */}
-        <div style={{ flex: '1', marginRight: '10px' }}>
-          <label htmlFor="monthFilter">Select Month:</label>
-          <Select
-            id="monthFilter"
-            value={selectedMonth}
-            onChange={handleMonthFilterChange}
-            style={{ width: '150px' }}
-          >
-            <MenuItem value="JANUARY">January</MenuItem>
-            <MenuItem value="FEBRUARY">February</MenuItem>
-            <MenuItem value="MARCH">March</MenuItem>
-            <MenuItem value="APRIL">April</MenuItem>
-            <MenuItem value="MAY">May</MenuItem>
-            <MenuItem value="JUNE">June</MenuItem>
-            <MenuItem value="JULY">July</MenuItem>
-            <MenuItem value="AUGUST">August</MenuItem>
-            <MenuItem value="SEPTEMBER">September</MenuItem>
-            <MenuItem value="OCTOBER">October</MenuItem>
-            <MenuItem value="NOVEMBER">November</MenuItem>
-            <MenuItem value="DECEMBER">December</MenuItem>
-          </Select>
-        </div>
-
-        {/* Add Course Button */}
-        <Button variant="contained" onClick={handleClick} style={{ marginRight: '10px' }}>
-          Add Course
-        </Button>
+    <h2 style={{textAlign:'center'}}>All Courses</h2>
+    <div className="filters">
+    <FormControl style={{ marginRight: '10px', marginLeft:'10px' , marginTop:'10px' }}>
+        <Select
+          value={selectedMonth}
+          onChange={handleMonthFilterChange}
+          displayEmpty
+          inputProps={{ 'aria-label': 'Without label' }}
+        >
+          {[
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
+          ].map((month) => (
+            <MenuItem key={month} value={month.toUpperCase()}>
+              {month}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <div className="separator"></div>
+      <FormControl style={{ marginRight: '10px', marginTop:'10px' }}>
+      <Select
+          displayEmpty
+          value={selectedDomain}
+          onChange={handleDomainFilterChange}
+          renderValue={(selected) => {
+            return 'Category';
+          }}
+          inputProps={{ 'aria-label': 'Without label' }}
+        >
+          {names.map((name) => (
+            <MenuItem key={name} value={name}>
+              {name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <div className="separator"></div>
+      <FormControl style={{ marginRight: '10px',marginTop:'10px' }}>
+      <Select
+          displayEmpty
+          value={selectedStatus}
+          onChange={handleStatusFilterChange}
+          renderValue={(selected) => {
+            return 'Status';
+          }}
+          inputProps={{ 'aria-label': 'Without label' }}
+        >
+          {statuses.map((status) => (
+            <MenuItem key={status} value={status}>
+              {status}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+       
         <Button
+  className="addCourse"
+  variant="outlined"
+  onClick={handleClick}
+  style={{ marginLeft: '150px' }} // This will move the button to the right
+>
+  Add Course
+</Button>
+        <Button
+          
           variant="contained"
           disabled={!isActivateButtonEnabled}
           onClick={handleActivateButtonClick}
-          style={buttonStyle} // Apply buttonStyle here
+          style={buttonStyle}  // Apply buttonStyle here
         >
           {buttonText}
         </Button>
       </div>
 
-   
+      <div style={{ paddingTop: '2%', marginTop: '30px' }}>
       {/* Table */}
       <Table style={{ backgroundColor: 'white' }}>
         <TableHead>
@@ -361,6 +384,7 @@ if (selectedRows.length === 0 && allSelectedInactive) {
           ))}
         </TableBody>
       </Table>
+      </div>
 
        {/* Course Details Dialog */}
       <Dialog open={showDetails} onClose={handleCloseDetails}>
