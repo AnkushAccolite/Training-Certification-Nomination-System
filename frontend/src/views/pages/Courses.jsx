@@ -23,6 +23,7 @@ import currentMonth from 'utils/currentMonth';
 import getNominationCourses from 'utils/getNominationCourses';
 import axios from '../../api/axios';
 import './Courses.css';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -52,6 +53,7 @@ function Courses() {
   const [approvedCourses, setApprovedCourses] = useState([]);
   const [pendingCourses, setPendingCourses] = useState([]);
   const [completedCourses, setCompletedCourses] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
@@ -180,6 +182,28 @@ function Courses() {
     }
   });
 
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedCourses = [...filteredRows].sort((a, b) => {
+    if (sortConfig.key) {
+      const aValue = a[sortConfig.key];
+      const bValue = b[sortConfig.key];
+
+      if (sortConfig.key === 'courseName' || sortConfig.key === 'domain' || sortConfig.key === 'status') {
+        return (aValue?.localeCompare(bValue) || 0) * (sortConfig.direction === 'asc' ? 1 : -1);
+      } else if (sortConfig.key === 'duration') {
+        return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
+      }
+    }
+    return 0;
+  });
+
   return (
     <div>
       <h2 style={{textAlign:'center'}}>Available Courses</h2>
@@ -247,16 +271,24 @@ function Courses() {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-                <TableCell></TableCell>
-                <TableCell>Course Name</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Duration(Hours)</TableCell>
-                <TableCell>Status</TableCell>
+              <TableCell></TableCell>
+                <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                  Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                </TableCell>
+                <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                  Category <ArrowDropDownIcon style={{ fontSize: '130%' }}/>
+                </TableCell>
+                <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                  Duration (Hours) <ArrowDropDownIcon style={{ fontSize: '130%' }}/>
+                </TableCell>
+                <TableCell  style={{ textAlign: 'center'}}>
+                  Status 
+                </TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredRows.map((row) => (
+              {sortedCourses.map((row) => (
                 <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell padding="checkbox">
                     <Checkbox
@@ -264,11 +296,10 @@ function Courses() {
                       onChange={(e) => handleCheckboxChange(e, row?.courseId)}
                     />
                   </TableCell>
-                  <TableCell>{row?.courseName}</TableCell>
-                  <TableCell>{row?.domain}</TableCell>
-                  <TableCell>{row?.duration}</TableCell>
-                  <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)) }}>{getStatus(row?.courseId)}</TableCell>
-                  <TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row?.duration}</TableCell>
+                  <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)), textAlign:'center' }}>{getStatus(row?.courseId)}</TableCell>                  <TableCell>
                     <Button variant="contained" onClick={() => handleViewDetails(row)}>
                       View Details
                     </Button>
