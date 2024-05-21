@@ -350,12 +350,7 @@ const CourseReport = () => {
             clearOnEscape={false}
             clearIcon={null}
           />
-          <TextField
-            label="Search by ID"
-            value={searchQueryID}
-            onChange={(e) => setSearchQueryID(e.target.value)}
-            style={{ marginRight: '10px' }}
-          />
+
           <TextField
             label="Search by Name"
             value={searchQueryName}
