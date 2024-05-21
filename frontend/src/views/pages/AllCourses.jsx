@@ -288,102 +288,105 @@ if (selectedRows.length === 0) {
       <div style={{ paddingTop: '2%', marginTop: '30px' }}>
       {/* Table */}
       <Table style={{ backgroundColor: 'white' }}>
+       
         <TableHead>
-          <TableRow>
-            <TableCell padding="checkbox">
-              <Checkbox
-                indeterminate={selectedRows.length > 0 && selectedRows.length < filteredCourses.length}
-                checked={selectedRows.length === filteredCourses.length}
-                onChange={handleSelectAllClick}
-                inputProps={{ 'aria-label': 'select all courses' }}
-              />
-            </TableCell>
-            <TableCell align="center">
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                Course Name
-                <Button variant="text" onClick={handleSortingOrderChange}>
-                  {sortingOrder === 'ascending' ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                </Button>
-              </div>
-            </TableCell>
-            <TableCell align="center">Duration</TableCell>
-            <TableCell align="center">Domain</TableCell>
-            <TableCell align="center">Status</TableCell>
-            {/* <TableCell align="center">Month</TableCell> */}
-            <TableCell align="center">Action</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedCourses.map(course => (
-            <TableRow key={course?.courseId} hover role="checkbox" tabIndex={-1} selected={isSelected(course?.courseId)}>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  checked={isSelected(course?.courseId)}
-                  onChange={(event) => handleRowCheckboxChange(event, course?.courseId)}
-                  inputProps={{ 'aria-labelledby': `checkbox-${course?.courseId}` }}
-                />
-              </TableCell>
-              <TableCell>
-                {editingCourseId === course?.courseId ? (
-                  <TextField
-                    value={editFields?.courseName || course?.courseName}
-                    onChange={(event) => handleEditFieldChange(event, 'courseName')}
-                  />
-                ) : (
-                  <div>
-                    {course?.courseName}
-                    <Button variant="contained" style={{ marginLeft: '50px', marginRight: '-100px' }} onClick={() => handleViewDetails(course)}>View Details</Button>
-                  </div>
-                )}
-              </TableCell>
-
-              <TableCell align="center">
-                {editingCourseId === course?.courseId ? (
-                  <TextField
-                    value={editFields?.duration || course?.duration}
-                    type='number'
-                    onChange={(event) => handleEditFieldChange(event, 'duration')}
-                  />
-                ) : (
-                  course?.duration
-                )}
-              </TableCell>
-              <TableCell align="center">
-                {editingCourseId === course?.courseId ? (
-                  <TextField
-                    value={editFields?.domain || course?.domain}
-                    onChange={(event) => handleEditFieldChange(event, 'domain')}
-                  />
-                ) : (
-                  course?.domain
-                )}
-              </TableCell>
-              <TableCell align="center">
-                <span style={{ color: course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === false ? 'red' : 'green' }}>
-                  {course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus ? "Active":"Inactive"}
-                </span>
-              </TableCell>
-              <TableCell align="center">
-                {editingCourseId === course?.courseId ? (
-                  <>
-                    <Button variant="contained" onClick={saveEditedCourse}>
-                      Save
-                    </Button>
-                    <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)}>Edit</Button>
-                    <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px' }}>Delete</Button>
-                  </>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+  <TableRow>
+    <TableCell padding="checkbox">
+      <Checkbox
+        indeterminate={selectedRows.length > 0 && selectedRows.length < filteredCourses.length}
+        checked={selectedRows.length === filteredCourses.length}
+        onChange={handleSelectAllClick}
+        inputProps={{ 'aria-label': 'select all courses' }}
+      />
+    </TableCell>
+    <TableCell align="center">
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        Course Name
+        <Button variant="text" onClick={handleSortingOrderChange}>
+          {sortingOrder === 'ascending' ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+        </Button>
+      </div>
+    </TableCell>
+    <TableCell align="center">Details</TableCell>
+    <TableCell align="center">Duration</TableCell>
+    <TableCell align="center">Domain</TableCell>
+    <TableCell align="center">Status</TableCell>
+    {/* <TableCell align="center">Month</TableCell> */}
+    <TableCell align="center">Action</TableCell>
+  </TableRow>
+</TableHead>
+<TableBody>
+  {sortedCourses.map(course => (
+    <TableRow key={course?.courseId} hover role="checkbox" tabIndex={-1} selected={isSelected(course?.courseId)}>
+      <TableCell padding="checkbox">
+        <Checkbox
+          checked={isSelected(course?.courseId)}
+          onChange={(event) => handleRowCheckboxChange(event, course?.courseId)}
+          inputProps={{ 'aria-labelledby': `checkbox-${course?.courseId}` }}
+        />
+      </TableCell>
+      <TableCell>
+        {editingCourseId === course?.courseId ? (
+          <TextField
+            value={editFields?.courseName || course?.courseName}
+            onChange={(event) => handleEditFieldChange(event, 'courseName')}
+          />
+        ) : (
+          <div>
+            {course?.courseName}
+          </div>
+        )}
+      </TableCell>
+      <TableCell align="center">
+        <Button variant="contained" onClick={() => handleViewDetails(course)}>View Details</Button>
+      </TableCell>
+      <TableCell align="center">
+        {editingCourseId === course?.courseId ? (
+          <TextField
+            value={editFields?.duration || course?.duration}
+            type='number'
+            onChange={(event) => handleEditFieldChange(event, 'duration')}
+          />
+        ) : (
+          course?.duration
+        )}
+      </TableCell>
+      <TableCell align="center">
+        {editingCourseId === course?.courseId ? (
+          <TextField
+            value={editFields?.domain || course?.domain}
+            onChange={(event) => handleEditFieldChange(event, 'domain')}
+          />
+        ) : (
+          course?.domain
+        )}
+      </TableCell>
+      <TableCell align="center">
+        <span style={{ color: course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === false ? 'red' : 'green' }}>
+          {course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus ? "Active":"Inactive"}
+        </span>
+      </TableCell>
+      <TableCell align="center">
+        {editingCourseId === course?.courseId ? (
+          <>
+            <Button variant="contained" onClick={saveEditedCourse}>
+              Save
+            </Button>
+            <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
+              Cancel
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)}>Edit</Button>
+            <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px' }}>Delete</Button>
+          </>
+        )}
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+</Table>
       </div>
 
        {/* Course Details Dialog */}
