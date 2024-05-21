@@ -1,5 +1,5 @@
 import { Provider, useSelector } from 'react-redux';
-import { RouterProvider } from 'react-router-dom';
+import { RouterProvider, useNavigate } from 'react-router-dom';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline, StyledEngineProvider } from '@mui/material';
@@ -13,22 +13,25 @@ import themes from 'themes';
 // project imports
 import NavigationScroll from 'layout/NavigationScroll';
 import store from './store/store';
+// import { useEffect } from 'react';
+// import { getToken } from 'utils/verifyToken';
 
 // ==============================|| APP ||============================== //
 
 const App = () => {
   const customization = useSelector((state) => state.customization);
-  const auth = useSelector(state=>state.auth);
+  const auth = useSelector((state) => state.auth);
+  // const navigate = useNavigate();
 
   return (
     <StyledEngineProvider injectFirst>
       <Provider store={store}>
         <ThemeProvider theme={themes(customization)}>
-        <CssBaseline />
-        <NavigationScroll>
-          <RouterProvider router={router} />
-        </NavigationScroll>
-      </ThemeProvider>
+          <CssBaseline />
+          <NavigationScroll>
+            <RouterProvider router={router} />
+          </NavigationScroll>
+        </ThemeProvider>
       </Provider>
     </StyledEngineProvider>
   );
