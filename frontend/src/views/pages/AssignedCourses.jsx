@@ -23,7 +23,7 @@ import MuiAlert from '@mui/material/Alert';
 import getNominationCourses from 'utils/getNominationCourses';
 import getAllCourses from 'utils/getAllCourses';
 import axios from '../../api/axios';
-
+import { ArrowDropDownIcon } from '@mui/x-date-pickers';
 
 const AssignedCourses = () => {
   const navigate = useNavigate();
@@ -86,7 +86,6 @@ const AssignedCourses = () => {
     };
     fetchData();
   }, []);
-
 
   const [modalOpen, setModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);

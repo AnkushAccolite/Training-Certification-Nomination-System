@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Bar, Pie } from 'react-chartjs-2';
+import { Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 import {
   Button,
@@ -16,7 +16,7 @@ import {
   Popover,
   List,
   ListItem,
-  ListItemText,
+  ListItemText
 } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -27,7 +27,6 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
-import DownloadIcon from '@mui/icons-material/Download';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import items from 'menu-items/items';
@@ -35,7 +34,7 @@ import axios from '../../api/axios';
 import { TwelveMp } from '@mui/icons-material';
 
 import './EmployeeReport.css';
-
+import { useEffect } from 'react';
 
 const CourseReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
@@ -46,7 +45,6 @@ const CourseReport = () => {
   const [searchQueryName, setSearchQueryName] = useState('');
 
   const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
-=======
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
@@ -84,14 +82,14 @@ const CourseReport = () => {
             courseId: item?.courseId,
             name: item?.courseName,
             category: item?.category,
-            monthlyDetails: item?.monthlyDetails?.map(employee => ({
+            monthlyDetails: item?.monthlyDetails?.map((employee) => ({
               employeesEnrolled: employee?.employeesEnrolled,
               employeesCompleted: employee?.employeesCompleted,
               attendance: employee?.attendance,
               completionMonth: months.indexOf(employee?.month) + 1
             }))
           }))
-          .filter(course => course?.monthlyDetails?.length !== 0);
+          .filter((course) => course?.monthlyDetails?.length !== 0);
 
         setCourses(temp);
       } catch (error) {
@@ -105,7 +103,6 @@ const CourseReport = () => {
     handleSearch();
   }, [selectedMonth, selectedQuarter, selectedCategory, searchQueryID, searchQueryName]);
 
-
   const generateChartData = () => {
     const colors = [
       '#00C49F',
@@ -117,7 +114,7 @@ const CourseReport = () => {
       'rgba(255, 99, 132, 0.6)',
       'rgba(54, 162, 235, 0.6)',
       'rgba(255, 206, 86, 0.6)',
-      'rgba(75, 192, 192, 0.6)',
+      'rgba(75, 192, 192, 0.6)'
     ];
 
     const data = {
@@ -125,13 +122,16 @@ const CourseReport = () => {
       datasets: [
         {
           data: [],
-          backgroundColor: [],
-        },
-      ],
+          backgroundColor: []
+        }
+      ]
     };
 
     courses.forEach((course, index) => {
-      const totalAttendance = course.monthlyDetails.reduce((acc, cur) => acc + calculateAttendance(cur.employeesCompleted, cur.employeesEnrolled), 0);
+      const totalAttendance = course.monthlyDetails.reduce(
+        (acc, cur) => acc + calculateAttendance(cur.employeesCompleted, cur.employeesEnrolled),
+        0
+      );
       const averageAttendance = Math.round(totalAttendance / course.monthlyDetails.length);
       data.labels.push(course.name);
       data.datasets[0].data.push(averageAttendance);
@@ -139,38 +139,41 @@ const CourseReport = () => {
     });
 
     return data;
-
   };
   const handleGenerateReport = (format) => {
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text('Course Report', 10, 10);
 
-    const tableData = courses.map(course => {
-      return course.monthlyDetails.map(data => [
-        course.courseId,
-        course.name,
-        course.category,
-        data.employeesEnrolled,
-        data.employeesCompleted,
-        // `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
-        `${data.attendance}%`,
-        getMonthName(data.completionMonth)
-      ]);
-    }).flat();
+    const tableData = courses
+      .map((course) => {
+        return course.monthlyDetails.map((data) => [
+          course.courseId,
+          course.name,
+          course.category,
+          data.employeesEnrolled,
+          data.employeesCompleted,
+          // `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
+          `${data.attendance}%`,
+          getMonthName(data.completionMonth)
+        ]);
+      })
+      .flat();
 
-    const tableData1 = courses.map(course => {
-      return course.monthlyDetails.map(data => ({
-        'Course ID': course.courseId,
-        'Name': course.name,
-        'Category': course.category,
-        'Employees Enrolled': data.employeesEnrolled,
-        'Employees Completed': data.employeesCompleted,
-        // 'Attendance': `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
-        'Attendance': `${data.attendance}%`,
-        'Completion Month': getMonthName(data.completionMonth)
-      }));
-    }).flat();
+    const tableData1 = courses
+      .map((course) => {
+        return course.monthlyDetails.map((data) => ({
+          'Course ID': course.courseId,
+          Name: course.name,
+          Category: course.category,
+          'Employees Enrolled': data.employeesEnrolled,
+          'Employees Completed': data.employeesCompleted,
+          // 'Attendance': `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
+          Attendance: `${data.attendance}%`,
+          'Completion Month': getMonthName(data.completionMonth)
+        }));
+      })
+      .flat();
 
     const chartCanvas = document.querySelector('canvas');
     const chartImage = chartCanvas.toDataURL('image/jpeg');
@@ -182,7 +185,6 @@ const CourseReport = () => {
           body: tableData,
           startY: 20
         });
-
 
         doc.addImage(chartImage, 'JPEG', 60, doc.autoTable.previous.finalY + 10, 80, 80);
         doc.save('course_report.pdf');
@@ -210,26 +212,37 @@ const CourseReport = () => {
   };
 
   const getMonthName = (month) => {
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthNames = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
     return monthNames[month - 1];
   };
 
   const handleSearch = () => {
-    const filteredCourses = courses.filter(course => {
+    const filteredCourses = courses.filter((course) => {
       const matchingEmployees = course.monthlyDetails.reduce((acc, data, index) => {
         const completionMonth = data.completionMonth[index];
         if (
           (!selectedMonth || data.completionMonth.toString() === selectedMonth) &&
           (!selectedCategory || course.category.toLowerCase() === selectedCategory.toLowerCase()) &&
-          (
-            (!selectedQuarter) ||
+          (!selectedQuarter ||
             (selectedQuarter === 'Q1' && data.completionMonth >= 1 && data.completionMonth <= 3) ||
             (selectedQuarter === 'Q2' && data.completionMonth >= 4 && data.completionMonth <= 6) ||
             (selectedQuarter === 'Q3' && data.completionMonth >= 7 && data.completionMonth <= 9) ||
             (selectedQuarter === 'Q4' && data.completionMonth >= 10 && data.completionMonth <= 12) ||
-            (selectedQuarter === 'H1' && (data.completionMonth >= 1 && data.completionMonth <= 6)) ||
-            (selectedQuarter === 'H2' && (data.completionMonth >= 7 && data.completionMonth <= 12))
-          )
+            (selectedQuarter === 'H1' && data.completionMonth >= 1 && data.completionMonth <= 6) ||
+            (selectedQuarter === 'H2' && data.completionMonth >= 7 && data.completionMonth <= 12))
         ) {
           acc.push({
             courseName: course.name,
@@ -244,13 +257,12 @@ const CourseReport = () => {
       return (
         (!searchQueryName || course.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
         (!searchQueryID || course.courseId.toLowerCase().includes(searchQueryID.toLowerCase())) &&
-        (matchingEmployees.length > 0)
+        matchingEmployees.length > 0
       );
     });
 
     setCourses(filteredCourses);
   };
-
 
   const handleFilterChange = (event) => {
     setSelectedFilter(event.target.value);
@@ -271,13 +283,7 @@ const CourseReport = () => {
           Course Report
         </Typography>
         <div className="employee-report-filters">
-          <TextField
-            select
-            label="Filter"
-            value={selectedFilter}
-            onChange={handleFilterChange}
-            style={{ marginRight: '10px' }}
-          >
+          <TextField select label="Filter" value={selectedFilter} onChange={handleFilterChange} style={{ marginRight: '10px' }}>
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
             <MenuItem value="HalfYearly">Half Yearly</MenuItem>
@@ -337,7 +343,7 @@ const CourseReport = () => {
                 variant="outlined"
                 InputProps={{
                   ...params.InputProps,
-                  style: { paddingRight: '10px' }, 
+                  style: { paddingRight: '10px' }
                 }}
               />
             )}
@@ -356,12 +362,7 @@ const CourseReport = () => {
             onChange={(e) => setSearchQueryName(e.target.value)}
             style={{ marginRight: '10px' }}
           />
-          <Button
-            variant="contained"
-            startIcon={<SearchIcon />}
-            onClick={handleSearch}
-            style={{ marginRight: '10px' }}
-          >
+          <Button variant="contained" startIcon={<SearchIcon />} onClick={handleSearch} style={{ marginRight: '10px' }}>
             Search
           </Button>
           <Button
@@ -378,11 +379,11 @@ const CourseReport = () => {
             onClose={() => setDownloadAnchorEl(null)}
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'right',
+              horizontal: 'right'
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: 'right',
+              horizontal: 'right'
             }}
           >
             <List>
@@ -399,32 +400,33 @@ const CourseReport = () => {
           </Popover>
         </div>
 
-        <div style={{ display: 'flex',flex: '1', overflow: 'hidden', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', flex: '1', overflow: 'hidden', alignItems: 'flex-start' }}>
           <div style={{ height: 'calc(100vh - 290px)', flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
-            <TableContainer style={{
-                  backgroundColor: 'white',
-                  borderRadius: '8px',
-                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                  paddingRight: '8px', 
-                  marginBottom: '-16px', 
-                  
-                }}
-                component={Paper}
-                sx={{
-                  maxHeight: '100%',
-                  overflowY: 'auto',
-                  '&::-webkit-scrollbar': {
-                    width: '6px', 
-                    borderRadius: '3px', 
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#FFFFFF',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#eee6ff', 
-                    borderRadius: '3px',
-                  },
-                }}>
+            <TableContainer
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                paddingRight: '8px',
+                marginBottom: '-16px'
+              }}
+              component={Paper}
+              sx={{
+                maxHeight: '100%',
+                overflowY: 'auto',
+                '&::-webkit-scrollbar': {
+                  width: '6px',
+                  borderRadius: '3px'
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: '#FFFFFF'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#eee6ff',
+                  borderRadius: '3px'
+                }
+              }}
+            >
               <Table aria-label="course report table">
                 <TableHead>
                   <TableRow>
@@ -463,8 +465,12 @@ const CourseReport = () => {
                           return (
                             <TableRow key={`${course.courseId}_${index}`}>
                               {/* <TableCell align="center" rowSpan={matchingCourses.length}>{course.courseId}</TableCell> */}
-                              <TableCell align="center" rowSpan={matchingCourses.length}>{course.name}</TableCell>
-                              <TableCell align="center" rowSpan={matchingCourses.length}>{course.category}</TableCell>
+                              <TableCell align="center" rowSpan={matchingCourses.length}>
+                                {course.name}
+                              </TableCell>
+                              <TableCell align="center" rowSpan={matchingCourses.length}>
+                                {course.category}
+                              </TableCell>
                               <TableCell align="center">{data.employeesEnrolled}</TableCell>
                               <TableCell align="center">{data.employeesCompleted}</TableCell>
                               {/* <TableCell align="center">{`${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`}</TableCell> */}
@@ -494,11 +500,11 @@ const CourseReport = () => {
               </Table>
             </TableContainer>
           </div>
-          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px', marginLeft: '50px', marginRight: '-10px', marginTop:'20px' }}>
-            <Typography variant="h4" gutterBottom style={{marginLeft: '-70px'}}>
+          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px', marginLeft: '50px', marginRight: '-10px', marginTop: '20px' }}>
+            <Typography variant="h4" gutterBottom style={{ marginLeft: '-70px' }}>
               Course Attendance Chart
             </Typography>
-            <div style={{ width: '100%', height: '250px',marginTop:'10px' }}>
+            <div style={{ width: '100%', height: '250px', marginTop: '10px' }}>
               <Pie
                 data={generateChartData()}
                 options={{
