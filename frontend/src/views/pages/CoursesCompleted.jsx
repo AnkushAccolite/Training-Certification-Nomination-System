@@ -131,11 +131,13 @@ const CoursesCompleted = () => {
   ];
 
   return (
+    <div>
+      <h2 style={{ textAlign: 'center' }}>Courses Completed</h2>
     <div className="courses-completed-container" style={{ overflowX: 'hidden' }}>
       <div className="left-panel" style={{ overflowX: 'hidden' }}>
-        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
+        {/* <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
           <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
-        </Typography>
+        </Typography> */}
         <div className="course-filters">
           <FormControl className="date-picker">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -191,7 +193,7 @@ const CoursesCompleted = () => {
                       Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                     <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      Completion Month <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -273,6 +275,7 @@ const CoursesCompleted = () => {
 
         </ResponsiveContainer>
       </div>
+    </div>
     </div>
   );
 };
