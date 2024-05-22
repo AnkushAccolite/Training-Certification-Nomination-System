@@ -55,6 +55,15 @@ const items = {
           roles: ['ADMIN', 'USER', 'MANAGER'],
           icon: icons.IconBook,
           breadcrumbs: false
+        },
+        {
+          id: 'course-faq',
+          title: 'Courses FAQ',
+          type: 'item',
+          url: '/course-faq',
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          icon: icons.IconBook,
+          breadcrumbs: false
         }
       ]
     },
