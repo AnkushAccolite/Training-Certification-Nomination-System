@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'; // Import the PDF icon
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -35,7 +35,7 @@ const MenuProps = {
 };
 
 const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
-const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Assigned', 'Completed'];
+const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Approved', 'Completed'];
 
 function Certifications() {
   const [selectedDomain, setSelectedDomain] = useState('All');
@@ -52,17 +52,6 @@ function Certifications() {
 
   const empId = useSelector((state) => state?.auth?.user?.empId);
 
-  // const dummyCourses = [
-  //   {
-  //     courseId: 1,
-  //     courseName: 'React Fundamentals',
-  //     domain: 'Technical',
-  //     duration: '10,000',
-  //     description: 'A beginner-friendly course on React fundamentals.',
-  //     status: 'Not Opted'
-  //   }
-  // ];
-
   const getStatus = (pendingCertifications, certifications, certificationId) => {
     if (pendingCertifications.includes(certificationId)) {
       return 'Pending for Approval';
@@ -74,9 +63,9 @@ function Certifications() {
         certificationEntries[0]
       );
 
-      return latestAttempt.status === 'inProgress' ? 'Approved' : 'Attempted';
+      return latestAttempt.status === 'inProgress' ? 'Approved' : 'Completed';
     }
-    return 'Not opted';
+    return 'Not Opted';
   };
 
   useEffect(() => {
@@ -85,8 +74,6 @@ function Certifications() {
         const { data } = await axios.get('/certifications');
 
         const res = await axios.get(`/certifications/employee/${empId}`);
-
-        console.log('res-->', empId);
 
         const pendingCertifications = res.data.pendingCertifications;
         const certifications = res.data.certifications;
@@ -99,7 +86,7 @@ function Certifications() {
       }
     };
     fetchData();
-  }, []);
+  }, [empId]);
 
   const handleViewDetails = (course) => {
     setSelectedCourse(course);
@@ -217,15 +204,15 @@ function Certifications() {
           variant="outlined"
           startIcon={<LocalLibraryIcon />}
           onClick={openConfirmationDialog}
-          style={{ marginLeft: 'auto', marginRight: '10px' }} // This will move the button to the right
+          style={{ marginLeft: 'auto', marginRight: '10px' }}
         >
           Nominate
         </Button>
         <Button
           variant="outlined"
-          startIcon={<PictureAsPdfIcon />} // Use the PDF icon
+          startIcon={<PictureAsPdfIcon />}
           onClick={handlePDFClick}
-          style={{ marginRight: '10px' }} // Optional: adjust the margin to align with the nominate button
+          style={{ marginRight: '10px' }}
         >
           Reimbursement Policy
         </Button>
@@ -239,7 +226,6 @@ function Certifications() {
                 <TableCell></TableCell>
                 <TableCell>Certification Name</TableCell>
                 <TableCell>Category</TableCell>
-                {/* <TableCell>Duration</TableCell> */}
                 <TableCell>Status</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
@@ -248,15 +234,18 @@ function Certifications() {
               {courses.filter(filterCourses).map((row) => (
                 <TableRow key={row?.certificationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCourseIds.includes(row?.certificationId)}
-                      onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
-                    />
+                    {row?.status !== 'Approved' && row?.status !== 'Completed' && (
+                      <Checkbox
+                        checked={selectedCourseIds.includes(row?.certificationId)}
+                        onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
+                      />
+                    )}
                   </TableCell>
                   <TableCell>{row?.name}</TableCell>
                   <TableCell>{row?.category}</TableCell>
-                  {/* <TableCell>{row.duration}</TableCell> */}
-                  <TableCell style={{ color: row?.status === 'Pending for Approval' ? 'red' : 'inherit' }}>{row?.status}</TableCell>
+                  <TableCell style={{ color: row?.status === 'Pending for Approval' ? 'red' : row?.status === 'Approved' ? 'green' : row?.status === 'Completed' ? 'blue' : 'inherit' }}>
+                    {row?.status}
+                  </TableCell>
                   <TableCell>
                     <Button variant="contained" onClick={() => handleViewDetails(row)}>
                       View Details
@@ -268,7 +257,7 @@ function Certifications() {
                       style={{ marginLeft: '8px' }}
                     >
                       Cancel
-                    </Button>
+                      </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -289,7 +278,6 @@ function Certifications() {
             <Button onClick={handleCloseDetails}>Close</Button>
           </DialogActions>
         </Dialog>
-
         {/* Confirmation Dialog */}
         <Dialog open={showConfirmation} onClose={closeConfirmationDialog}>
           <DialogTitle className="confirmation-title" style={{ fontSize: '20px', textAlign: 'center' }}>
@@ -339,3 +327,5 @@ function Certifications() {
 }
 
 export default Certifications;
+
+

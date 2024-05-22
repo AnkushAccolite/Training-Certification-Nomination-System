@@ -110,6 +110,10 @@ function Courses() {
   };
 
   const nominateCourses = async () => {
+    if (selectedCourseIds.length === 0) {
+      alert('Please select at least one course to nominate');
+      return;
+    }
     try {
       const payload = {
         empName: auth?.user?.empName,
@@ -206,7 +210,7 @@ function Courses() {
 
   return (
     <div>
-      <h2 style={{textAlign:'center'}}>Available Courses</h2>
+      <h2 style={{ textAlign: 'center' }}>Available Courses</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select value={selectedMonth} onChange={handleMonthChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
@@ -271,18 +275,18 @@ function Courses() {
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
-              <TableCell></TableCell>
+                <TableCell></TableCell>
                 <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
                   Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
                 <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                  Category <ArrowDropDownIcon style={{ fontSize: '130%' }}/>
+                  Category <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
                 <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                  Duration (Hours) <ArrowDropDownIcon style={{ fontSize: '130%' }}/>
+                  Duration (Hours) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
-                <TableCell  style={{ textAlign: 'center'}}>
-                  Status 
+                <TableCell style={{ textAlign: 'center' }}>
+                  Status
                 </TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
@@ -291,15 +295,20 @@ function Courses() {
               {sortedCourses.map((row) => (
                 <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCourseIds.includes(row?.courseId)}
-                      onChange={(e) => handleCheckboxChange(e, row?.courseId)}
-                    />
+                    {getStatus(row?.courseId) === 'Not Opted' || getStatus(row?.courseId) === 'Pending for Approval' ? (
+                      <Checkbox
+                        checked={selectedCourseIds.includes(row?.courseId)}
+                        onChange={(e) => handleCheckboxChange(e, row?.courseId)}
+                      />
+                    ) : null}
                   </TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.duration}</TableCell>
-                  <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)), textAlign:'center' }}>{getStatus(row?.courseId)}</TableCell>                  <TableCell>
+                  <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)), textAlign: 'center' }}>
+                    {getStatus(row?.courseId)}
+                  </TableCell>
+                  <TableCell>
                     <Button variant="contained" onClick={() => handleViewDetails(row)}>
                       View Details
                     </Button>
@@ -315,6 +324,7 @@ function Courses() {
                 </TableRow>
               ))}
             </TableBody>
+
           </Table>
         </TableContainer>
         <Dialog open={showDetails} onClose={handleCloseDetails}>
