@@ -1,9 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Bar, Pie } from 'react-chartjs-2';
+import React, { useState, useEffect } from 'react';
 import 'chart.js/auto';
 import {
   Button,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +14,8 @@ import {
   Popover,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  Paper
 } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -27,191 +26,112 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
-
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import axios from '../../api/axios';
+import { Bar } from 'react-chartjs-2'; // Import Bar from react-chartjs-2
 
 import './EmployeeReport.css';
 
-
 const CertificationsReport = () => {
-  const [selectedFilter, setSelectedFilter] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [selectedQuarter, setSelectedQuarter] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
   const [downloadAnchorEl, setDownloadAnchorEl] = useState(null);
-  const chartRef = useRef(null);
-
-  const navigate = useNavigate();
-  const auth = useSelector((state) => state?.auth);
-
-  const [months, setMonths] = useState([
-    'JANUARY',
-    'FEBRUARY',
-    'MARCH',
-    'APRIL',
-    'MAY',
-    'JUNE',
-    'JULY',
-    'AUGUST',
-    'SEPTEMBER',
-    'OCTOBER',
-    'NOVEMBER',
-    'DECEMBER'
-  ]);
-
   const [employees, setEmployees] = useState([]);
-
-  //   useEffect(() => {
-  //     if (!auth?.isAuthenticated) navigate('/login');
-
-  //     const fetchData = async () => {
-  //       try {
-  //         const { data } = await axios.get('/employee/employeeReport');
-
-  //         const temp = data
-  //           ?.map((item) => ({
-  //             empID: item?.empId,
-  //             name: item?.empName,
-  //             category: item?.completedCourses?.map((course) => course?.category),
-  //             coursesEnrolled: item?.completedCourses?.map((course) => course?.courseName),
-  //             completionMonth: item?.completedCourses?.map((course) => months.indexOf(course?.month) + 1)
-  //           }))
-  //           .filter((employee) => employee?.coursesEnrolled?.length !== 0);
-
-  //         setEmployees(temp);
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     };
-  //     fetchData();
-  //   }, [auth, navigate]);
-
-  useEffect(() => {
-    if (!(auth?.isAuthenticated)) navigate("/login");
-  }, [auth, navigate]);
+  const [filteredCertifications, setFilteredCertifications] = useState([]);
 
   // Dummy certifications data
   const [certifications, setCertifications] = useState([
-    { empid: 'INT-123', name: 'ABC', certifications: 'aws', category: 'technical', price: '10000', year: '2023' },
-    { empid: 'INT-124', name: 'DEF', certifications: 'azure', category: 'technical', price: '12000', year: '2022' },
-    { empid: '1235', name: 'GHI', certifications: 'aws', category: 'domain', price: '9000', year: '2023' },
-    { empid: 'INT-113', name: 'JKL', certifications: 'aws', category: 'technical', price: '10000', year: '2023' },
-    { empid: 'INT-224', name: 'MNO', certifications: 'aws', category: 'domain', price: '12000', year: '2022' },
-    { empid: '7784', name: 'PQR', certifications: 'aws', category: 'technical', price: '9000', year: '2023' },
+    { empid: 'INT-123', name: 'ABC', certifications: 'aws', category: 'technical', year: '2023' },
+    { empid: 'INT-124', name: 'DEF', certifications: 'azure', category: 'technical', year: '2022' },
+    { empid: '1235', name: 'GHI', certifications: 'aws', category: 'domain', year: '2023' },
+    { empid: 'INT-113', name: 'JKL', certifications: 'aws', category: 'technical', year: '2023' },
+    { empid: 'INT-224', name: 'MNO', certifications: 'aws', category: 'domain', year: '2022' },
+    { empid: '7784', name: 'PQR', certifications: 'hippa', category: 'technical', year: '2023' },
+    { empid: 'INT-013', name: 'JKKL', certifications: 'aws', category: 'technical', year: '2023' },
+    { empid: 'INT-224', name: 'MNNO', certifications: 'agile', category: 'domain', year: '2022' },
+    { empid: '7704', name: 'PQRR', certifications: 'agile', category: 'technical', year: '2023' },
+    { empid: '7784', name: 'PQR', certifications: 'python', category: 'technical', year: '2023' },
+    { empid: '2013', name: 'JKKL', certifications: 'spring', category: 'technical', year: '2023' },
+    { empid: '6224', name: 'MNNO', certifications: 'java', category: 'domain', year: '2022' },
+    { empid: '7804', name: 'PQRR', certifications: 'agile', category: 'technical', year: '2023' },
+    { empid: '7704', name: 'PQRR', certifications: 'email', category: 'technical', year: '2023' },
+    { empid: '7784', name: 'PQR', certifications: 'public speaking', category: 'technical', year: '2023' },
+    { empid: '2013', name: 'JKKL', certifications: 'react', category: 'technical', year: '2023' },
+    { empid: '6224', name: 'MNNO', certifications: 'git', category: 'domain', year: '2022' },
+    { empid: '7804', name: 'PQRR', certifications: 'business report', category: 'technical', year: '2023' },
     // Add more dummy data here
   ]);
-
-  const generatePieChartData = () => {
-    const completionCounts = {
-      January: 0,
-      February: 0,
-      March: 0,
-      April: 0,
-      May: 0,
-      June: 0,
-      July: 0,
-      August: 0,
-      September: 0,
-      October: 0,
-      November: 0,
-      December: 0
-    };
-
-    employees?.forEach((employee) => {
-      employee.completionMonth.forEach((month) => {
-        const roundedMonth = parseInt(month);
-        const monthName = new Date(0, roundedMonth - 1).toLocaleString('default', { month: 'long' });
-        completionCounts[monthName]++;
-      });
-    });
-
-    const data = {
-      labels: Object.keys(completionCounts),
-      datasets: [
-        {
-          label: 'Completion Months',
-          data: Object.values(completionCounts),
-          backgroundColor: [
-            '#FF6384', '#36A2EB', '#FFCE56', '#D29CC5', '#FF5733',
-            '#66FF33', '#337DFF', '#AB33FF', '#FF33E3', '#33FFA8',
-            '#FFBD33', '#33FFD8',
-          ],
-        },
-      ],
-    };
-
-    return { data };
-  };
-
-  const { data } = generatePieChartData();
 
   const handleGenerateReport = (format) => {
     if (format === 'pdf') {
       const doc = new jsPDF();
       doc.setFontSize(20);
-      doc.text('Employee Report', 10, 10);
-      const chartCanvas = document.querySelector('canvas');
-      chartCanvas.style.backgroundColor = 'white';
-      const chartImage = chartCanvas.toDataURL('image/jpeg');
+      doc.text('Certifications Report', 10, 10);
 
-      const tableData = employees?.map((employee) => [
-        employee.empID,
-        employee.name,
-        employee.coursesEnrolled.join(', '),
-        employee.category.join(', '),
-        employee.completionMonth.map((month) => new Date(0, month - 1).toLocaleString('default', { month: 'long' })).join(', ')
-      ]);
+      // Generate PDF content
+      const tableRows = [];
+      filteredCertifications.forEach((certification) => {
+        tableRows.push([
+          certification.empid,
+          certification.name,
+          certification.certifications,
+          certification.category,
+          certification.year
+        ]);
+      });
 
       doc.autoTable({
-        head: [['EmpID', 'Name', 'Courses', 'Category', 'Completion Month']],
-        body: tableData,
-        startY: 20
+        head: [['EmpID', 'Name', 'Certifications', 'Category', 'Year']],
+        body: tableRows
       });
-      doc.addImage(chartImage, 'JPEG', 60, doc.autoTable.previous.finalY + 10, 80, 80);
 
-      doc.save('employee_report.pdf');
+      // Save PDF
+      doc.save('certifications_report.pdf');
     } else if (format === 'xlsx') {
-      const tableData1 = employees?.reduce((acc, employee) => {
-        employee.completionMonth.forEach((month, index) => {
-          acc.push({
-            EmpID: employee.empID,
-            Name: employee.name,
-            Courses: employee.coursesEnrolled[index],
-            Category: employee.category[index],
-            Month: new Date(0, month - 1).toLocaleString('default', { month: 'long' })
-          });
-        });
-        return acc;
-      }, []);
-
-      const ws = XLSX.utils.json_to_sheet(tableData1, { header: Object.keys(tableData1[0]) });
+      const ws = XLSX.utils.json_to_sheet(filteredCertifications);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Employee Report');
-      XLSX.writeFile(wb, 'employee_report.xlsx');
+      XLSX.utils.book_append_sheet(wb, ws, 'Certifications Report');
+      XLSX.writeFile(wb, 'certifications_report.xlsx');
     } else if (format === 'csv') {
-      const tableData = employees?.map((employee) => [
-        employee.empID,
-        employee.name,
-        employee.coursesEnrolled.join(', '),
-        employee.completionMonth.map((month) => new Date(0, month - 1).toLocaleString('default', { month: 'long' })).join(', ')
-      ]);
-
-      const csv = Papa.unparse({
-        fields: ['EmpID', 'Name', 'Courses', 'Completion Month'],
-        data: tableData
-      });
+      const csv = Papa.unparse(filteredCertifications);
       const csvContent = `data:text/csv;charset=utf-8,${csv}`;
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
-      link.setAttribute('download', 'employee_report.csv');
+      link.setAttribute('download', 'certifications_report.csv');
       document.body.appendChild(link);
       link.click();
     }
+  };
+
+  // Extract unique years and categories from certifications data
+  const years = ['All', ...Array.from(new Set(certifications.map(certification => certification.year)))];
+  const categories = ['All', ...Array.from(new Set(certifications.map(certification => certification.category)))];
+
+  useEffect(() => {
+    filterCertifications();
+  }, [selectedYear, selectedCategory, searchQueryID, searchQueryName]);
+
+  const filterCertifications = () => {
+    let filteredData = certifications;
+
+    if (selectedYear && selectedYear !== 'All') {
+      filteredData = filteredData.filter(certification => certification.year === selectedYear);
+    }
+
+    if (selectedCategory && selectedCategory !== 'All') {
+      filteredData = filteredData.filter(certification => certification.category === selectedCategory);
+    }
+
+    if (searchQueryID) {
+      filteredData = filteredData.filter(certification => certification.empid.toLowerCase().includes(searchQueryID.toLowerCase()));
+    }
+
+    if (searchQueryName) {
+      filteredData = filteredData.filter(certification => certification.name.toLowerCase().includes(searchQueryName.toLowerCase()));
+    }
+
+    setFilteredCertifications(filteredData);
   };
 
   const handleSearch = () => {
@@ -221,14 +141,7 @@ const CertificationsReport = () => {
         if (
           (!selectedYear || certification.year === selectedYear) &&
           (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
-          (!selectedCategory || employee.category[index] === selectedCategory) &&
-          (!selectedQuarter ||
-            (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
-            (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
-            (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
-            (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
-            (selectedQuarter === 'H1' && completionMonth >= 1 && completionMonth <= 6) ||
-            (selectedQuarter === 'H2' && completionMonth >= 7 && completionMonth <= 12))
+          (!selectedCategory || employee.category[index] === selectedCategory)
         ) {
           acc.push({
             course,
@@ -250,7 +163,45 @@ const CertificationsReport = () => {
   };
 
   const handleFilterChange = (event) => {
-    setSelectedFilter(event.target.value);
+    setSelectedYear(event.target.value);
+  };
+
+  // Prepare data for bar chart
+  const certificationCounts = certifications.reduce((acc, certification) => {
+    acc[certification.certifications] = (acc[certification.certifications] || 0) + 1;
+    return acc;
+  }, {});
+
+  const chartData = {
+    labels: Object.keys(certificationCounts),
+    datasets: [
+      {
+        label: 'Number of Employees',
+        data: Object.values(certificationCounts),
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      }
+    ]
+  };
+
+  const chartOptions = {
+    indexAxis: 'y',
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Number of Employees'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Certifications'
+        }
+      }
+    }
   };
 
   return (
@@ -259,32 +210,22 @@ const CertificationsReport = () => {
         <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
           Certifications Report
         </Typography>
-        <div className="employee-report-filters">
+        <div className="employee-report-filters" style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
           <TextField
             select
-            label="Filter"
-            value={selectedFilter}
-            onChange={handleFilterChange}
+            label="Year"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
             style={{ marginRight: '10px' }}
           >
+            {years.map(year => (
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
+            ))}
           </TextField>
-          {selectedFilter === 'Monthly' && (
-            <TextField
-              select
-              label="Month"
-              value={selectedMonth}
-              onChange={(event) => setSelectedMonth(event.target.value)}
-              style={{ marginRight: '10px' }}
-            >
-              {Array.from({ length: 12 }, (_, index) => (
-                <MenuItem key={index + 1} value={(index + 1).toString()}>
-                  {new Date(0, index).toLocaleString('default', { month: 'long' })}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
           <Autocomplete
-            options={['Domain', 'Power', 'Technical', 'Process']}
+            options={categories}
             value={selectedCategory}
             onChange={(event, newValue) => setSelectedCategory(newValue)}
             renderInput={(params) => (
@@ -315,9 +256,6 @@ const CertificationsReport = () => {
             onChange={(e) => setSearchQueryName(e.target.value)}
             style={{ marginRight: '10px' }}
           />
-          <Button variant="contained" startIcon={<SearchIcon />} onClick={handleSearch} style={{ marginRight: '10px' }}>
-            Search
-          </Button>
           <Button
             variant="contained"
             endIcon={<DownloadIcon />}
@@ -353,40 +291,62 @@ const CertificationsReport = () => {
           </Popover>
         </div>
 
-        <div style={{ display: 'flex', flex: '1', overflow: 'hidden', alignItems: 'flex-start' }}>
-          <div style={{ height: 'calc(100vh - 290px)', flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', flex: '1', overflow: 'hidden', alignItems: 'flex-start' }}>
-              <div style={{ height: 'calc(100vh - 290px)', flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
-                <TableContainer style={{ backgroundColor: 'white' }}>
-                  <Table aria-label="certifications report table">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell align="center">EmpID</TableCell>
-                        <TableCell align="center">Name</TableCell>
-                        <TableCell align="center">Certifications</TableCell>
-                        <TableCell align="center">Category</TableCell>
-                        <TableCell align="center">Price</TableCell>
-                        <TableCell align="center">Year</TableCell>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flex: '1', width: '100%', overflow: 'hidden', alignItems: 'flex-start' }}>
+            <div style={{ height: 'calc(100vh - 290px)', flex: '1 0 100%', overflowX: 'hidden', overflowY: 'auto' }}>
+              <TableContainer
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                  paddingRight: '8px', // Adjust padding to accommodate scrollbar width
+                  marginBottom: '-16px' // Compensate for the added padding to avoid double scrollbars
+                }}
+                component={Paper}
+                sx={{
+                  width: '100%',
+                  maxHeight: '100%',
+                  overflowY: 'auto',
+                  '&::-webkit-scrollbar': {
+                    width: '6px', // Reduce width of the scrollbar
+                    borderRadius: '3px' // Round scrollbar corners
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#FFFFFF' // Background color of the scrollbar track
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
+                    borderRadius: '3px' // Round scrollbar thumb corners
+                  }
+                }}
+              >
+                <Table aria-label="certifications report table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">EmpID</TableCell>
+                      <TableCell align="center">Name</TableCell>
+                      <TableCell align="center">Certifications</TableCell>
+                      <TableCell align="center">Category</TableCell>
+                      <TableCell align="center">Year</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredCertifications.map((certification, index) => (
+                      <TableRow key={index}>
+                        <TableCell align="center">{certification.empid}</TableCell>
+                        <TableCell align="center">{certification.name}</TableCell>
+                        <TableCell align="center">{certification.certifications}</TableCell>
+                        <TableCell align="center">{certification.category}</TableCell>
+                        <TableCell align="center">{certification.year}</TableCell>
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {certifications.map((certification, index) => (
-                        <TableRow key={index}>
-                          <TableCell align="center">{certification.empid}</TableCell>
-                          <TableCell align="center">{certification.name}</TableCell>
-                          <TableCell align="center">{certification.certifications}</TableCell>
-                          <TableCell align="center">{certification.category}</TableCell>
-                          <TableCell align="center">{certification.price}</TableCell>
-                          <TableCell align="center">{certification.year}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-
-              </div>
-
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </div>
+          </div>
+          <div style={{ width: '80%', marginBottom: '20px', marginTop: '30px' }}>
+            <Bar data={chartData} options={chartOptions} />
           </div>
         </div>
       </div>
