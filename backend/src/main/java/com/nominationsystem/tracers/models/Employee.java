@@ -36,16 +36,15 @@ public class Employee {
     @Size(max = 120)
     private String password;
 
-
     private String role;
-
-    private List<String> courseIds = new ArrayList<>();
 
     private ArrayList<EmployeeCourseStatus> pendingCourses = new ArrayList<>();
 
     private ArrayList<EmployeeCourseStatus> approvedCourses = new ArrayList<>();
 
-    private List<String> certificationIds = new ArrayList<>();
+    private ArrayList<String> pendingCertifications= new ArrayList<>();
+
+    private ArrayList<CertificationStatus> certifications = new ArrayList<>();
 
     private ArrayList<EmployeeCourseStatus> completedCourses = new ArrayList<>();
 
@@ -89,13 +88,9 @@ public class Employee {
             }
         }
     }
-
-    // Method to check if a courseId is present in the pendingCourses
-//    public Boolean isPendingCoursePresent(String courseId) {
-//        return this.pendingCourses.stream().anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
-//    }
-//    public Boolean isApprrovedCoursePresent(String courseId) {
-//        return this.approvedCourses.stream().anyMatch(courseStatus -> courseStatus.getCourseId().equals(courseId));
-//    }
+    public boolean isCertificationPresent(String certificationId) {
+        return this.certifications.stream()
+                .anyMatch(certification -> certification.getCertificationId().equals(certificationId));
+    }
 
 }

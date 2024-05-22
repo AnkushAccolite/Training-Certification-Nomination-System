@@ -18,6 +18,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import './Courses.css';
+import axios from '../../api/axios';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -45,37 +48,57 @@ function Certifications() {
 
   const [courses, setCourses] = useState([]);
 
-  useEffect(() => {
-    // Dummy data for testing purposes
-    const dummyCourses = [
-      {
-        courseId: 1,
-        courseName: 'React Fundamentals',
-        domain: 'Technical',
-        duration: '10,000',
-        description: 'A beginner-friendly course on React fundamentals.',
-        status: 'Not Opted'
-      },
-      {
-        courseId: 2,
-        courseName: 'Data Science Essentials',
-        domain: 'Technical',
-        duration: '16,000',
-        description: 'Learn the essentials of data science with Python.',
-        status: 'Not Opted'
-      },
-      {
-        courseId: 3,
-        courseName: 'Digital Marketing Basics',
-        domain: 'Domain',
-        duration: '12,000',
-        description: 'Introduction to digital marketing strategies and techniques.',
-        status: 'Not Opted'
-      },
-      // Add more dummy courses as needed
-    ];
+  const navigate = useNavigate();
 
-    setCourses(dummyCourses);
+  const empId = useSelector((state) => state?.auth?.user?.empId);
+
+  // const dummyCourses = [
+  //   {
+  //     courseId: 1,
+  //     courseName: 'React Fundamentals',
+  //     domain: 'Technical',
+  //     duration: '10,000',
+  //     description: 'A beginner-friendly course on React fundamentals.',
+  //     status: 'Not Opted'
+  //   }
+  // ];
+
+  const getStatus = (pendingCertifications, certifications, certificationId) => {
+    if (pendingCertifications.includes(certificationId)) {
+      return 'Pending for Approval';
+    }
+    const certificationEntries = certifications.filter((cert) => cert.certificationId === certificationId);
+    if (certificationEntries.length > 0) {
+      const latestAttempt = certificationEntries.reduce(
+        (latest, current) => (current.attempt > latest.attempt ? current : latest),
+        certificationEntries[0]
+      );
+
+      return latestAttempt.status === 'inProgress' ? 'Approved' : 'Attempted';
+    }
+    return 'Not opted';
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get('/certifications');
+
+        const res = await axios.get(`/certifications/employee/${empId}`);
+
+        console.log('res-->', empId);
+
+        const pendingCertifications = res.data.pendingCertifications;
+        const certifications = res.data.certifications;
+
+        const temp = data?.map((cert) => ({ ...cert, status: getStatus(pendingCertifications, certifications, cert?.certificationId) }));
+
+        setCourses(temp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
   }, []);
 
   const handleViewDetails = (course) => {
@@ -110,11 +133,11 @@ function Certifications() {
     if (selectedDomain === 'All' && selectedStatus === 'All') {
       return true;
     } else if (selectedDomain === 'All') {
-      return course.status === selectedStatus;
+      return course?.status === selectedStatus;
     } else if (selectedStatus === 'All') {
-      return course.domain === selectedDomain;
+      return course?.category === selectedDomain;
     } else {
-      return course.domain === selectedDomain && course.status === selectedStatus;
+      return course?.category === selectedDomain && course?.status === selectedStatus;
     }
   };
 
@@ -130,26 +153,16 @@ function Certifications() {
     setShowConfirmation(false);
   };
 
-  const nominateCourses = () => {
-    const updatedCourses = courses.map(course => {
-      if (selectedCourseIds.includes(course.courseId)) {
-        return { ...course, status: 'Pending for Approval' };
-      }
-      return course;
-    });
-    setCourses(updatedCourses);
+  const nominateCourses = async () => {
+    const res = await axios.post(`/certifications/nominateCertification?empId=${empId}`, selectedCourseIds);
     setSelectedCourseIds([]);
     closeConfirmationDialog();
+    navigate(0);
   };
 
-  const cancelNomination = () => {
-    const updatedCourses = courses.map(course => {
-      if (course.status === 'Pending for Approval') {
-        return { ...course, status: 'Not Opted' };
-      }
-      return course;
-    });
-    setCourses(updatedCourses);
+  const cancelNomination = async (certificationId) => {
+    const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
+    navigate(0);
   };
 
   const handlePDFClick = () => {
@@ -226,32 +239,32 @@ function Certifications() {
                 <TableCell></TableCell>
                 <TableCell>Certification Name</TableCell>
                 <TableCell>Category</TableCell>
-                <TableCell>Price</TableCell>
+                {/* <TableCell>Duration</TableCell> */}
                 <TableCell>Status</TableCell>
                 <TableCell align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {courses.filter(filterCourses).map((row) => (
-                <TableRow key={row.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableRow key={row?.certificationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell padding="checkbox">
                     <Checkbox
-                      checked={selectedCourseIds.includes(row.courseId)}
-                      onChange={(e) => handleCheckboxChange(e, row.courseId)}
+                      checked={selectedCourseIds.includes(row?.certificationId)}
+                      onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
                     />
                   </TableCell>
-                  <TableCell>{row.courseName}</TableCell>
-                  <TableCell>{row.domain}</TableCell>
-                  <TableCell>{row.duration}</TableCell>
-                  <TableCell style={{ color: row.status === 'Pending for Approval' ? 'red' : 'inherit' }}>{row.status}</TableCell>
+                  <TableCell>{row?.name}</TableCell>
+                  <TableCell>{row?.category}</TableCell>
+                  {/* <TableCell>{row.duration}</TableCell> */}
+                  <TableCell style={{ color: row?.status === 'Pending for Approval' ? 'red' : 'inherit' }}>{row?.status}</TableCell>
                   <TableCell>
                     <Button variant="contained" onClick={() => handleViewDetails(row)}>
                       View Details
                     </Button>
                     <Button
                       variant="outlined"
-                      onClick={cancelNomination}
-                      disabled={row.status !== 'Pending for Approval'}
+                      onClick={() => cancelNomination(row?.certificationId)}
+                      disabled={row?.status !== 'Pending for Approval'}
                       style={{ marginLeft: '8px' }}
                     >
                       Cancel
@@ -267,7 +280,7 @@ function Certifications() {
           <DialogContent>
             {selectedCourse && (
               <div>
-                <h3>{selectedCourse.courseName}</h3>
+                <h3>{selectedCourse?.name}</h3>
                 <p>{selectedCourse.description}</p>
               </div>
             )}
@@ -279,11 +292,13 @@ function Certifications() {
 
         {/* Confirmation Dialog */}
         <Dialog open={showConfirmation} onClose={closeConfirmationDialog}>
-          <DialogTitle className="confirmation-title" style={{fontSize: '20px', textAlign: 'center'}}><b>Confirmation</b></DialogTitle>
-          <DialogContent className="confirmation-content" style={{textAlign:'center'}}>
+          <DialogTitle className="confirmation-title" style={{ fontSize: '20px', textAlign: 'center' }}>
+            <b>Confirmation</b>
+          </DialogTitle>
+          <DialogContent className="confirmation-content" style={{ textAlign: 'center' }}>
             By clicking on Nominate, you are agreeing to the certification reimbursement policies. Do you still want to proceed?
           </DialogContent>
-          <DialogActions className="confirmation-actions" >
+          <DialogActions className="confirmation-actions">
             <Button
               onClick={nominateCourses}
               className="confirmation-button-yes"
@@ -312,12 +327,7 @@ function Certifications() {
         <Dialog open={showPDF} onClose={handleClosePDF} maxWidth="lg" fullWidth>
           <DialogTitle>Certificate Reimbursement Policy</DialogTitle>
           <DialogContent>
-            <embed
-              src="../../../public/Certification Reimbursement Policy.pdf"
-              type="application/pdf"
-              width="100%"
-              height="500px"
-            />
+            <embed src="../../../public/Certification Reimbursement Policy.pdf" type="application/pdf" width="100%" height="500px" />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClosePDF}>Close</Button>
