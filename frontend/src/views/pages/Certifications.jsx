@@ -209,10 +209,26 @@ function Certifications() {
           Nominate
         </Button>
         <Button
-          variant="outlined"
-          startIcon={<PictureAsPdfIcon />}
+          style={{
+            marginRight: '10px',
+            color: '#3498db',
+            border: 'none',
+            backgroundColor: 'transparent',
+            transition: 'all 0.5s ease-in-out',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.border = '1px solid #3498db';
+            e.currentTarget.style.backgroundColor = '#eaf5fe';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.border = 'none';
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.transition = 'border 0.5s ease-in-out';
+          }}
+
+          className="reimbursementBtn"
+          startIcon={<PictureAsPdfIcon />} // Use the PDF icon
           onClick={handlePDFClick}
-          style={{ marginRight: '10px' }}
         >
           Reimbursement Policy
         </Button>

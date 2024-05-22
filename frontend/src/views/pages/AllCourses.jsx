@@ -369,7 +369,7 @@ if (selectedRows.length === 0) {
       <TableCell align="center">
         {editingCourseId === course?.courseId ? (
           <>
-            <Button variant="contained" onClick={saveEditedCourse}>
+            <Button variant="contained" onClick={saveEditedCourse} style={{ marginBottom: '10px' }}>
               Save
             </Button>
             <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
@@ -378,7 +378,7 @@ if (selectedRows.length === 0) {
           </>
         ) : (
           <>
-            <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)}>Edit</Button>
+            <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)} style={{ marginBottom: '10px' }}>Edit</Button>
             <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px' }}>Delete</Button>
           </>
         )}
