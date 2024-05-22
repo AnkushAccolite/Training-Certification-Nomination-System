@@ -379,7 +379,7 @@ if (selectedRows.length === 0) {
         ) : (
           <>
             <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)} style={{ marginBottom: '10px' }}>Edit</Button>
-            <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px' }}>Delete</Button>
+            <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px', marginBottom: '10px' }}>Delete</Button>
           </>
         )}
       </TableCell>
@@ -391,11 +391,11 @@ if (selectedRows.length === 0) {
 
        {/* Course Details Dialog */}
       <Dialog open={showDetails} onClose={handleCloseDetails}>
-        <DialogTitle>Course Details</DialogTitle>
+        <DialogTitle style={{fontSize: '17px', textAlign:'center'}}>Course Details</DialogTitle>
         <DialogContent>
           {selectedCourse && (
             <div>
-              <h3>{selectedCourse?.courseName}</h3>
+              <h3 style={{fontSize: '17px', textAlign:'center'}}>{selectedCourse?.courseName}</h3>
               <p>{selectedCourse?.description}</p>
             </div>
           )}

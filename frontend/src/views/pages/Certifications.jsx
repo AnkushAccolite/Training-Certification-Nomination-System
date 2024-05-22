@@ -281,11 +281,11 @@ function Certifications() {
           </Table>
         </TableContainer>
         <Dialog open={showDetails} onClose={handleCloseDetails}>
-          <DialogTitle>Course Details</DialogTitle>
+          <DialogTitle style={{fontSize: '17px', textAlign:'center'}}>Course Details</DialogTitle>
           <DialogContent>
             {selectedCourse && (
               <div>
-                <h3>{selectedCourse?.name}</h3>
+                <h3 style={{fontSize: '17px', textAlign:'center'}}>{selectedCourse?.name}</h3>
                 <p>{selectedCourse.description}</p>
               </div>
             )}
