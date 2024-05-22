@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'; // Import the PDF icon
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -39,6 +40,8 @@ function Certifications() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const [showPDF, setShowPDF] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const [courses, setCourses] = useState([]);
 
@@ -49,7 +52,7 @@ function Certifications() {
         courseId: 1,
         courseName: 'React Fundamentals',
         domain: 'Technical',
-        duration: '4 weeks',
+        duration: '10,000',
         description: 'A beginner-friendly course on React fundamentals.',
         status: 'Not Opted'
       },
@@ -57,7 +60,7 @@ function Certifications() {
         courseId: 2,
         courseName: 'Data Science Essentials',
         domain: 'Technical',
-        duration: '6 weeks',
+        duration: '16,000',
         description: 'Learn the essentials of data science with Python.',
         status: 'Not Opted'
       },
@@ -65,7 +68,7 @@ function Certifications() {
         courseId: 3,
         courseName: 'Digital Marketing Basics',
         domain: 'Domain',
-        duration: '3 weeks',
+        duration: '12,000',
         description: 'Introduction to digital marketing strategies and techniques.',
         status: 'Not Opted'
       },
@@ -115,6 +118,14 @@ function Certifications() {
     }
   };
 
+  const openConfirmationDialog = () => {
+    setShowConfirmation(true);
+  };
+
+  const closeConfirmationDialog = () => {
+    setShowConfirmation(false);
+  };
+
   const nominateCourses = () => {
     const updatedCourses = courses.map(course => {
       if (selectedCourseIds.includes(course.courseId)) {
@@ -124,6 +135,7 @@ function Certifications() {
     });
     setCourses(updatedCourses);
     setSelectedCourseIds([]);
+    closeConfirmationDialog();
   };
 
   const cancelNomination = () => {
@@ -134,6 +146,14 @@ function Certifications() {
       return course;
     });
     setCourses(updatedCourses);
+  };
+
+  const handlePDFClick = () => {
+    setShowPDF(true);
+  };
+
+  const handleClosePDF = () => {
+    setShowPDF(false);
   };
 
   return (
@@ -179,10 +199,18 @@ function Certifications() {
           className="nominateBtn"
           variant="outlined"
           startIcon={<LocalLibraryIcon />}
-          onClick={nominateCourses}
+          onClick={openConfirmationDialog}
           style={{ marginLeft: 'auto', marginRight: '10px' }} // This will move the button to the right
         >
           Nominate
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<PictureAsPdfIcon />} // Use the PDF icon
+          onClick={handlePDFClick}
+          style={{ marginRight: '10px' }} // Optional: adjust the margin to align with the nominate button
+        >
+          Reimbursement Policy
         </Button>
       </div>
 
@@ -231,7 +259,6 @@ function Certifications() {
           </Table>
         </TableContainer>
         <Dialog open={showDetails} onClose={handleCloseDetails}>
-
           <DialogTitle>Course Details</DialogTitle>
           <DialogContent>
             {selectedCourse && (
@@ -243,6 +270,53 @@ function Certifications() {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDetails}>Close</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Confirmation Dialog */}
+        <Dialog open={showConfirmation} onClose={closeConfirmationDialog}>
+          <DialogTitle className="confirmation-title" style={{fontSize: '20px', textAlign: 'center'}}><b>Confirmation</b></DialogTitle>
+          <DialogContent className="confirmation-content" style={{textAlign:'center'}}>
+            By clicking on Nominate, you are agreeing to the certification reimbursement policies. Do you still want to proceed?
+          </DialogContent>
+          <DialogActions className="confirmation-actions" >
+            <Button
+              onClick={nominateCourses}
+              className="confirmation-button-yes"
+              style={{
+                backgroundColor: '#4caf50',
+                color: 'white',
+                marginRight: '20px'
+              }}
+            >
+              Yes
+            </Button>
+            <Button
+              onClick={closeConfirmationDialog}
+              className="confirmation-button-no"
+              style={{
+                backgroundColor: '#f44336',
+                color: 'white',
+                marginRight: '210px'
+              }}
+            >
+              No
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog open={showPDF} onClose={handleClosePDF} maxWidth="lg" fullWidth>
+          <DialogTitle>Certificate Reimbursement Policy</DialogTitle>
+          <DialogContent>
+            <embed
+              src="../../../public/Certification Reimbursement Policy.pdf"
+              type="application/pdf"
+              width="100%"
+              height="500px"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClosePDF}>Close</Button>
           </DialogActions>
         </Dialog>
       </div>

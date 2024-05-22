@@ -101,6 +101,15 @@ const items = {
           roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false
         },
+        {
+          id: 'certification-faq',
+          title: 'Certification FAQs',
+          type: 'item',
+          url: '/certifications-faq',
+          icon: icons.IconFileCertificate,
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          breadcrumbs: false
+        },
       ]
     },
     {
