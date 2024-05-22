@@ -294,13 +294,14 @@ function Courses() {
             <TableBody>
               {sortedCourses.map((row) => (
                 <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  {/* Render the checkbox only if the status is "Not Opted" */}
                   <TableCell padding="checkbox">
-                    {getStatus(row?.courseId) === 'Not Opted' || getStatus(row?.courseId) === 'Pending for Approval' ? (
+                    {getStatus(row?.courseId) === 'Not Opted' && (
                       <Checkbox
                         checked={selectedCourseIds.includes(row?.courseId)}
                         onChange={(e) => handleCheckboxChange(e, row?.courseId)}
                       />
-                    ) : null}
+                    )}
                   </TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
@@ -324,6 +325,7 @@ function Courses() {
                 </TableRow>
               ))}
             </TableBody>
+
 
           </Table>
         </TableContainer>

@@ -250,7 +250,7 @@ function Certifications() {
               {courses.filter(filterCourses).map((row) => (
                 <TableRow key={row?.certificationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell padding="checkbox">
-                    {row?.status !== 'Approved' && row?.status !== 'Completed' && (
+                    {(row?.status !== 'Pending for Approval' && row?.status !== 'Approved' && row?.status !== 'Completed') && (
                       <Checkbox
                         checked={selectedCourseIds.includes(row?.certificationId)}
                         onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
@@ -273,7 +273,7 @@ function Certifications() {
                       style={{ marginLeft: '8px' }}
                     >
                       Cancel
-                      </Button>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
