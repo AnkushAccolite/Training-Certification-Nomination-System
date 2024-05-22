@@ -87,4 +87,35 @@
       font-size: 14px;
       width: 50px; /* Adjust the font size as needed */
     }
+    /* Styles for Confirmation Dialog */
+/* Styles for Confirmation Dialog */
+.confirmation-title {
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
+}
+
+.confirmation-content {
+  font-size: 16px;
+  padding: 20px;
+  text-align: center;
+}
+
+.confirmation-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.confirmation-button-yes {
+  background-color: #4caf50;
+  color: white;
+  margin-right: 10px;
+}
+
+.confirmation-button-no {
+  background-color: #f44336;
+  color: white;
+}
+
+  
     

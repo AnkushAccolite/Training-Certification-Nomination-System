@@ -55,6 +55,15 @@ const items = {
           roles: ['ADMIN', 'USER', 'MANAGER'],
           icon: icons.IconBook,
           breadcrumbs: false
+        },
+        {
+          id: 'course-faq',
+          title: 'Courses FAQ',
+          type: 'item',
+          url: '/course-faq',
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          icon: icons.IconBook,
+          breadcrumbs: false
         }
       ]
     },
@@ -88,6 +97,15 @@ const items = {
           title: 'Certifications Enrolled',
           type: 'item',
           url: '/certifications-assigned',
+          icon: icons.IconFileCertificate,
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          breadcrumbs: false
+        },
+        {
+          id: 'certification-faq',
+          title: 'Certification FAQs',
+          type: 'item',
+          url: '/certifications-faq',
           icon: icons.IconFileCertificate,
           roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false

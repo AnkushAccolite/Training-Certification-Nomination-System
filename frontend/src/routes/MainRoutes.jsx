@@ -11,9 +11,11 @@ const Courses = Loadable(lazy(() => import('views/pages/Courses')));
 const Certifications = Loadable(lazy(() => import('views/pages/Certifications')));
 const AssignedCourses = Loadable(lazy(() => import('views/pages/AssignedCourses')));
 const AssignedCertifications = Loadable(lazy(() => import('views/pages/AssignedCertifications')))
+const CourseFAQ = Loadable(lazy(() => import('views/pages/CourseFAQ')))
 // const Status = Loadable(lazy(() => import('views/pages/Status')));
 const CoursesCompleted = Loadable(lazy(() => import('views/pages/CoursesCompleted')));
 const CertificationsCompleted = Loadable(lazy(() => import('views/pages/CertificationsCompleted')));
+const CertificationFAQ = Loadable(lazy(() => import('views/pages/CertificationFAQ')));
 
 const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
 // const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
@@ -104,6 +106,14 @@ const MainRoutes = {
         {
           path: 'certifications-assigned',
           element: <AssignedCertifications />
+        },
+        {
+          path: 'course-faq',
+          element: <CourseFAQ />
+        },
+        {
+          path: 'certifications-faq',
+          element: <CertificationFAQ />
         },
       ]
     }

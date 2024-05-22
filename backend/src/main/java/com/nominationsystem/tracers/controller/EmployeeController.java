@@ -1,5 +1,6 @@
 package com.nominationsystem.tracers.controller;
 
+import com.nominationsystem.tracers.models.CertificationStatus;
 import com.nominationsystem.tracers.models.CourseFeedback;
 import com.nominationsystem.tracers.models.EmployeeCourseStatus;
 import com.nominationsystem.tracers.models.EmployeeReportTemplate;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,10 +46,10 @@ public class EmployeeController {
         return this.employeeService.setRole(email,role);
     }
 
-    @PatchMapping("/addCourses")
-    public ResponseEntity<?> addCoursesToEmployee(@RequestParam String email, @RequestParam String courseIds) {
-        return this.employeeService.addCourses(email,courseIds);
-    }
+//    @PatchMapping("/addCourses")
+//    public ResponseEntity<?> addCoursesToEmployee(@RequestParam String email, @RequestParam String courseIds) {
+//        return this.employeeService.addCourses(email,courseIds);
+//    }
 
     @GetMapping("/status")
     public Map<String,List<EmployeeCourseStatus>> getCoursesNominatedByEmployee(@RequestParam String empId) {

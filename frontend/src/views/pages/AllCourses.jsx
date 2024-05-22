@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Button, Table, TableHead, TableBody, TableCell, TableRow, Select, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Checkbox } from '@mui/material';
+import { Button, Table, TableHead, TableBody, TableCell, TableRow, Select, MenuItem, Paper, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Checkbox, TableContainer } from '@mui/material';
 import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
@@ -28,7 +28,7 @@ const AllCourses = () => {
     navigate('/AllCourses/add-course');
   };
 
-  const currentMonthUppercase =currentMonth();
+  const currentMonthUppercase = currentMonth();
 
   const [selectedDomain, setSelectedDomain] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All"); // State for selected status filter
@@ -45,7 +45,7 @@ const AllCourses = () => {
 
 
   const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
-const statuses = ['All', 'Active', 'Inactive'];
+  const statuses = ['All', 'Active', 'Inactive'];
 
   const handleDomainFilterChange = (event) => {
     const { value } = event.target;
@@ -57,13 +57,13 @@ const statuses = ['All', 'Active', 'Inactive'];
     console.log("Selected Status:", value);
     setSelectedStatus(value);
   };
-  
+
   const handleMonthFilterChange = (event) => {
     const { value } = event.target;
     setSelectedMonth(value === "All" ? "All" : value);
   };
 
-  const deleteCourse = async(id) => {
+  const deleteCourse = async (id) => {
     try {
       const res = await axios.put(`/course/delete/${id}`);
       navigate(0);
@@ -86,12 +86,12 @@ const statuses = ['All', 'Active', 'Inactive'];
     }));
   };
   // const [updatedCourse,setUpdatedCourse] = useState({});
-  const saveEditedCourse = async() => {
+  const saveEditedCourse = async () => {
     try {
-      const temp = courses.find(course=>course?.courseId===editingCourseId);
-      const updatedCourse={...temp,...editFields};
+      const temp = courses.find(course => course?.courseId === editingCourseId);
+      const updatedCourse = { ...temp, ...editFields };
       console.log(updatedCourse)
-      const res = await axios.put(`/course/${editingCourseId}`,updatedCourse);
+      const res = await axios.put(`/course/${editingCourseId}`, updatedCourse);
       navigate(0);
     } catch (error) {
       console.log(error)
@@ -130,10 +130,10 @@ const statuses = ['All', 'Active', 'Inactive'];
   };
 
   const isSelected = (courseId) => selectedRows.indexOf(courseId) !== -1;
-  const handleActivateButtonClick = async() => {
+  const handleActivateButtonClick = async () => {
     try {
-      const res = await axios.post(`/course/change-status?month=${selectedMonth}`,selectedRows)
-      navigate(0);      
+      const res = await axios.post(`/course/change-status?month=${selectedMonth}`, selectedRows)
+      navigate(0);
 
     } catch (error) {
       console.log(error)
@@ -155,7 +155,7 @@ const statuses = ['All', 'Active', 'Inactive'];
       return course?.domain === selectedDomain && course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === (selectedStatus === 'Active');
     }
   });
-  
+
 
   const handleSortingOrderChange = () => {
     setSortingOrder(sortingOrder === 'ascending' ? 'descending' : 'ascending');
@@ -175,107 +175,107 @@ const statuses = ['All', 'Active', 'Inactive'];
   const allSelectedInactive = selectedRows.every(courseId => sortedCourses.find(course => course.courseId === courseId)?.monthlyStatus?.find(monthStatus => monthStatus.month === selectedMonth)?.activationStatus === false);
 
 
-let buttonText = 'Change Status';
-let buttonStyle = {
-  backgroundColor: 'blue', // Default background color
-  color: 'white', // Default text color
-  marginRight:'30px',
-  width:'100px'
-};
+  let buttonText = 'Change Status';
+  let buttonStyle = {
+    backgroundColor: 'blue', // Default background color
+    color: 'white', // Default text color
+    marginRight: '30px',
+    width: '100px'
+  };
 
-if (selectedRows.length === 0) {
-  buttonText = 'Activate';
-  buttonStyle.backgroundColor = 'lightgrey'; // Make button grey when disabled
-} else if (allSelectedActive) {
-  buttonText = 'Deactivate';
-  buttonStyle.backgroundColor = '#eb4034'; // Deactivate
-} else if (allSelectedInactive) {
-  buttonText = 'Activate';
-  buttonStyle.backgroundColor = '#3ea115'; // Activate
-} else {
-  buttonText = 'Invert ';
-  buttonStyle.backgroundColor = '#3453cf'; // Invert Status
-}
+  if (selectedRows.length === 0) {
+    buttonText = 'Activate';
+    buttonStyle.backgroundColor = 'lightgrey'; // Make button grey when disabled
+  } else if (allSelectedActive) {
+    buttonText = 'Deactivate';
+    buttonStyle.backgroundColor = '#eb4034'; // Deactivate
+  } else if (allSelectedInactive) {
+    buttonText = 'Activate';
+    buttonStyle.backgroundColor = '#3ea115'; // Activate
+  } else {
+    buttonText = 'Invert ';
+    buttonStyle.backgroundColor = '#3453cf'; // Invert Status
+  }
 
 
   return (
     <div>
-    <h2 style={{textAlign:'center'}}>All Courses</h2>
-    <div className="filters">
-    <FormControl style={{ marginRight: '10px', marginLeft:'10px' , marginTop:'10px' }}>
-        <Select
-          value={selectedMonth}
-          onChange={handleMonthFilterChange}
-          displayEmpty
-          inputProps={{ 'aria-label': 'Without label' }}
-        >
-          {[
-            'January',
-            'February',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December',
-          ].map((month) => (
-            <MenuItem key={month} value={month.toUpperCase()}>
-              {month}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <div className="separator"></div>
-      <FormControl style={{ marginRight: '10px', marginTop:'10px' }}>
-      <Select
-          displayEmpty
-          value={selectedDomain}
-          onChange={handleDomainFilterChange}
-          renderValue={(selected) => {
-            return 'Category';
-          }}
-          inputProps={{ 'aria-label': 'Without label' }}
-        >
-          {names.map((name) => (
-            <MenuItem key={name} value={name}>
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      <div className="separator"></div>
-      <FormControl style={{ marginRight: '10px',marginTop:'10px' }}>
-      <Select
-          displayEmpty
-          value={selectedStatus}
-          onChange={handleStatusFilterChange}
-          renderValue={(selected) => {
-            return 'Status';
-          }}
-          inputProps={{ 'aria-label': 'Without label' }}
-        >
-          {statuses.map((status) => (
-            <MenuItem key={status} value={status}>
-              {status}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-       
+      <h2 style={{ textAlign: 'center' }}>All Courses</h2>
+      <div className="filters">
+        <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
+          <Select
+            value={selectedMonth}
+            onChange={handleMonthFilterChange}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Without label' }}
+          >
+            {[
+              'January',
+              'February',
+              'March',
+              'April',
+              'May',
+              'June',
+              'July',
+              'August',
+              'September',
+              'October',
+              'November',
+              'December',
+            ].map((month) => (
+              <MenuItem key={month} value={month.toUpperCase()}>
+                {month}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <div className="separator"></div>
+        <FormControl style={{ marginRight: '10px', marginTop: '10px' }}>
+          <Select
+            displayEmpty
+            value={selectedDomain}
+            onChange={handleDomainFilterChange}
+            renderValue={(selected) => {
+              return 'Category';
+            }}
+            inputProps={{ 'aria-label': 'Without label' }}
+          >
+            {names.map((name) => (
+              <MenuItem key={name} value={name}>
+                {name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <div className="separator"></div>
+        <FormControl style={{ marginRight: '10px', marginTop: '10px' }}>
+          <Select
+            displayEmpty
+            value={selectedStatus}
+            onChange={handleStatusFilterChange}
+            renderValue={(selected) => {
+              return 'Status';
+            }}
+            inputProps={{ 'aria-label': 'Without label' }}
+          >
+            {statuses.map((status) => (
+              <MenuItem key={status} value={status}>
+                {status}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
         <Button
-  className="addCourse"
-  variant="outlined"
-  onClick={handleClick}
-  style={{ marginLeft: '150px' }} // This will move the button to the right
->
-  Add Course
-</Button>
+          className="addCourse"
+          variant="outlined"
+          onClick={handleClick}
+          style={{ marginLeft: '150px' }} // This will move the button to the right
+        >
+          Add Course
+        </Button>
         <Button
-          
+
           variant="contained"
           disabled={!isActivateButtonEnabled}
           onClick={handleActivateButtonClick}
@@ -286,116 +286,142 @@ if (selectedRows.length === 0) {
       </div>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
-      {/* Table */}
-      <Table style={{ backgroundColor: 'white' }}>
-       
-        <TableHead>
-  <TableRow>
-    <TableCell padding="checkbox">
-      <Checkbox
-        indeterminate={selectedRows.length > 0 && selectedRows.length < filteredCourses.length}
-        checked={selectedRows.length === filteredCourses.length}
-        onChange={handleSelectAllClick}
-        inputProps={{ 'aria-label': 'select all courses' }}
-      />
-    </TableCell>
-    <TableCell align="center">
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        Course Name
-        <Button variant="text" onClick={handleSortingOrderChange}>
-          {sortingOrder === 'ascending' ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-        </Button>
-      </div>
-    </TableCell>
-    <TableCell align="center">Details</TableCell>
-    <TableCell align="center">Duration</TableCell>
-    <TableCell align="center">Domain</TableCell>
-    <TableCell align="center">Status</TableCell>
-    {/* <TableCell align="center">Month</TableCell> */}
-    <TableCell align="center">Action</TableCell>
-  </TableRow>
-</TableHead>
-<TableBody>
-  {sortedCourses.map(course => (
-    <TableRow key={course?.courseId} hover role="checkbox" tabIndex={-1} selected={isSelected(course?.courseId)}>
-      <TableCell padding="checkbox">
-        <Checkbox
-          checked={isSelected(course?.courseId)}
-          onChange={(event) => handleRowCheckboxChange(event, course?.courseId)}
-          inputProps={{ 'aria-labelledby': `checkbox-${course?.courseId}` }}
-        />
-      </TableCell>
-      <TableCell>
-        {editingCourseId === course?.courseId ? (
-          <TextField
-            value={editFields?.courseName || course?.courseName}
-            onChange={(event) => handleEditFieldChange(event, 'courseName')}
-          />
-        ) : (
-          <div>
-            {course?.courseName}
+        {/* Table */}
+        <div style={{ flex: '1', overflow: 'hidden' }}>
+          <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+            <TableContainer style={{
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+              paddingRight: '8px', // Adjust padding to accommodate scrollbar width
+              marginBottom: '-16px', // Compensate for the added
+            }}
+              component={Paper}
+              sx={{
+                maxHeight: '100%',
+                overflowY: 'auto',
+                '&::-webkit-scrollbar': {
+                  width: '6px', // Reduce width of the scrollbar
+                  borderRadius: '3px', // Round scrollbar corners
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: '#FFFFFF', // Background color of the scrollbar track
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
+                  borderRadius: '3px', // Round scrollbar thumb corners
+                },
+              }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        indeterminate={selectedRows.length > 0 && selectedRows.length < filteredCourses.length}
+                        checked={selectedRows.length === filteredCourses.length}
+                        onChange={handleSelectAllClick}
+                        inputProps={{ 'aria-label': 'select all courses' }}
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        Course Name
+                        <Button variant="text" onClick={handleSortingOrderChange}>
+                          {sortingOrder === 'ascending' ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                        </Button>
+                      </div>
+                    </TableCell>
+                    <TableCell align="center">Details</TableCell>
+                    <TableCell align="center">Duration</TableCell>
+                    <TableCell align="center">Domain</TableCell>
+                    <TableCell align="center">Status</TableCell>
+                    <TableCell align="center">Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {sortedCourses.map(course => (
+                    <TableRow key={course?.courseId} hover role="checkbox" tabIndex={-1} selected={isSelected(course?.courseId)}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isSelected(course?.courseId)}
+                          onChange={(event) => handleRowCheckboxChange(event, course?.courseId)}
+                          inputProps={{ 'aria-labelledby': `checkbox-${course?.courseId}` }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {editingCourseId === course?.courseId ? (
+                          <TextField
+                            value={editFields?.courseName || course?.courseName}
+                            onChange={(event) => handleEditFieldChange(event, 'courseName')}
+                          />
+                        ) : (
+                          <div>
+                            {course?.courseName}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button variant="contained" onClick={() => handleViewDetails(course)}>View Details</Button>
+                      </TableCell>
+                      <TableCell align="center">
+                        {editingCourseId === course?.courseId ? (
+                          <TextField
+                            value={editFields?.duration || course?.duration}
+                            type='number'
+                            onChange={(event) => handleEditFieldChange(event, 'duration')}
+                          />
+                        ) : (
+                          course?.duration
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        {editingCourseId === course?.courseId ? (
+                          <TextField
+                            value={editFields?.domain || course?.domain}
+                            onChange={(event) => handleEditFieldChange(event, 'domain')}
+                          />
+                        ) : (
+                          course?.domain
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        <span style={{ color: course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === false ? 'red' : 'green' }}>
+                          {course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus ? "Active" : "Inactive"}
+                        </span>
+                      </TableCell>
+                      <TableCell align="center">
+                        {editingCourseId === course?.courseId ? (
+                          <>
+                            <Button variant="contained" onClick={saveEditedCourse} style={{ marginBottom: '10px' }}>
+                              Save
+                            </Button>
+                            <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
+                              Cancel
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)} style={{ marginBottom: '10px' }}>Edit</Button>
+                            <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px', marginBottom: '10px' }}>Delete</Button>
+                          </>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </div>
-        )}
-      </TableCell>
-      <TableCell align="center">
-        <Button variant="contained" onClick={() => handleViewDetails(course)}>View Details</Button>
-      </TableCell>
-      <TableCell align="center">
-        {editingCourseId === course?.courseId ? (
-          <TextField
-            value={editFields?.duration || course?.duration}
-            type='number'
-            onChange={(event) => handleEditFieldChange(event, 'duration')}
-          />
-        ) : (
-          course?.duration
-        )}
-      </TableCell>
-      <TableCell align="center">
-        {editingCourseId === course?.courseId ? (
-          <TextField
-            value={editFields?.domain || course?.domain}
-            onChange={(event) => handleEditFieldChange(event, 'domain')}
-          />
-        ) : (
-          course?.domain
-        )}
-      </TableCell>
-      <TableCell align="center">
-        <span style={{ color: course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus === false ? 'red' : 'green' }}>
-          {course?.monthlyStatus?.find(monthStatus => monthStatus?.month === selectedMonth)?.activationStatus ? "Active":"Inactive"}
-        </span>
-      </TableCell>
-      <TableCell align="center">
-        {editingCourseId === course?.courseId ? (
-          <>
-            <Button variant="contained" onClick={saveEditedCourse}>
-              Save
-            </Button>
-            <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
-              Cancel
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)}>Edit</Button>
-            <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px' }}>Delete</Button>
-          </>
-        )}
-      </TableCell>
-    </TableRow>
-  ))}
-</TableBody>
-</Table>
+        </div>
       </div>
 
-       {/* Course Details Dialog */}
+      {/* Course Details Dialog */}
       <Dialog open={showDetails} onClose={handleCloseDetails}>
-        <DialogTitle>Course Details</DialogTitle>
+        <DialogTitle style={{ fontSize: '17px', textAlign: 'center' }}>Course Details</DialogTitle>
         <DialogContent>
           {selectedCourse && (
             <div>
-              <h3>{selectedCourse?.courseName}</h3>
+              <h3 style={{ fontSize: '17px', textAlign: 'center' }}>{selectedCourse?.courseName}</h3>
               <p>{selectedCourse?.description}</p>
             </div>
           )}
