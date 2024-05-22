@@ -119,7 +119,11 @@ function Certifications() {
   };
 
   const openConfirmationDialog = () => {
-    setShowConfirmation(true);
+    if (selectedCourseIds.length === 0) {
+      alert('Please select at least one certification for nomination.');
+    } else {
+      setShowConfirmation(true);
+    }
   };
 
   const closeConfirmationDialog = () => {
