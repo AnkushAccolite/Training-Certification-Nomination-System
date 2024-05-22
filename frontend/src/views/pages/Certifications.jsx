@@ -67,7 +67,7 @@ function Certifications() {
         certificationEntries[0]
       );
 
-      return latestAttempt.status === 'inProgress' ? 'Approved' : 'Completed';
+      return latestAttempt.status === 'inProgress' ? 'Approved' : latestAttempt.status === 'completed' ? 'Completed' : 'Not Opted';
     }
     return 'Not Opted';
   };
