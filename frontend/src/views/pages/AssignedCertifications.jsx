@@ -16,18 +16,18 @@ function AssignedCertifications() {
     }, [auth, navigate]);
 
     const [certifications, setCertifications] = useState([
-        { name: 'Certification 1', status: 'pending', price: '10000' },
-        { name: 'Certification 2', status: 'pending', price: '20000' },
-        { name: 'Certification 3', status: 'passed', price: '1000' },
-        { name: 'Certification 4', status: 'pending', price: '4000' },
-        { name: 'Certification 5', status: 'passed', price: '25000' },
-        { name: 'Certification 6', status: 'passed', price: '2500' },
-        { name: 'Certification 7', status: 'passed', price: '2500' },
-        { name: 'Certification 8', status: 'passed', price: '5000' },
-        { name: 'Certification 9', status: 'passed', price: '7000' },
-        { name: 'Certification 10', status: 'passed', price: '14000' },
-        { name: 'Certification 11', status: 'passed', price: '16000' },
-        { name: 'Certification 12', status: 'passed', price: '7000' },
+        { name: 'Certification 1', status: 'ongoing', attempts: 1},
+        { name: 'Certification 2', status: 'ongoing', attempts: 2 },
+        { name: 'Certification 3', status: 'passed', attempts: 2 },
+        { name: 'Certification 4', status: 'ongoing', attempts: 1 },
+        { name: 'Certification 5', status: 'passed', attempts: 2 },
+        { name: 'Certification 6', status: 'passed', attempts: 1 },
+        { name: 'Certification 7', status: 'passed', attempts: 2 },
+        { name: 'Certification 8', status: 'passed', attempts: 1 },
+        { name: 'Certification 9', status: 'passed', attempts: 2 },
+        { name: 'Certification 10', status: 'passed', attempts: 1 },
+        { name: 'Certification 11', status: 'passed', attempts: 1 },
+        { name: 'Certification 12', status: 'passed', attempts: 1 },
     ]);
     const [modalOpen, setModalOpen] = useState(false);
     const [certificateModalOpen, setCertificateModalOpen] = useState(false);
@@ -41,13 +41,24 @@ function AssignedCertifications() {
     const handleSelfAssessmentClick = (index) => {
         setSelectedCertificationIndex(index);
         setModalOpen(true);
+        // Reset state variables for upload file modal
+        setSelectedFileName('');
+        setSelectedFile(null);
+        // Reset state variable for feedback modal
+        setFeedbackData({ rating: 0, comments: '' });
     };
 
+
     const handleCloseModal = (completed) => {
+        const updatedCertifications = [...certifications];
         if (completed) {
             // Open the certificate upload modal
             setCertificateModalOpen(true);
+        } else {
+            // Change the status of the certification to failed
+            updatedCertifications[selectedCertificationIndex].status = 'failed';
         }
+        setCertifications(updatedCertifications);
         // Close the current modal
         setModalOpen(false);
     };
@@ -107,17 +118,19 @@ function AssignedCertifications() {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'pending':
-                return '#3498db'; // Blue color for Pending
+            case 'ongoing':
+                return '#3498db'; // Blue color for Ongoing
             case 'passed':
                 return '#2ecc71'; // Green color for Passed
+            case 'failed':
+                return '#e74c3c'; // Red color for Failed
             default:
                 return '#000';
         }
     };
 
     const pieData = Object.keys(chartData).map(status => ({
-        name: status === 'pending' ? 'Pending' : 'Passed',
+        name: status.charAt(0).toUpperCase() + status.slice(1), // Capitalize first letter
         value: chartData[status],
         percentage: ((chartData[status] / certifications.length) * 100).toFixed(1) + '%'
     }));
@@ -135,7 +148,7 @@ function AssignedCertifications() {
                                     borderRadius: '8px',
                                     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                                     paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                                    marginBottom: '-16px', // Compensate for the added padding to avoid double scrollbars
+                                    marginBottom: '-16px', // Compensate for the added
                                 }}
                                 component={Paper}
                                 sx={{
@@ -158,8 +171,8 @@ function AssignedCertifications() {
                                     <TableHead style={{ textAlign: 'center' }}>
                                         <TableRow>
                                             <TableCell style={{ textAlign: 'center' }}>Certification Name</TableCell>
-                                            <TableCell style={{ textAlign: 'center' }}>Price (Rupees)</TableCell>
                                             <TableCell style={{ textAlign: 'center' }}>Status</TableCell>
+                                            <TableCell style={{ textAlign: 'center' }}>Attempts</TableCell>
                                             <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -167,14 +180,14 @@ function AssignedCertifications() {
                                         {certifications.map((certification, index) => (
                                             <TableRow key={index}>
                                                 <TableCell style={{ textAlign: 'center' }}>{certification.name}</TableCell>
-                                                <TableCell style={{ textAlign: 'center' }}>{certification.price}</TableCell>
                                                 <TableCell style={{ textAlign: 'center' }}>
                                                     <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(certification.status) }}>
-                                                        {certification.status === 'pending' ? 'Pending' : 'Passed'}
+                                                        {certification.status.charAt(0).toUpperCase() + certification.status.slice(1)}
                                                     </Typography>
                                                 </TableCell>
+                                                <TableCell style={{ textAlign: 'center' }}>{certification.attempts}</TableCell>
                                                 <TableCell style={{ textAlign: 'center' }}>
-                                                    {certification.status === 'pending' && (
+                                                    {certification.status === 'ongoing' && (
                                                         <Button variant="contained" style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }} onClick={() => handleSelfAssessmentClick(index)}>
                                                             Self Assessment
                                                         </Button>
@@ -188,7 +201,6 @@ function AssignedCertifications() {
                         </div>
                     </div>
                 </div>
-
                 <div className="pie-chart-section" style={{ flex: '0 1 30%', position: 'sticky', top: 20 }}>
                     <Typography variant="h4" style={{ textAlign: 'center', marginTop: '45%', marginBottom: '-60px', fontSize: '18px' }}>
                         Progress Tracker
@@ -205,8 +217,9 @@ function AssignedCertifications() {
                                 fill="#8884D8"
                                 labelLine={false} // Remove lines extending from the numbers
                                 // Render custom label inside the pie chart
+                                // Render custom label inside the pie chart
                                 label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-                                    const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
+                                    const radius = innerRadius + (outerRadius - innerRadius) * 0.5; // Adjust label radius
                                     const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
                                     const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
                                     return (
@@ -214,16 +227,18 @@ function AssignedCertifications() {
                                             x={x}
                                             y={y}
                                             fill="#fff" // Set text color to white
-                                            textAnchor={x > cx ? 'start' : 'end'}
-                                            dominantBaseline="central"
+                                            textAnchor="middle" // Center align the text horizontally
+                                            dominantBaseline="middle" // Center align the text vertically
+                                            fontSize={14} // Adjust font size as needed
                                         >
-                                            {`${Math.round(percent * 100)}%`} {/* Round the percentage value */}
+                                            {`${Math.round(percent * 100)}%`}
                                         </text>
                                     );
                                 }}
+
                             >
                                 {pieData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.name === 'Pending' ? '#3498db' : '#2ecc71'} />
+                                    <Cell key={`cell-${index}`} fill={entry.name === 'Ongoing' ? '#3498db' : (entry.name === 'Failed' ? '#e74c3c' : '#2ecc71')} />
                                 ))}
                             </Pie>
                             <Tooltip />
@@ -231,7 +246,6 @@ function AssignedCertifications() {
                     </ResponsiveContainer>
                 </div>
             </div>
-
             <Modal open={modalOpen} onClose={() => handleCloseModal(false)}>
                 <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', padding: '40px', outline: 'none', borderRadius: '8px', width: '60%', maxWidth: '400px' }}>
                     <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
@@ -279,7 +293,7 @@ function AssignedCertifications() {
 
             <Snackbar
                 open={snackbarOpen}
-                autoHidePrice={3000} // Price for the Snackbar to remain open (3 seconds)
+                autoHideDuration={3000} // Duration for the Snackbar to remain open (3 seconds)
                 onClose={handleSnackbarClose}
             >
                 <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
