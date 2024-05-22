@@ -194,9 +194,11 @@ const AssignedCourses = () => {
 
   return (
     <div className="container">
-      <div className="content-section" style={{ display: 'flex' }}>
+          <h2 style={{textAlign:'center'}}>Assigned Courses</h2>
+
+      <div className="content-section" style={{ display: 'flex', paddingTop:'25px' }}>
         <div className="courses-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
-          <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Assigned Courses</h2>
+          {/* <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Assigned Courses</h2> */}
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
               <TableContainer
