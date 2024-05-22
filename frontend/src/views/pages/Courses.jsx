@@ -296,13 +296,15 @@ function Courses() {
                 <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   {/* Render the checkbox only if the status is "Not Opted" */}
                   <TableCell padding="checkbox">
-                    {getStatus(row?.courseId) === 'Not Opted' && (
+                    
                       <Checkbox
                         checked={selectedCourseIds.includes(row?.courseId)}
                         onChange={(e) => handleCheckboxChange(e, row?.courseId)}
+                        disabled={getStatus(row?.courseId) !== 'Not Opted'}
                       />
-                    )}
+                    
                   </TableCell>
+
                   <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.duration}</TableCell>

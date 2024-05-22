@@ -208,6 +208,7 @@ function Certifications() {
         >
           Nominate
         </Button>
+
         <Button
           style={{
             marginRight: '10px',
@@ -227,7 +228,7 @@ function Certifications() {
           }}
 
           className="reimbursementBtn"
-          startIcon={<PictureAsPdfIcon />} // Use the PDF icon
+          startIcon={<PictureAsPdfIcon />}
           onClick={handlePDFClick}
         >
           Reimbursement Policy
@@ -250,12 +251,13 @@ function Certifications() {
               {courses.filter(filterCourses).map((row) => (
                 <TableRow key={row?.certificationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell padding="checkbox">
-                    {(row?.status !== 'Pending for Approval' && row?.status !== 'Approved' && row?.status !== 'Completed') && (
-                      <Checkbox
-                        checked={selectedCourseIds.includes(row?.certificationId)}
-                        onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
-                      />
-                    )}
+                    <Checkbox
+                      checked={selectedCourseIds.includes(row?.certificationId)}
+                      onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
+                      disabled={row?.status !== 'Not Opted'}
+                    />
+
+
                   </TableCell>
                   <TableCell>{row?.name}</TableCell>
                   <TableCell>{row?.category}</TableCell>
@@ -281,11 +283,11 @@ function Certifications() {
           </Table>
         </TableContainer>
         <Dialog open={showDetails} onClose={handleCloseDetails}>
-          <DialogTitle style={{fontSize: '17px', textAlign:'center'}}>Course Details</DialogTitle>
+          <DialogTitle style={{ fontSize: '17px', textAlign: 'center' }}>Course Details</DialogTitle>
           <DialogContent>
             {selectedCourse && (
               <div>
-                <h3 style={{fontSize: '17px', textAlign:'center'}}>{selectedCourse?.name}</h3>
+                <h3 style={{ fontSize: '17px', textAlign: 'center' }}>{selectedCourse?.name}</h3>
                 <p>{selectedCourse.description}</p>
               </div>
             )}
@@ -338,7 +340,7 @@ function Certifications() {
           </DialogActions>
         </Dialog>
       </div>
-    </div>
+    </div >
   );
 }
 
