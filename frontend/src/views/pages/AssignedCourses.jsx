@@ -1,19 +1,6 @@
 import 'chart.js/auto';
 import React, { useState, useEffect } from 'react';
-import {
-  Paper,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Modal,
-  Typography,
-  TextField,
-  Rating
-} from '@mui/material';
+import {Paper,Button,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Modal,Typography,TextField,Rating} from '@mui/material';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -32,22 +19,6 @@ const AssignedCourses = () => {
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
   }, [auth, navigate]);
-
-  // const [courses, setCourses] = useState([
-  //   { name: 'Course 1', status: 'start', duration: '1' },
-  //   { name: 'Course 2', status: 'start', duration: '2' },
-  //   { name: 'Course 3', status: 'completed', duration: '1' },
-  //   { name: 'Course 4', status: 'start', duration: '4' },
-  //   { name: 'Course 5', status: 'completed', duration: '2.5' },
-  //   { name: 'Course 6', status: 'completed', duration: '2.5' },
-  //   { name: 'Course 7', status: 'completed', duration: '2.5' },
-  //   { name: 'Course 8', status: 'completed', duration: '2.5' },
-  //   { name: 'Course 9', status: 'completed', duration: '2.5' },
-  //   { name: 'Course 10', status: 'completed', duration: '2.5' },
-  //   { name: 'Course 11', status: 'completed', duration: '2.5' },
-  //   { name: 'Course 12', status: 'completed', duration: '2.5' }
-  // ]);
-
   const [courses, setCourses] = useState([]);
 
   const [assignedCoursesStatus, setAssignedCoursesStatus] = useState({
@@ -77,7 +48,6 @@ const AssignedCourses = () => {
             status: completedCourseIds?.includes(item?.courseId) ? 'completed' : 'start',
             duration: item?.duration
           }));
-        // console.log('temp-->', temp);
 
         setCourses(temp);
       } catch (error) {
@@ -103,9 +73,6 @@ const AssignedCourses = () => {
 
   const handleCloseModal = (completed) => {
     if (completed) {
-      // const updatedCourses = [...courses];
-      // updatedCourses[selectedCourseIndex].status = 'completed';
-      // setCourses(updatedCourses);
       setFeedbackData({ rating: 0, comments: '' });
       setModalOpen(false);
       setFeedbackOpen(true);
@@ -148,15 +115,15 @@ const AssignedCourses = () => {
     setSortConfig({ key, direction });
   };
 
-  const sortedRows = [...courses].sort((a, b) => {
+  const sortedCourses = [...courses].sort((a, b) => {
     if (sortConfig.key) {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
       if (sortConfig.key === 'DateOfCompletion') {
         return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
-      } else if (sortConfig.key === 'SNo') {
+      } else if (sortConfig.key === 'duration') {
         return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-      }
+      }else if(sortConfig.key === 'name'|| sortConfig.key === 'status')
       return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
     }
     return 0;
@@ -194,11 +161,11 @@ const AssignedCourses = () => {
 
   return (
     <div className="container">
-          <h2 style={{textAlign:'center'}}>Assigned Courses</h2>
+      <h2 style={{ textAlign: 'center' }}>Assigned Courses</h2>
 
-      <div className="content-section" style={{ display: 'flex', paddingTop:'25px' }}>
+      <div className="content-section" style={{ display: 'flex', paddingTop: '25px' }}>
         <div className="courses-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
-          {/* <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Assigned Courses</h2> */}
+          {' '}
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
               <TableContainer
@@ -245,7 +212,7 @@ const AssignedCourses = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {courses?.map((course, index) => (
+                    {sortedCourses?.map((course, index) => (
                       <TableRow key={index}>
                         <TableCell style={{ textAlign: 'center' }}>{course?.name}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
