@@ -196,24 +196,24 @@ const AssignedCourses = () => {
                 <Table stickyHeader>
                   <TableHead style={{ textAlign: 'center' }}>
                     <TableRow>
-                      <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('name')}>
+                      <TableCell style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('name')}>
                         Course Name
                         <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                       </TableCell>
-                      <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('duration')}>
+                      <TableCell style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('duration')}>
                         Duration(Hours)
                         <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                       </TableCell>
-                      <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('status')}>
+                      <TableCell style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('status')}>
                         Status
                         <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                       </TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
+                      <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {sortedCourses?.map((course, index) => (
-                      <TableRow key={index}>
+                      <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                         <TableCell style={{ textAlign: 'center' }}>{course?.name}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>

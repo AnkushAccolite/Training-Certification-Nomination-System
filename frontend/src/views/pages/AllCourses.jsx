@@ -313,27 +313,27 @@ const AllCourses = () => {
                     inputProps={{ 'aria-label': 'select all courses' }}
                   />
                 </TableCell>
-                <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('courseName')}>
+                <TableCell style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('courseName')}>
                   Course Name
                   <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
-                <TableCell style={{ textAlign: 'center' }}>Details</TableCell>
-                <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('duration')}>
+                <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Details</TableCell>
+                <TableCell style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('duration')}>
                   Duration
                   <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
-                <TableCell style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => handleSort('domain')}>
+                <TableCell style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('domain')}>
                   Domain <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
-                <TableCell style={{ textAlign: 'center'}}>
+                <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold'}}>
                   Status
                 </TableCell>
-                <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
+                <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredCourses.map((course) => (
-                <TableRow key={course?.courseId} hover role="checkbox" tabIndex={-1} selected={isSelected(course?.courseId)}>
+              {filteredCourses.map((course, index) => (
+                <TableRow key={course?.courseId} hover role="checkbox" tabIndex={-1} selected={isSelected(course?.courseId)} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                   <TableCell padding="checkbox">
                     <Checkbox
                       checked={isSelected(course?.courseId)}

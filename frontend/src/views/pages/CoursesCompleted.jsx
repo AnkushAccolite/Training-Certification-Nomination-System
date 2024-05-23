@@ -189,31 +189,31 @@ const CoursesCompleted = () => {
               <Table aria-label="completed courses table">
                 <TableHead>
                   <TableRow>
-                    <TableCell onClick={() => handleSort('SNo')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                    <TableCell onClick={() => handleSort('SNo')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
                       S.No <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
-                    <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                    <TableCell onClick={() => handleSort('CourseName')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
                       Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
-                    <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                    <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
                       Duration (hrs) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
-                    <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                    <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' ,fontSize: '16px', fontWeight: 'bold'}}>
                       Completion Month <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {sortedRows
-                    .filter((row) => {
+                    .filter((row ) => {
                       if (!startDate && !endDate) return true;
                       const completionDate = dayjs(row.DateOfCompletion);
                       const afterStartDate = !startDate || completionDate.isAfter(startDate, 'month') || completionDate.isSame(startDate, 'month');
                       const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'month') || completionDate.isSame(endDate, 'month');
                       return afterStartDate && beforeEndDate;
                     })
-                    .map((row) => (
-                      <TableRow key={row.SNo}>
+                    .map((row,index) => (
+                      <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                         <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>

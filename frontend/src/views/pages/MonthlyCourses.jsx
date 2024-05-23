@@ -165,24 +165,24 @@ const MonthlyCourses = () => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                  <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
                     Course Name
                     <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                   </TableCell>
-                  <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                  <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
                     Duration
                     <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                   </TableCell>
-                  <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                  <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
                     Domain
                     <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                   </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
+                  <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredCourses.map((course) => (
-                  <TableRow key={course?.courseId}>
+                {filteredCourses.map((course,index) => (
+                  <TableRow key={course?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                     <TableCell style={{ textAlign: 'center' }}>{course?.courseName}</TableCell>
                     <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
                     <TableCell style={{ textAlign: 'center' }}>{course?.domain}</TableCell>

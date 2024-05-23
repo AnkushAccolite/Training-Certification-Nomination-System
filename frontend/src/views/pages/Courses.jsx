@@ -302,24 +302,24 @@ function Courses() {
             <TableHead>
               <TableRow>
               <TableCell></TableCell>
-                <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
                   Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
-                <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
                   Category <ArrowDropDownIcon style={{ fontSize: '130%' }}/>
                 </TableCell>
-                <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
                   Duration (Hours) <ArrowDropDownIcon style={{ fontSize: '130%' }}/>
                 </TableCell>
-                <TableCell  style={{ textAlign: 'center'}}>
+                <TableCell  style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold'}}>
                   Status 
                 </TableCell>
-                <TableCell style={{ textAlign: 'center'}}>Actions</TableCell>
+                <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold'}}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedCourses.map((row) => (
-                <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              {sortedCourses.map((row, index) => (
+                <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }} >
                   {/* Render the checkbox only if the status is "Not Opted" */}
                   <TableCell padding="checkbox">
                     
