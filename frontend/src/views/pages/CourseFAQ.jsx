@@ -54,9 +54,7 @@ function CourseFAQ() {
 
   return (
     <div style={{ padding: '8px' }}>
-      <Typography variant="h3" gutterBottom sx={{ marginBottom: '20px' }}>
-        Course FAQ's
-      </Typography>
+      <h2 style={{textAlign:'center', paddingBottom:'20px'}}>Course FAQ's</h2>
       {faqs.map((faq, index) => (
         <Accordion
           key={index}
