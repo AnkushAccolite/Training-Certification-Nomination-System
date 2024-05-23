@@ -133,8 +133,8 @@ const CoursesCompleted = () => {
   return (
     <div className="courses-completed-container" style={{ overflowX: 'hidden' }}>
       <div className="left-panel" style={{ overflowX: 'hidden' }}>
-        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
-          <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
+        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px', textAlign: 'center', marginTop: '10px' }}>
+          <span style={{fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
         </Typography>
         <div className="course-filters">
           <FormControl className="date-picker">
@@ -188,10 +188,10 @@ const CoursesCompleted = () => {
                       Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                     <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      Duration (hrs) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                     <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      Completion Month <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -230,7 +230,7 @@ const CoursesCompleted = () => {
               nameKey="name"
               cx="50%"
               cy="35%"
-              outerRadius={105}
+              outerRadius={100}
               fill="#8884d8"
               labelLine={false}
               label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
