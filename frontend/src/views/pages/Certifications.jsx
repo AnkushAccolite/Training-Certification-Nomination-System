@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'; // Import the PDF icon
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -12,6 +12,7 @@ import Paper from '@mui/material/Paper';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import QueueIcon from '@mui/icons-material/Queue';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -95,6 +96,9 @@ function Certifications() {
 
   const handleCloseDetails = () => {
     setShowDetails(false);
+  };
+  const handleClick = () => {
+    navigate('/Certifications/add-certifications');
   };
 
   const handleCheckboxChange = (event, courseId) => {
@@ -204,9 +208,31 @@ function Certifications() {
           variant="outlined"
           startIcon={<LocalLibraryIcon />}
           onClick={openConfirmationDialog}
-          style={{ marginLeft: 'auto', marginRight: '10px' }}
+          style={{ marginLeft: 'auto', marginRight: '-5px' }}
         >
           Nominate
+        </Button>
+        <Button
+          style={{
+            marginRight: '-5px',
+            color: '#3498db',
+            border: 'none',
+            backgroundColor: 'transparent'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.border = '1px solid #3498db';
+            e.currentTarget.style.backgroundColor = '#eaf5fe';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.border = 'none';
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
+          className="addCertification"
+          variant="outlined"
+          startIcon={<QueueIcon />}
+          onClick={handleClick}
+        >
+          Add Certification
         </Button>
 
         <Button
@@ -215,7 +241,7 @@ function Certifications() {
             color: '#3498db',
             border: 'none',
             backgroundColor: 'transparent',
-            transition: 'all 0.5s ease-in-out',
+            transition: 'all 0.5s ease-in-out'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.border = '1px solid #3498db';
@@ -226,7 +252,6 @@ function Certifications() {
             e.currentTarget.style.backgroundColor = 'transparent';
             e.currentTarget.style.transition = 'border 0.5s ease-in-out';
           }}
-
           className="reimbursementBtn"
           startIcon={<PictureAsPdfIcon />}
           onClick={handlePDFClick}
@@ -241,27 +266,42 @@ function Certifications() {
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
-                <TableCell>Certification Name</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="center">Actions</TableCell>
+                <TableCell style={{ fontSize: '16px', fontWeight: 'bold' }}>Certification Name</TableCell>
+                <TableCell style={{ fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                <TableCell style={{ fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
+                <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {courses.filter(filterCourses).map((row) => (
-                <TableRow key={row?.certificationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              {courses.filter(filterCourses).map((row, index) => (
+                <TableRow
+                  key={row?.certificationId}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f2f2f2' }}
+                >
                   <TableCell padding="checkbox">
                     <Checkbox
                       checked={selectedCourseIds.includes(row?.certificationId)}
                       onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
                       disabled={row?.status !== 'Not Opted'}
                     />
-
-
                   </TableCell>
                   <TableCell>{row?.name}</TableCell>
                   <TableCell>{row?.category}</TableCell>
-                  <TableCell style={{ color: row?.status === 'Pending for Approval' ? 'red' : row?.status === 'Approved' ? 'green' : row?.status === 'Completed' ? 'blue' : 'inherit' }}>
+                  <TableCell
+                    style={{
+                      color:
+                        row?.status === 'Pending for Approval'
+                          ? 'red'
+                          : row?.status === 'Approved'
+                            ? 'green'
+                            : row?.status === 'Completed'
+                              ? 'blue'
+                              : 'inherit'
+                    }}
+                  >
                     {row?.status}
                   </TableCell>
                   <TableCell>
@@ -340,10 +380,8 @@ function Certifications() {
           </DialogActions>
         </Dialog>
       </div>
-    </div >
+    </div>
   );
 }
 
 export default Certifications;
-
-

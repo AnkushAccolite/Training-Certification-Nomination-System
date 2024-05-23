@@ -102,7 +102,6 @@ const CoursesCompleted = () => {
 
   const getPieChartData = () => {
     const data = rows.reduce((acc, row) => {
-      // const month = dayjs(row.DateOfCompletion).format('MMM YYYY');
       const month = row.DateOfCompletion;
       const existingMonth = acc.find((item) => item.name === month);
       if (existingMonth) {
@@ -131,21 +130,30 @@ const CoursesCompleted = () => {
   ];
 
   return (
+    <div>
+      <h2 style={{ textAlign: 'center' }}>Courses Completed</h2>
     <div className="courses-completed-container" style={{ overflowX: 'hidden' }}>
       <div className="left-panel" style={{ overflowX: 'hidden' }}>
-        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
-          <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Courses Completed</span>
-        </Typography>
         <div className="course-filters">
           <FormControl className="date-picker">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker label="Start Date" value={startDate} onChange={handleStartDateChange} />
+              <DatePicker
+                views={['year', 'month']}
+                label="Start Month"
+                value={startDate}
+                onChange={handleStartDateChange}
+              />
             </LocalizationProvider>
           </FormControl>
           <span className="date-separator"> - </span>
           <FormControl className="date-picker">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker label="End Date" value={endDate} onChange={handleEndDateChange} />
+              <DatePicker
+                views={['year', 'month']}
+                label="End Month"
+                value={endDate}
+                onChange={handleEndDateChange}
+              />
             </LocalizationProvider>
           </FormControl>
         </div>
@@ -188,10 +196,10 @@ const CoursesCompleted = () => {
                       Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                     <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      Duration (hrs) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                     <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      Completion Month <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -200,8 +208,8 @@ const CoursesCompleted = () => {
                     .filter((row) => {
                       if (!startDate && !endDate) return true;
                       const completionDate = dayjs(row.DateOfCompletion);
-                      const afterStartDate = !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
-                      const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
+                      const afterStartDate = !startDate || completionDate.isAfter(startDate, 'month') || completionDate.isSame(startDate, 'month');
+                      const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'month') || completionDate.isSame(endDate, 'month');
                       return afterStartDate && beforeEndDate;
                     })
                     .map((row) => (
@@ -230,7 +238,7 @@ const CoursesCompleted = () => {
               nameKey="name"
               cx="50%"
               cy="35%"
-              outerRadius={105}
+              outerRadius={100}
               fill="#8884d8"
               labelLine={false}
               label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
@@ -273,6 +281,7 @@ const CoursesCompleted = () => {
 
         </ResponsiveContainer>
       </div>
+    </div>
     </div>
   );
 };

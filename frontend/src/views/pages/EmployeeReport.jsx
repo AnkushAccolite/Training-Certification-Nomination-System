@@ -34,7 +34,6 @@ import axios from '../../api/axios';
 
 import './EmployeeReport.css';
 
-
 const EmployeeReport = () => {
   const [selectedFilter, setSelectedFilter] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -124,6 +123,40 @@ const EmployeeReport = () => {
     setEmployees(filteredEmployees);
   }, [selectedMonth, selectedCategory, selectedQuarter, searchQueryID, searchQueryName, employees]);
 
+  useEffect(() => {
+    const filteredEmployees = employees?.filter((employee) => {
+      const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
+        const completionMonth = employee.completionMonth[index];
+        if (
+          (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
+          (!selectedCategory || employee.category[index] === selectedCategory) &&
+          (!selectedQuarter ||
+            (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
+            (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
+            (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
+            (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
+            (selectedQuarter === 'H1' && completionMonth >= 1 && completionMonth <= 6) ||
+            (selectedQuarter === 'H2' && completionMonth >= 7 && completionMonth <= 12))
+        ) {
+          acc.push({
+            course,
+            category: employee.category[index],
+            completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
+          });
+        }
+        return acc;
+      }, []);
+
+      return (
+        (!searchQueryName || employee.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
+        (!searchQueryID || employee.empID.toLowerCase().includes(searchQueryID.toLowerCase())) &&
+        matchingCourses.length > 0
+      );
+    });
+
+    setEmployees(filteredEmployees);
+  }, [selectedMonth, selectedCategory, selectedQuarter, searchQueryID, searchQueryName, employees]);
+
   const generatePieChartData = () => {
     const completionCounts = {
       January: 0,
@@ -155,12 +188,21 @@ const EmployeeReport = () => {
           label: 'Completion Months',
           data: Object.values(completionCounts),
           backgroundColor: [
-            '#FF6384', '#36A2EB', '#FFCE56', '#D29CC5', '#FF5733', 
-            '#66FF33', '#337DFF', '#AB33FF', '#FF33E3', '#33FFA8', 
-            '#FFBD33', '#33FFD8',
-          ],
-        },
-      ],
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#D29CC5',
+            '#FF5733',
+            '#66FF33',
+            '#337DFF',
+            '#AB33FF',
+            '#FF33E3',
+            '#33FFA8',
+            '#FFBD33',
+            '#33FFD8'
+          ]
+        }
+      ]
     };
 
     return { data };
@@ -173,7 +215,6 @@ const EmployeeReport = () => {
       const doc = new jsPDF();
       doc.setFontSize(20);
       doc.text('Employee Report', 10, 10);
-      
 
       const tableData = employees?.map((employee) => [
         employee.empID,
@@ -271,17 +312,11 @@ const EmployeeReport = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div style={{ textAlign: 'center' }}>
-      <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
+        <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
           Employee Report
         </Typography>
         <div className="employee-report-filters">
-          <TextField
-            select
-            label="Filter"
-            value={selectedFilter}
-            onChange={handleFilterChange}
-            style={{ marginRight: '10px' }}
-          >
+          <TextField select label="Filter" value={selectedFilter} onChange={handleFilterChange} style={{ marginRight: '10px' }}>
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
             <MenuItem value="HalfYearly">Half Yearly</MenuItem>
@@ -341,7 +376,7 @@ const EmployeeReport = () => {
                 variant="outlined"
                 InputProps={{
                   ...params.InputProps,
-                  style: { paddingRight: '10px' },
+                  style: { paddingRight: '10px' }
                 }}
               />
             )}
@@ -360,7 +395,7 @@ const EmployeeReport = () => {
             onChange={(e) => setSearchQueryName(e.target.value)}
             style={{ marginRight: '10px' }}
           />
-          
+
           <Button
             variant="contained"
             endIcon={<DownloadIcon />}
@@ -396,43 +431,55 @@ const EmployeeReport = () => {
           </Popover>
         </div>
 
-        <div style={{ display: 'flex',flex: '1', overflow: 'hidden', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', flex: '1', overflow: 'hidden', alignItems: 'flex-start' }}>
           <div style={{ height: 'calc(100vh - 290px)', flex: '1 0 70%', overflowX: 'hidden', overflowY: 'auto' }}>
-            <TableContainer style={{
-                  backgroundColor: 'white',
-                  borderRadius: '8px',
-                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                  paddingRight: '8px', 
-                  marginBottom: '-16px', 
-                }}
-                component={Paper}
-                sx={{
-                  maxHeight: '100%',
-                  overflowY: 'auto',
-                  '&::-webkit-scrollbar': {
-                    width: '6px', 
-                    borderRadius: '3px', 
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#FFFFFF',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#eee6ff', 
-                    borderRadius: '3px',
-                  },
-                }}>
+            <TableContainer
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                paddingRight: '8px',
+                marginBottom: '-16px'
+              }}
+              component={Paper}
+              sx={{
+                maxHeight: '100%',
+                overflowY: 'auto',
+                '&::-webkit-scrollbar': {
+                  width: '6px',
+                  borderRadius: '3px'
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: '#FFFFFF'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#eee6ff',
+                  borderRadius: '3px'
+                }
+              }}
+            >
               <Table aria-label="employee report table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>EmpID</TableCell>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Name</TableCell>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Courses</TableCell>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Completion Month</TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      EmpID
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Name
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Courses
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Category
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Completion Month
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {employees?.map((employee,employeeIndex) => {
+                  {employees?.map((employee, employeeIndex) => {
                     const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
                       const completionMonth = employee.completionMonth[index];
                       if (
@@ -460,7 +507,10 @@ const EmployeeReport = () => {
                       const completionMonth = course.completionMonth;
                       if (index === 0) {
                         rows.push(
-                          <TableRow key={`${employee.empID}-${course.course}`} style={{ backgroundColor: employeeIndex % 2 === 0 ? '#f2f2f2' : 'white' }}>
+                          <TableRow
+                            key={`${employee.empID}-${course.course}`}
+                            style={{ backgroundColor: employeeIndex % 2 === 0 ? '#f2f2f2' : 'white' }}
+                          >
                             <TableCell align="center" rowSpan={matchingCourses.length}>
                               {employee.empID}
                             </TableCell>
@@ -474,7 +524,10 @@ const EmployeeReport = () => {
                         );
                       } else {
                         rows.push(
-                          <TableRow key={`${employee.empID}-${course.course}`}style={{ backgroundColor: employeeIndex % 2 === 0 ? '#f2f2f2' : 'white' }}>
+                          <TableRow
+                            key={`${employee.empID}-${course.course}`}
+                            style={{ backgroundColor: employeeIndex % 2 === 0 ? '#f2f2f2' : 'white' }}
+                          >
                             <TableCell align="center">{course.course}</TableCell>
                             <TableCell align="center">{course.category}</TableCell>
                             <TableCell align="center">{completionMonth}</TableCell>
@@ -490,7 +543,7 @@ const EmployeeReport = () => {
             </TableContainer>
           </div>
 
-          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px', marginRight:'40px' }}>
+          <div style={{ flex: '1 0 30%', position: 'sticky', top: '-50px', marginRight: '40px' }}>
             <Typography variant="h4" gutterBottom>
               Completion Months Chart
             </Typography>

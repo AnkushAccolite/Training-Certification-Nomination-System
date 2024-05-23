@@ -1,5 +1,23 @@
-import { IconArrowRight, IconBook, IconBook2 ,IconCertificate,IconFileCertificate,IconFileDescription,IconClipboardText,IconMessages} from '@tabler/icons-react';
-const icons = { IconArrowRight, IconBook, IconBook2 ,IconCertificate,IconFileCertificate,IconFileDescription,IconClipboardText,IconMessages };
+import {
+  IconArrowRight,
+  IconBook,
+  IconBook2,
+  IconCertificate,
+  IconFileCertificate,
+  IconFileDescription,
+  IconClipboardText,
+  IconMessages
+} from '@tabler/icons-react';
+const icons = {
+  IconArrowRight,
+  IconBook,
+  IconBook2,
+  IconCertificate,
+  IconFileCertificate,
+  IconFileDescription,
+  IconClipboardText,
+  IconMessages
+};
 const items = {
   id: 'items',
   type: 'group',
@@ -93,10 +111,10 @@ const items = {
           breadcrumbs: false
         },
         {
-          id: 'certification-assigned',
+          id: 'certification-enrolled',
           title: 'Certifications Enrolled',
           type: 'item',
-          url: '/certifications-assigned',
+          url: '/certifications-enrolled',
           icon: icons.IconFileCertificate,
           roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false
@@ -109,7 +127,7 @@ const items = {
           icon: icons.IconFileCertificate,
           roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false
-        },
+        }
       ]
     },
     {

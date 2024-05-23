@@ -20,12 +20,7 @@ import { useSelector } from 'react-redux';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
-import getNominationCourses from 'utils/getNominationCourses';
-import getAllCourses from 'utils/getAllCourses';
-import axios from '../../api/axios';
-import { ArrowDropDownIcon } from '@mui/x-date-pickers';
-
-const AssignedCourses = () => {
+function CertificationsApproved() {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
 
@@ -33,66 +28,76 @@ const AssignedCourses = () => {
     if (!auth?.isAuthenticated) navigate('/login');
   }, [auth, navigate]);
 
-  const [courses, setCourses] = useState([]);
-
-  const [assignedCoursesStatus, setAssignedCoursesStatus] = useState({
-    approvedCourses: [],
-    completedCourses: []
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const nominationCourses = await getNominationCourses(auth?.user?.empId);
-        const approvedCourseIds = nominationCourses?.approvedCourses?.map((course) => course.courseId);
-        const completedCourseIds = nominationCourses?.completedCourses?.map((course) => course.courseId);
-
-        const allCourses = await getAllCourses();
-
-        setAssignedCoursesStatus({
-          approvedCourses: approvedCourseIds,
-          completedCourses: completedCourseIds
-        });
-
-        const temp = allCourses
-          .filter((item) => approvedCourseIds?.includes(item?.courseId) || completedCourseIds?.includes(item?.courseId))
-          .map((item) => ({
-            id: item?.courseId,
-            name: item?.courseName,
-            status: completedCourseIds?.includes(item?.courseId) ? 'completed' : 'start',
-            duration: item?.duration
-          }));
-
-        setCourses(temp);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchData();
-  }, []);
-
+  const [certifications, setCertifications] = useState([
+    { name: 'Certification 1', status: 'ongoing', attempts: 1 },
+    { name: 'Certification 2', status: 'ongoing', attempts: 2 },
+    { name: 'Certification 3', status: 'passed', attempts: 2 },
+    { name: 'Certification 4', status: 'ongoing', attempts: 1 },
+    { name: 'Certification 5', status: 'passed', attempts: 2 },
+    { name: 'Certification 6', status: 'passed', attempts: 1 },
+    { name: 'Certification 7', status: 'passed', attempts: 2 },
+    { name: 'Certification 8', status: 'passed', attempts: 1 },
+    { name: 'Certification 9', status: 'passed', attempts: 2 },
+    { name: 'Certification 10', status: 'passed', attempts: 1 },
+    { name: 'Certification 11', status: 'passed', attempts: 1 },
+    { name: 'Certification 12', status: 'passed', attempts: 1 }
+  ]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [certificateModalOpen, setCertificateModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' });
-  const [selectedCourseId, setSelectedCourseId] = useState(null);
-  const [selectedCourseIndex, setSelectedCourseIndex] = useState(null);
+  const [selectedCertificationIndex, setSelectedCertificationIndex] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [selectedFileName, setSelectedFileName] = useState(''); // State to hold selected file
+  const [selectedFile, setSelectedFile] = useState(null); // State to hold selected file object
 
-  const handleSelfAssessmentClick = (id, index) => {
-    setSelectedCourseId(id);
-    setSelectedCourseIndex(index);
+  const handleSelfAssessmentClick = (index) => {
+    setSelectedCertificationIndex(index);
     setModalOpen(true);
+    // Reset state variables for upload file modal
+    setSelectedFileName('');
+    setSelectedFile(null);
+    // Reset state variable for feedback modal
+    setFeedbackData({ rating: 0, comments: '' });
   };
 
   const handleCloseModal = (completed) => {
+    const updatedCertifications = [...certifications];
     if (completed) {
-      setFeedbackData({ rating: 0, comments: '' });
-      setModalOpen(false);
-      setFeedbackOpen(true);
+      // Open the certificate upload modal
+      setCertificateModalOpen(true);
     } else {
-      setModalOpen(false);
+      // Change the status of the certification to failed
+      updatedCertifications[selectedCertificationIndex].status = 'failed';
     }
+    setCertifications(updatedCertifications);
+    // Close the current modal
+    setModalOpen(false);
+  };
+
+  // Function to handle file upload event
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    setSelectedFileName(file ? file.name : ''); // Update the selected file name
+    setSelectedFile(file); // Set the selected file
+  };
+
+  // Function to handle certificate upload
+  const handleCertificateUpload = () => {
+    if (!selectedFile) {
+      alert('Please upload a file before submitting.');
+      return;
+    }
+
+    // Change the status of the certification to passed
+    const updatedCertifications = [...certifications];
+    updatedCertifications[selectedCertificationIndex].status = 'passed';
+    setCertifications(updatedCertifications);
+
+    // Close the certificate upload modal
+    setCertificateModalOpen(false);
+    // Open the feedback modal
+    setFeedbackOpen(true);
   };
 
   const handleFeedbackClose = () => {
@@ -103,49 +108,16 @@ const AssignedCourses = () => {
     setSnackbarOpen(false);
   };
 
-  const handleFeedbackSubmit = async () => {
-    try {
-      const feedback = {
-        empId: auth?.user?.empId,
-        empName: auth?.user?.empName,
-        courseId: selectedCourseId,
-        rating: feedbackData?.rating,
-        comment: feedbackData?.comments
-      };
-      const res = await axios.post(`/course/completed?empId=${feedback.empId}&courseId=${selectedCourseId}`, feedback);
-      setFeedbackOpen(false);
-      setSnackbarOpen(true);
-      navigate(0);
-    } catch (err) {
-      console.log(err);
-    }
+  const handleFeedbackSubmit = () => {
+    // Implement your logic to submit feedback
+    console.log(feedbackData); // For demonstration, log feedback data
+    setFeedbackOpen(false);
+    setSnackbarOpen(true); // Open the Snackbar
   };
-
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const sortedCourses = [...courses].sort((a, b) => {
-    if (sortConfig.key) {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-      if (sortConfig.key === 'DateOfCompletion') {
-        return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
-      } else if (sortConfig.key === 'duration') {
-        return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-      } else if (sortConfig.key === 'name' || sortConfig.key === 'status')
-        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-    }
-    return 0;
-  });
 
   const countByStatus = () => {
-    return courses.reduce((acc, course) => {
-      acc[course.status] = (acc[course.status] || 0) + 1;
+    return certifications.reduce((acc, certification) => {
+      acc[certification.status] = (acc[certification.status] || 0) + 1;
       return acc;
     }, {});
   };
@@ -154,30 +126,32 @@ const AssignedCourses = () => {
 
   useEffect(() => {
     setChartData(countByStatus());
-  }, [courses]);
+  }, [certifications]);
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'start':
-        return '#3498db';
-      case 'completed':
-        return '#2ecc71';
+      case 'ongoing':
+        return '#3498db'; // Blue color for Ongoing
+      case 'passed':
+        return '#2ecc71'; // Green color for Passed
+      case 'failed':
+        return '#e74c3c'; // Red color for Failed
       default:
         return '#000';
     }
   };
 
   const pieData = Object.keys(chartData).map((status) => ({
-    name: status,
+    name: status.charAt(0).toUpperCase() + status.slice(1), // Capitalize first letter
     value: chartData[status],
-    percentage: ((chartData[status] / courses.length) * 100).toFixed(1) + '%'
+    percentage: ((chartData[status] / certifications.length) * 100).toFixed(1) + '%'
   }));
 
   return (
     <div className="container">
       <div className="content-section" style={{ display: 'flex' }}>
-        <div className="courses-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
-          <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Assigned Courses</h2>
+        <div className="certifications-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
+          <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Certifications Enrolled</h2>
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
               <TableContainer
@@ -186,7 +160,7 @@ const AssignedCourses = () => {
                   borderRadius: '8px',
                   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                   paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                  marginBottom: '-16px' // Compensate for the added padding to avoid double scrollbars
+                  marginBottom: '-16px' // Compensate for the added
                 }}
                 component={Paper}
                 sx={{
@@ -208,29 +182,28 @@ const AssignedCourses = () => {
                 <Table stickyHeader>
                   <TableHead style={{ textAlign: 'center' }}>
                     <TableRow>
-                      <TableCell style={{ textAlign: 'center' }}>Course Name</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Duration(Hours)</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>Certification Name</TableCell>
                       <TableCell style={{ textAlign: 'center' }}>Status</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>Attempts</TableCell>
                       <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {courses?.map((course, index) => (
+                    {certifications.map((certification, index) => (
                       <TableRow key={index}>
-                        <TableCell style={{ textAlign: 'center' }}>{course?.name}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{certification.name}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
-                          <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(course.status) }}>
-                            {course?.status === 'start' && 'Yet to Start'}
-                            {course?.status === 'completed' && 'Completed'}
+                          <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(certification.status) }}>
+                            {certification.status.charAt(0).toUpperCase() + certification.status.slice(1)}
                           </Typography>
                         </TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{certification.attempts}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
-                          {course?.status === 'start' && (
+                          {certification.status === 'ongoing' && (
                             <Button
                               variant="contained"
                               style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }}
-                              onClick={() => handleSelfAssessmentClick(course?.id, index)}
+                              onClick={() => handleSelfAssessmentClick(index)}
                             >
                               Self Assessment
                             </Button>
@@ -244,7 +217,6 @@ const AssignedCourses = () => {
             </div>
           </div>
         </div>
-
         <div className="pie-chart-section" style={{ flex: '0 1 30%', position: 'sticky', top: 20 }}>
           <Typography variant="h4" style={{ textAlign: 'center', marginTop: '45%', marginBottom: '-60px', fontSize: '18px' }}>
             Progress Tracker
@@ -261,8 +233,9 @@ const AssignedCourses = () => {
                 fill="#8884D8"
                 labelLine={false} // Remove lines extending from the numbers
                 // Render custom label inside the pie chart
+                // Render custom label inside the pie chart
                 label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-                  const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
+                  const radius = innerRadius + (outerRadius - innerRadius) * 0.5; // Adjust label radius
                   const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
                   const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
                   return (
@@ -270,16 +243,20 @@ const AssignedCourses = () => {
                       x={x}
                       y={y}
                       fill="#fff" // Set text color to white
-                      textAnchor={x > cx ? 'start' : 'end'}
-                      dominantBaseline="central"
+                      textAnchor="middle" // Center align the text horizontally
+                      dominantBaseline="middle" // Center align the text vertically
+                      fontSize={14} // Adjust font size as needed
                     >
-                      {`${Math.round(percent * 100)}%`} {/* Round the percentage value */}
+                      {`${Math.round(percent * 100)}%`}
                     </text>
                   );
                 }}
               >
                 {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={getStatusColor(entry.name)} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.name === 'Ongoing' ? '#3498db' : entry.name === 'Failed' ? '#e74c3c' : '#2ecc71'}
+                  />
                 ))}
               </Pie>
               <Tooltip />
@@ -287,7 +264,6 @@ const AssignedCourses = () => {
           </ResponsiveContainer>
         </div>
       </div>
-
       <Modal open={modalOpen} onClose={() => handleCloseModal(false)}>
         <div
           style={{
@@ -307,7 +283,7 @@ const AssignedCourses = () => {
             Self Assessment
           </Typography>
           <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px', textAlign: 'center' }}>
-            Have you completed the course?
+            Have you cleared the certification exam?
           </Typography>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '25px' }}>
             <Button
@@ -323,6 +299,45 @@ const AssignedCourses = () => {
               onClick={() => handleCloseModal(false)}
             >
               No
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* New Modal for Certificate Upload */}
+      <Modal open={certificateModalOpen} onClose={() => setCertificateModalOpen(false)}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: 'white',
+            padding: '40px',
+            outline: 'none',
+            borderRadius: '8px',
+            width: '60%',
+            maxWidth: '400px'
+          }}
+        >
+          <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
+            Upload Passing Certificate
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom style={{ fontSize: '16px', textAlign: 'center' }}>
+            Please upload your passing certificate for verification.
+          </Typography>
+          <div style={{ margin: '20px auto', textAlign: 'center' }}>
+            <input type="file" accept=".pdf" onChange={handleFileUpload} style={{ display: 'none' }} id="upload-file" />
+            <label htmlFor="upload-file">
+              <Button variant="contained" color="primary" component="span">
+                Choose File
+              </Button>
+            </label>
+            <span style={{ marginLeft: '10px' }}>{selectedFileName}</span> {/* Display selected file name */}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '25px' }}>
+            <Button variant="contained" color="primary" onClick={handleCertificateUpload}>
+              Submit
             </Button>
           </div>
         </div>
@@ -354,16 +369,17 @@ const AssignedCourses = () => {
           }}
         >
           <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
-            Course Feedback
+            Certification Feedback
           </Typography>
           <div style={{ marginBottom: '20px', textAlign: 'center' }}>
             <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px' }}>
-              Rate the course: <span style={{ color: '#3453cf', fontWeight: 'bold' }}>{courses[selectedCourseIndex]?.name}</span>{' '}
-              {/* Display course name in blue */}
+              Rate the certification:{' '}
+              <span style={{ color: '#3453cf', fontWeight: 'bold' }}>{certifications[selectedCertificationIndex]?.name}</span>{' '}
+              {/* Display certification name in blue */}
             </Typography>
             <div style={{ display: 'inline-block' }}>
               <Rating
-                name="course-rating"
+                name="certification-rating"
                 value={feedbackData.rating}
                 onChange={(event, newValue) => setFeedbackData({ ...feedbackData, rating: newValue })}
                 aria-required
@@ -385,7 +401,7 @@ const AssignedCourses = () => {
             <Button variant="contained" color="primary" onClick={handleFeedbackSubmit} disabled={feedbackData.rating === 0}>
               Submit
             </Button>
-            <Button variant="contained" onClick={handleFeedbackSubmit} style={{ marginLeft: '10px' }}>
+            <Button variant="contained" onClick={handleFeedbackClose} style={{ marginLeft: '10px' }}>
               Skip
             </Button>
           </div>
@@ -393,5 +409,6 @@ const AssignedCourses = () => {
       </Modal>
     </div>
   );
-};
-export default AssignedCourses;
+}
+
+export default CertificationsApproved;

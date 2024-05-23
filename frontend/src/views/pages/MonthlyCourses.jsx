@@ -85,13 +85,10 @@ const MonthlyCourses = () => {
       const bValue = b[sortConfig.key];
 
       if (sortConfig.key === 'courseName' || sortConfig.key === 'domain') {
-        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+        return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'duration') {
         return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
       }
-      // } else if (sortConfig.key === 'domain') {
-      //   return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-      // }
     }
     return 0;
   });

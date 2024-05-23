@@ -18,5 +18,5 @@ public class CertificationStatus {
     private String startDate=new SimpleDateFormat("dd-MM-yyyy").format(new Date());
     private String completionDate;
     private String status;
-    private Integer Attempt=1;
+    private Integer attempt=1;
 }

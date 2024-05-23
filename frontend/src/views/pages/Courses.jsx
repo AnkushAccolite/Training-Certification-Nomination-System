@@ -110,6 +110,10 @@ function Courses() {
   };
 
   const nominateCourses = async () => {
+    if (selectedCourseIds.length === 0) {
+      alert('Please select at least one course to nominate');
+      return;
+    }
     try {
       const payload = {
         empName: auth?.user?.empName,
