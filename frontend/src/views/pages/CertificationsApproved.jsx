@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
-function AssignedCertifications() {
+function CertificationsApproved() {
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
 
@@ -126,7 +126,7 @@ function AssignedCertifications() {
         <div className="container">
             <div className="content-section" style={{ display: 'flex' }}>
                 <div className="certifications-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
-                    <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Certifications Enrolled</h2>
+                    <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Certifications Approved</h2>
                     <div style={{ flex: '1', overflow: 'hidden' }}>
                         <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
                             <TableContainer
@@ -330,4 +330,4 @@ function AssignedCertifications() {
     );
 }
 
-export default AssignedCertifications;
+export default CertificationsApproved;
