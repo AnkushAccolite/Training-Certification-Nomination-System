@@ -299,57 +299,76 @@ function Courses() {
               }}
             >
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-              <TableCell></TableCell>
-                <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                  Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                </TableCell>
-                <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                  Category <ArrowDropDownIcon style={{ fontSize: '130%' }}/>
-                </TableCell>
-                <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                  Duration (Hours) <ArrowDropDownIcon style={{ fontSize: '130%' }}/>
-                </TableCell>
-                <TableCell  style={{ textAlign: 'center'}}>
-                  Status 
-                </TableCell>
-                <TableCell style={{ textAlign: 'center'}}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sortedCourses.map((row) => (
-                <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                  {/* Render the checkbox only if the status is "Not Opted" */}
-                  <TableCell padding="checkbox">
-                    
-                      <Checkbox
-                        checked={selectedCourseIds.includes(row?.courseId)}
-                        onChange={(e) => handleCheckboxChange(e, row?.courseId)}
-                        disabled={getStatus(row?.courseId) !== 'Not Opted'}
-                      />
-                    
-                  </TableCell>
+          <TableHead>
+  <TableRow>
+    <TableCell></TableCell>
+    <TableCell
+      onClick={() => handleSort('courseName')}
+      style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+    >
+      Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+    </TableCell>
+    <TableCell
+      onClick={() => handleSort('domain')}
+      style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+    >
+      Category <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+    </TableCell>
+    <TableCell
+      onClick={() => handleSort('duration')}
+      style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+    >
+      Duration (Hours) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+    </TableCell>
+    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
+      Status
+    </TableCell>
+    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
+      Actions
+    </TableCell>
+  </TableRow>
+</TableHead>
+<TableBody>
+  {sortedCourses.map((row, index) => (
+    <TableRow
+      key={row?.courseId}
+      sx={{
+        '&:last-child td, &:last-child th': { border: 0 },
+        backgroundColor: index % 2 === 0 ? '#F2F2F2' : 'white'
+      }}
+    >
+      {/* Render the checkbox only if the status is "Not Opted" */}
+      <TableCell padding="checkbox">
+        <Checkbox
+          checked={selectedCourseIds.includes(row?.courseId)}
+          onChange={(e) => handleCheckboxChange(e, row?.courseId)}
+          disabled={getStatus(row?.courseId) !== 'Not Opted'}
+        />
+      </TableCell>
 
-                  <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row?.duration}</TableCell>
-                  <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)), textAlign:'center' }}>{getStatus(row?.courseId)}</TableCell>                  <TableCell>
-                    <Button variant="contained" onClick={() => handleViewDetails(row)}>
-                      View Details
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => cancelNomination(row?.courseId)}
-                      disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
-                      style={{ marginLeft: '8px' }}
-                    >
-                      Cancel
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+      <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
+      <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
+      <TableCell style={{ textAlign: 'center' }}>{row?.duration}</TableCell>
+      <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)), textAlign: 'center' }}>
+        {getStatus(row?.courseId)}
+      </TableCell>
+      <TableCell>
+        <Button variant="contained" onClick={() => handleViewDetails(row)}>
+          View Details
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={() => cancelNomination(row?.courseId)}
+          disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
+          style={{ marginLeft: '8px' }}
+        >
+          Cancel
+        </Button>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
           </Table>
         </TableContainer>
         </div>

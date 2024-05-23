@@ -205,41 +205,42 @@ const AssignedCourses = () => {
                   }
                 }}
               >
-                <Table stickyHeader>
-                  <TableHead style={{ textAlign: 'center' }}>
-                    <TableRow>
-                      <TableCell style={{ textAlign: 'center' }}>Course Name</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Duration(Hours)</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Status</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {courses?.map((course, index) => (
-                      <TableRow key={index}>
-                        <TableCell style={{ textAlign: 'center' }}>{course?.name}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>
-                          <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(course.status) }}>
-                            {course?.status === 'start' && 'Yet to Start'}
-                            {course?.status === 'completed' && 'Completed'}
-                          </Typography>
-                        </TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>
-                          {course?.status === 'start' && (
-                            <Button
-                              variant="contained"
-                              style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }}
-                              onClick={() => handleSelfAssessmentClick(course?.id, index)}
-                            >
-                              Self Assessment
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+               <Table stickyHeader>
+  <TableHead style={{ textAlign: 'center' }}>
+    <TableRow>
+      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Course Name</TableCell>
+      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Duration(Hours)</TableCell>
+      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
+      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    {courses?.map((course, index) => (
+      <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? '#F2F2F2' : 'white' }}>
+        <TableCell style={{ textAlign: 'center' }}>{course?.name}</TableCell>
+        <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
+        <TableCell style={{ textAlign: 'center' }}>
+          <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(course.status) }}>
+            {course?.status === 'start' && 'Yet to Start'}
+            {course?.status === 'completed' && 'Completed'}
+          </Typography>
+        </TableCell>
+        <TableCell style={{ textAlign: 'center' }}>
+          {course?.status === 'start' && (
+            <Button
+              variant="contained"
+              style={{ backgroundColor: '#3498db', color: 'white', marginRight: '8px' }}
+              onClick={() => handleSelfAssessmentClick(course?.id, index)}
+            >
+              Self Assessment
+            </Button>
+          )}
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>
+
               </TableContainer>
             </div>
           </div>
