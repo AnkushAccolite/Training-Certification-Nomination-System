@@ -129,12 +129,12 @@ const CertificationsCompleted = () => {
             >
               <Table aria-label="completed certifications table">
                 <TableHead>
-                  <TableRow>
-                    <TableCell style={{ textAlign: 'center' }}>S.No</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>Certification Name </TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>Duration (hours) </TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>Date of Completion</TableCell>
-                  </TableRow>
+                <TableRow>
+        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>S.No</TableCell>
+        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Certification Name </TableCell>
+        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Duration (hours) </TableCell>
+        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Date of Completion</TableCell>
+      </TableRow>
                 </TableHead>
                 <TableBody>
                   {sortedRows
@@ -145,9 +145,8 @@ const CertificationsCompleted = () => {
                       const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
                       return afterStartDate && beforeEndDate;
                     })
-                    .map((row) => (
-                      <TableRow key={row.SNo}>
-                        <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
+                    .map((row,index) => (
+                    <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f2f2f2' }}>                        <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row.CertificationName}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>

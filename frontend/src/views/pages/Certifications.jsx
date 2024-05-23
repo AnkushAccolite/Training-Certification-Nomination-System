@@ -270,17 +270,17 @@ function Certifications() {
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
-              <TableRow>
+            <TableRow>
                 <TableCell></TableCell>
-                <TableCell>Certification Name</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="center">Actions</TableCell>
+                <TableCell style={{ fontSize: '16px', fontWeight: 'bold' }}>Certification Name</TableCell>
+                <TableCell style={{ fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                <TableCell style={{ fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
+                <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {courses.filter(filterCourses).map((row) => (
-                <TableRow key={row?.certificationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            {courses.filter(filterCourses).map((row, index) => (
+                <TableRow key={row?.certificationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f2f2f2' }}>
                   <TableCell padding="checkbox">
                     <Checkbox
                       checked={selectedCourseIds.includes(row?.certificationId)}
