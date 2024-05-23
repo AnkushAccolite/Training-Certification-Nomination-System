@@ -24,6 +24,7 @@ const CertificationApplicationRequests = Loadable(lazy(() => import('views/pages
 const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
 const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
 const AddCertification = Loadable(lazy(() => import('views/pages/AddCertification')));
+const AddCertification = Loadable(lazy(() => import('views/pages/AddCertification')));
 
 const MonthlyCourses = Loadable(lazy(() => import('views/pages/MonthlyCourses')));
 
