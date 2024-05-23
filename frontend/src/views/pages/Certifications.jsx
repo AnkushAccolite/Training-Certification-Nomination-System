@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'; // Import the PDF icon
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -132,6 +132,8 @@ function Certifications() {
     }
   };
 
+ 
+
   const openConfirmationDialog = () => {
     if (selectedCourseIds.length === 0) {
       alert('Please select at least one certification for nomination.');
@@ -155,6 +157,8 @@ function Certifications() {
     const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
     navigate(0);
   };
+
+
 
   const handlePDFClick = () => {
     setShowPDF(true);
