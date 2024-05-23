@@ -424,7 +424,7 @@ const EmployeeReport = () => {
               <Table aria-label="employee report table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>EmpID</TableCell>
+                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>ID</TableCell>
                     <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Name</TableCell>
                     <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Courses</TableCell>
                     <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
