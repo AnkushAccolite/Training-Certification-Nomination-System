@@ -19,5 +19,5 @@ public class Certification {
 
     private String category;
 
-    private Boolean isDeleted=false;
+    private Boolean isDeleted = false;
 }

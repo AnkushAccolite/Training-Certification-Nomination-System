@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CertificationService {
@@ -31,18 +28,18 @@ public class CertificationService {
     LocalDate currentDate = LocalDate.now();
     Month currentMonth = currentDate.getMonth();
 
-    public void deleteCertification(String certificationId){
+    public void deleteCertification(String certificationId) {
         Optional<Certification> certification = this.certificationRepository.findById(certificationId);
-        certification.ifPresent(cert->cert.setIsDeleted(true));
+        certification.ifPresent(cert -> cert.setIsDeleted(true));
         this.certificationRepository.save(certification.get());
     }
 
-    public EmployeeCertification getEmployeeCertification(String empId){
-        Employee employee=this.employeeRepository.findByEmpId(empId);
-        return new EmployeeCertification(employee.getPendingCertifications(),employee.getCertifications());
+    public EmployeeCertification getEmployeeCertification(String empId) {
+        Employee employee = this.employeeRepository.findByEmpId(empId);
+        return new EmployeeCertification(employee.getPendingCertifications(), employee.getCertifications());
     }
 
-    public void nominateCertification(String empId,ArrayList<String> certificationId){
+    public void nominateCertification(String empId, ArrayList<String> certificationId) {
         Employee employee = this.employeeRepository.findByEmpId(empId);
 
         ArrayList<String> pendingCertifications = employee.getPendingCertifications();
@@ -51,27 +48,27 @@ public class CertificationService {
         this.employeeRepository.save(employee);
     }
 
-    public ResponseEntity<?> approveCertification(String empId,String certificationId){
+    public ResponseEntity<?> approveCertification(String empId, String certificationId) {
         Employee employee = this.employeeRepository.findByEmpId(empId);
 
-        ArrayList<CertificationStatus> certifications =employee.getCertifications();
+        ArrayList<CertificationStatus> certifications = employee.getCertifications();
 
-        String currentDate=new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
-        if(employee.isCertificationPresent(certificationId)){
+        if (employee.isCertificationPresent(certificationId)) {
             certifications.forEach(certification -> {
                 if (certification.getCertificationId().equals(certificationId)) {
                     certification.setStatus("inProgress");
-                    certification.setAttempt(certification.getAttempt()+1);
+                    certification.setAttempt(certification.getAttempt() + 1);
                 }
             });
-        }else{
-            certifications.add(new CertificationStatus(certificationId,currentDate,null,"inProgress",1));
+        } else {
+            certifications.add(new CertificationStatus(certificationId, currentDate, null, "inProgress", 1));
         }
 
         employee.setCertifications(certifications);
 
-        ArrayList<String> pendingCerfications=employee.getPendingCertifications();
+        ArrayList<String> pendingCerfications = employee.getPendingCertifications();
 
         pendingCerfications.remove(certificationId);
 
@@ -81,14 +78,14 @@ public class CertificationService {
         return ResponseEntity.ok().build();
     }
 
-    public void certificationCompleted(String empId, String certificationId, CertificationFeedback certificationFeedback){
+    public void certificationCompleted(String empId, String certificationId, CertificationFeedback certificationFeedback) {
         this.certificationFeedbackRepository.save(certificationFeedback);
-        Employee employee=this.employeeRepository.findByEmpId(empId);
+        Employee employee = this.employeeRepository.findByEmpId(empId);
 
-        ArrayList<CertificationStatus> certifications=employee.getCertifications();
+        ArrayList<CertificationStatus> certifications = employee.getCertifications();
 
-        certifications.forEach(x->{
-            if(Objects.equals(x.getCertificationId(), certificationId)){
+        certifications.forEach(x -> {
+            if (Objects.equals(x.getCertificationId(), certificationId)) {
                 x.setCompletionDate(new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
                 x.setStatus("completed");
             }
@@ -98,13 +95,13 @@ public class CertificationService {
         this.employeeRepository.save(employee);
     }
 
-    public void certificationFailed(String empId,String certificationId){
-        Employee employee=this.employeeRepository.findByEmpId(empId);
+    public void certificationFailed(String empId, String certificationId) {
+        Employee employee = this.employeeRepository.findByEmpId(empId);
 
-        ArrayList<CertificationStatus> certifications=employee.getCertifications();
+        ArrayList<CertificationStatus> certifications = employee.getCertifications();
 
-        certifications.forEach(x->{
-            if(Objects.equals(x.getCertificationId(), certificationId)){
+        certifications.forEach(x -> {
+            if (Objects.equals(x.getCertificationId(), certificationId)) {
                 x.setStatus("failed");
             }
         });
@@ -113,12 +110,47 @@ public class CertificationService {
         this.employeeRepository.save(employee);
     }
 
-    public void cancelNomination(String empId,String certificationId){
-        Employee employee=this.employeeRepository.findByEmpId(empId);
+    public void cancelNomination(String empId, String certificationId) {
+        Employee employee = this.employeeRepository.findByEmpId(empId);
 
-        ArrayList<String> temp=employee.getPendingCertifications();
+        ArrayList<String> temp = employee.getPendingCertifications();
         temp.remove(certificationId);
         employee.setPendingCertifications(temp);
         this.employeeRepository.save(employee);
+    }
+
+    public List<CertificationReportTemplate> getCertificationReport() {
+        List<Employee> employees = this.employeeRepository.findAllByOrderByEmpIdAsc();
+        List<CertificationReportTemplate> certificationReport = new ArrayList<>();
+
+        employees.forEach(employee -> {
+            CertificationReportTemplate report = new CertificationReportTemplate();
+            List<String> certNames = new ArrayList<>();
+            List<String> categories = new ArrayList<>();
+            List<String> completionDates = new ArrayList<>();
+
+            employee.getCertifications().stream()
+                    .filter(cert -> cert.getStatus().equals("completed"))
+                    .forEach(cert -> {
+                        Certification certification = certificationRepository.findById(cert.getCertificationId())
+                                .orElse(null);
+                        if (certification != null) {
+                            certNames.add(certification.getName());
+                            categories.add(certification.getCategory());
+                            completionDates.add(cert.getCompletionDate());
+                        }
+                    });
+            if (!certNames.isEmpty()) {
+                report.setEmpId(employee.getEmpId());
+                report.setEmpName(employee.getEmpName());
+                report.setCertName(certNames);
+                report.setCategory(categories);
+                report.setCompletionDate(completionDates);
+
+                certificationReport.add(report);
+            }
+        });
+        
+        return certificationReport;
     }
 }
