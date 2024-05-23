@@ -133,12 +133,16 @@ const AssignedCourses = () => {
     if (sortConfig.key) {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
-      if (sortConfig.key === 'DateOfCompletion') {
-        return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
+      // if (sortConfig.key === 'duration') {
+      //   return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+      // } else if (sortConfig.key === 'courseName' || sortConfig.key === 'status')
+      //   return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+        
+      if (sortConfig.key === 'courseName' ||sortConfig.key === 'status' ) {
+        return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'duration') {
-        return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-      } else if (sortConfig.key === 'name' || sortConfig.key === 'status')
-        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+        return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
+      }
     }
     return 0;
   });
@@ -175,9 +179,9 @@ const AssignedCourses = () => {
 
   return (
     <div className="container">
+      <h2 style={{ paddingBottom: '20px', textAlign:'center' }}>Assigned Courses</h2>
       <div className="content-section" style={{ display: 'flex' }}>
-        <div className="courses-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
-          <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Assigned Courses</h2>
+        <div className="courses-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}> 
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
               <TableContainer
@@ -208,14 +212,23 @@ const AssignedCourses = () => {
                <Table stickyHeader>
   <TableHead style={{ textAlign: 'center' }}>
     <TableRow>
-      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Course Name</TableCell>
-      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Duration(Hours)</TableCell>
-      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
-      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+      <TableCell style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('courseName')} >
+        Course Name
+        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+        </TableCell>
+      <TableCell style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('duration')}>
+        Duration(Hours)
+        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+        </TableCell>
+      <TableCell style={{ textAlign: 'center', cursor: 'pointer',  fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('status')}>
+        Status
+      <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+      </TableCell>
+      <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
     </TableRow>
   </TableHead>
   <TableBody>
-    {courses?.map((course, index) => (
+    {sortedCourses?.map((course, index) => (
       <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? '#F2F2F2' : 'white' }}>
         <TableCell style={{ textAlign: 'center' }}>{course?.name}</TableCell>
         <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
