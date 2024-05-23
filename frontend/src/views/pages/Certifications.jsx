@@ -279,7 +279,7 @@ function Certifications() {
                 <TableRow
                   key={row?.certificationId}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f2f2f2' }}
+                  style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
                 >
                   <TableCell padding="checkbox">
                     <Checkbox

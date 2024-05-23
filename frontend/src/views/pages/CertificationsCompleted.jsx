@@ -150,7 +150,7 @@ const CertificationsCompleted = () => {
                       return afterStartDate && beforeEndDate;
                     })
                     .map((row, index) => (
-                      <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f2f2f2' }}>
+                      <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                         {' '}
                         <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row.CertificationName}</TableCell>
