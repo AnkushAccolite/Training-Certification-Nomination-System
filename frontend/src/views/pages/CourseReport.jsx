@@ -44,7 +44,7 @@ const CourseReport = () => {
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
 
-  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); 
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
@@ -148,12 +148,11 @@ const CourseReport = () => {
     const tableData = courses
       .map((course) => {
         return course.monthlyDetails.map((data) => [
-          course.courseId,
+          
           course.name,
           course.category,
           data.employeesEnrolled,
           data.employeesCompleted,
-          // `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
           `${data.attendance}%`,
           getMonthName(data.completionMonth)
         ]);
@@ -163,30 +162,25 @@ const CourseReport = () => {
     const tableData1 = courses
       .map((course) => {
         return course.monthlyDetails.map((data) => ({
-          'Course ID': course.courseId,
           Name: course.name,
           Category: course.category,
           'Employees Enrolled': data.employeesEnrolled,
           'Employees Completed': data.employeesCompleted,
-          // 'Attendance': `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
           Attendance: `${data.attendance}%`,
           'Completion Month': getMonthName(data.completionMonth)
         }));
       })
       .flat();
 
-    const chartCanvas = document.querySelector('canvas');
-    const chartImage = chartCanvas.toDataURL('image/jpeg');
-
+   
     switch (format) {
       case 'pdf':
         doc.autoTable({
-          head: [['Course ID', 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month']],
+          head: [[ 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month']],
           body: tableData,
           startY: 20
         });
 
-        doc.addImage(chartImage, 'JPEG', 60, doc.autoTable.previous.finalY + 10, 80, 80);
         doc.save('course_report.pdf');
         break;
       case 'excel':
@@ -197,7 +191,7 @@ const CourseReport = () => {
         break;
       case 'csv':
         const csv = Papa.unparse({
-          fields: ['Course ID', 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month'],
+          fields: ['Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month'],
           data: tableData
         });
         const csvContent = `data:text/csv;charset=utf-8,${csv}`;
@@ -357,9 +351,7 @@ const CourseReport = () => {
             onChange={(e) => setSearchQueryName(e.target.value)}
             style={{ marginRight: '10px' }}
           />
-          <Button variant="contained" startIcon={<SearchIcon />} onClick={handleSearch} style={{ marginRight: '10px' }}>
-            Search
-          </Button>
+         
           <Button
             variant="contained"
             endIcon={<DownloadIcon />}
@@ -385,7 +377,7 @@ const CourseReport = () => {
               <ListItem button onClick={() => handleGenerateReport('pdf')}>
                 <ListItemText primary="PDF" />
               </ListItem>
-              <ListItem button onClick={() => handleGenerateReport('xlsx')}>
+              <ListItem button onClick={() => handleGenerateReport('excel')}>
                 <ListItemText primary="Excel" />
               </ListItem>
               <ListItem button onClick={() => handleGenerateReport('csv')}>
@@ -425,73 +417,72 @@ const CourseReport = () => {
               <Table aria-label="course report table">
                 <TableHead>
                   <TableRow>
-                    {/* <TableCell align="center">Course ID</TableCell> */}
-                    <TableCell align="center">Name</TableCell>
-                    <TableCell align="center">Category</TableCell>
-                    <TableCell align="center">Employees Enrolled</TableCell>
-                    <TableCell align="center">Employees Completed</TableCell>
-                    <TableCell align="center">Attendance</TableCell>
-                    <TableCell align="center">Completion Month</TableCell>
+                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Name</TableCell>
+                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Employees Enrolled</TableCell>
+                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Employees Completed</TableCell>
+                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Attendance</TableCell>
+                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Completion Month</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {courses.map((course) => {
-                    const matchingCourses = course.monthlyDetails.filter((data) => {
-                      const completionMonth = getMonthName(data.completionMonth);
-                      return (
-                        (!selectedMonth || data.completionMonth.toString() === selectedMonth) &&
-                        (!selectedCategory || course.category.toLowerCase() === selectedCategory.toLowerCase()) &&
-                        (!searchQueryName || course.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
-                        (!searchQueryID || course.courseId.toLowerCase().includes(searchQueryID.toLowerCase())) &&
-                        (!selectedQuarter ||
-                          (selectedQuarter === 'Q1' && data.completionMonth >= 1 && data.completionMonth <= 3) ||
-                          (selectedQuarter === 'Q2' && data.completionMonth >= 4 && data.completionMonth <= 6) ||
-                          (selectedQuarter === 'Q3' && data.completionMonth >= 7 && data.completionMonth <= 9) ||
-                          (selectedQuarter === 'Q4' && data.completionMonth >= 10 && data.completionMonth <= 12) ||
-                          (selectedQuarter === 'H1' && data.completionMonth >= 1 && data.completionMonth <= 6) ||
-                          (selectedQuarter === 'H2' && data.completionMonth >= 7 && data.completionMonth <= 12))
-                      );
-                    });
+  {courses?.map((course, courseIndex) => {
+    const matchingDetails = course.monthlyDetails.filter((data) => {
+      const completionMonth = getMonthName(data.completionMonth);
+      return (
+        (!selectedMonth || data.completionMonth.toString() === selectedMonth) &&
+        (!selectedCategory || course.category.toLowerCase() === selectedCategory.toLowerCase()) &&
+        (!searchQueryName || course.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
+        (!searchQueryID || course.courseId.toLowerCase().includes(searchQueryID.toLowerCase())) &&
+        (!selectedQuarter ||
+          (selectedQuarter === 'Q1' && data.completionMonth >= 1 && data.completionMonth <= 3) ||
+          (selectedQuarter === 'Q2' && data.completionMonth >= 4 && data.completionMonth <= 6) ||
+          (selectedQuarter === 'Q3' && data.completionMonth >= 7 && data.completionMonth <= 9) ||
+          (selectedQuarter === 'Q4' && data.completionMonth >= 10 && data.completionMonth <= 12) ||
+          (selectedQuarter === 'H1' && data.completionMonth >= 1 && data.completionMonth <= 6) ||
+          (selectedQuarter === 'H2' && data.completionMonth >= 7 && data.completionMonth <= 12))
+      );
+    });
 
-                    if (matchingCourses.length > 0) {
-                      const rows = matchingCourses.map((data, index) => {
-                        const completionMonth = getMonthName(data.completionMonth);
-                        if (index === 0) {
-                          return (
-                            <TableRow key={`${course.courseId}_${index}`}>
-                              {/* <TableCell align="center" rowSpan={matchingCourses.length}>{course.courseId}</TableCell> */}
-                              <TableCell align="center" rowSpan={matchingCourses.length}>
-                                {course.name}
-                              </TableCell>
-                              <TableCell align="center" rowSpan={matchingCourses.length}>
-                                {course.category}
-                              </TableCell>
-                              <TableCell align="center">{data.employeesEnrolled}</TableCell>
-                              <TableCell align="center">{data.employeesCompleted}</TableCell>
-                              {/* <TableCell align="center">{`${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`}</TableCell> */}
-                              <TableCell align="center">{`${data.attendance}%`}</TableCell>
-                              <TableCell align="center">{completionMonth}</TableCell>
-                            </TableRow>
-                          );
-                        } else {
-                          return (
-                            <TableRow key={`${course.courseId}_${index}`}>
-                              <TableCell align="center">{data.employeesEnrolled}</TableCell>
-                              <TableCell align="center">{data.employeesCompleted}</TableCell>
-                              {/* <TableCell align="center">{`${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`}</TableCell> */}
-                              <TableCell align="center">{`${data.attendance}%`}</TableCell>
-                              <TableCell align="center">{completionMonth}</TableCell>
-                            </TableRow>
-                          );
-                        }
-                      });
+    if (matchingDetails.length > 0) {
+      const rows = matchingDetails.map((data, detailIndex) => {
+        const completionMonth = getMonthName(data.completionMonth);
+        const rowColorStyle = courseIndex % 2 === 0 ? { backgroundColor: '#f5f5f5' } : { backgroundColor: 'white' }; 
 
-                      return rows;
-                    } else {
-                      return null;
-                    }
-                  })}
-                </TableBody>
+        if (detailIndex === 0) {
+          return (
+            <TableRow key={`${course.courseId}_${detailIndex}`} style={rowColorStyle}>
+              <TableCell align="center" rowSpan={matchingDetails.length}>
+                {course.name}
+              </TableCell>
+              <TableCell align="center" rowSpan={matchingDetails.length}>
+                {course.category}
+              </TableCell>
+              <TableCell align="center">{data.employeesEnrolled}</TableCell>
+              <TableCell align="center">{data.employeesCompleted}</TableCell>
+              <TableCell align="center">{`${data.attendance}%`}</TableCell>
+              <TableCell align="center">{completionMonth}</TableCell>
+            </TableRow>
+          );
+        } else {
+          return (
+            <TableRow key={`${course.courseId}_${detailIndex}`} style={rowColorStyle}>
+              <TableCell align="center">{data.employeesEnrolled}</TableCell>
+              <TableCell align="center">{data.employeesCompleted}</TableCell>
+              <TableCell align="center">{`${data.attendance}%`}</TableCell>
+              <TableCell align="center">{completionMonth}</TableCell>
+            </TableRow>
+          );
+        }
+      });
+
+      return rows;
+    } else {
+      return null;
+    }
+  })}
+</TableBody>
+
               </Table>
             </TableContainer>
           </div>
