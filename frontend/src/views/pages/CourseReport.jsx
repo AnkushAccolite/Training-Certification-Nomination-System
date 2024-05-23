@@ -273,9 +273,7 @@ const CourseReport = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div style={{ textAlign: 'center' }}>
-        <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
-          Course Report
-        </Typography>
+        <h2>Course Report</h2>
         <div className="employee-report-filters">
           <TextField select label="Filter" value={selectedFilter} onChange={handleFilterChange} style={{ marginRight: '10px' }}>
             <MenuItem value="Monthly">Monthly</MenuItem>

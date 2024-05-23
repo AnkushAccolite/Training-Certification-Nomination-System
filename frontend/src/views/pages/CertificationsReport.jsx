@@ -221,9 +221,7 @@ const CertificationsReport = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div style={{ textAlign: 'center' }}>
-        <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
-          Certifications Report
-        </Typography>
+        <h2>Certifications Report</h2>
         <div className="employee-report-filters" style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
           <TextField
             select
