@@ -280,7 +280,7 @@ function Certifications() {
             </TableHead>
             <TableBody>
             {courses.filter(filterCourses).map((row, index) => (
-                <TableRow key={row?.certificationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f2f2f2' }}>
+                <TableRow key={row?.certificationId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                   <TableCell padding="checkbox">
                     <Checkbox
                       checked={selectedCourseIds.includes(row?.certificationId)}

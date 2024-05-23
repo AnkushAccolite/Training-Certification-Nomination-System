@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Paper,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  FormControl
-} from '@mui/material';
+import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -34,7 +24,7 @@ const rows = [
   createData(2, 'Certification 2', '3 ', '2024-05-01'),
   createData(3, 'Certification 3', '4 ', '2024-03-01'),
   createData(4, 'Certification 4', '1 ', '2024-12-01'),
-  createData(5, 'Certification 5', '6 ', '2024-06-01'),
+  createData(5, 'Certification 5', '6 ', '2024-06-01')
 ];
 
 const CertificationsCompleted = () => {
@@ -75,7 +65,7 @@ const CertificationsCompleted = () => {
   const auth = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!(auth?.isAuthenticated)) navigate('/login');
+    if (!auth?.isAuthenticated) navigate('/login');
   }, [auth, navigate]);
 
   const getPieChartData = () => {
@@ -92,125 +82,132 @@ const CertificationsCompleted = () => {
     return data;
   };
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#c32148', '#777777', '#842593', '#f88379', '#AF7AC5', '#9FE2BF', '#B3B6B7', '#E727B0'];
+  const COLORS = [
+    '#0088FE',
+    '#00C49F',
+    '#FFBB28',
+    '#FF8042',
+    '#c32148',
+    '#777777',
+    '#842593',
+    '#f88379',
+    '#AF7AC5',
+    '#9FE2BF',
+    '#B3B6B7',
+    '#E727B0'
+  ];
 
   return (
-    <div className="courses-completed-container">
-      <div className="left-panel">
-        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px', textAlign: 'center', marginTop: '20px' }}>
-          <span style={{ fontSize: '23px', marginRight: '10px' }}>Certifications Completed</span>
-        </Typography>
-        <div style={{ flex: '1', overflow: 'hidden' }}>
-          <div style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }}>
-            <TableContainer
-              style={{
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                marginBottom: '-16px', // Compensate for the added
-              }}
-              component={Paper}
-              sx={{
-                maxHeight: '100%',
-                overflowY: 'auto',
-                '&::-webkit-scrollbar': {
-                  width: '6px', // Reduce width of the scrollbar
-                  borderRadius: '3px', // Round scrollbar corners
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: '#FFFFFF', // Background color of the scrollbar track
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
-                  borderRadius: '3px', // Round scrollbar thumb corners
-                },
-              }}
-            >
-              <Table aria-label="completed certifications table">
-                <TableHead>
-                <TableRow>
-        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>S.No</TableCell>
-        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Certification Name </TableCell>
-        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Duration (hours) </TableCell>
-        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Date of Completion</TableCell>
-      </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sortedRows
-                    .filter((row) => {
-                      if (!startDate && !endDate) return true;
-                      const completionDate = dayjs(row.DateOfCompletion);
-                      const afterStartDate = !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
-                      const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
-                      return afterStartDate && beforeEndDate;
-                    })
-                    .map((row,index) => (
-                    <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f2f2f2' }}>                        <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{row.CertificationName}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+    <div>
+      <h2 style={{ textAlign: 'center', paddingBottom:'8px' }}>Certifications Completed</h2>
+      <div className="courses-completed-container">
+        <div className="left-panel">
+          <div style={{ flex: '1', overflow: 'hidden' }}>
+            <div style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+              <TableContainer
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                  paddingRight: '8px', // Adjust padding to accommodate scrollbar width
+                  marginBottom: '-16px' // Compensate for the added
+                }}
+                component={Paper}
+                sx={{
+                  maxHeight: '100%',
+                  overflowY: 'auto',
+                  '&::-webkit-scrollbar': {
+                    width: '6px', // Reduce width of the scrollbar
+                    borderRadius: '3px' // Round scrollbar corners
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#FFFFFF' // Background color of the scrollbar track
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
+                    borderRadius: '3px' // Round scrollbar thumb corners
+                  }
+                }}
+              >
+                <Table aria-label="completed certifications table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>S.No</TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Certification Name </TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Duration (hours) </TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Date of Completion</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {sortedRows
+                      .filter((row) => {
+                        if (!startDate && !endDate) return true;
+                        const completionDate = dayjs(row.DateOfCompletion);
+                        const afterStartDate =
+                          !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
+                        const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
+                        return afterStartDate && beforeEndDate;
+                      })
+                      .map((row, index) => (
+                        <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
+                          <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
+                          <TableCell style={{ textAlign: 'center' }}>{row.CertificationName}</TableCell>
+                          <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
+                          <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="right-panel"> {/* Changed class name */}
-        <Typography variant="h4" style={{ textAlign: 'center', marginTop: '50%', marginBottom: '-30px' }}>
-          Monthly Completion Status
-        </Typography>
-        <ResponsiveContainer width="100%" height="70%">
-          <PieChart>
-            <Pie
-              data={getPieChartData()}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="35%"
-              outerRadius={105}
-              fill="#8884d8"
-              labelLine={false}
-              label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-                const radius = innerRadius + (outerRadius - innerRadius) * 0.68;
-                const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
-                const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
-                const percentage = Math.round(percent * 100);
-                const spaceAvailable = innerRadius < 20 || outerRadius - innerRadius > 30;
-                return spaceAvailable ? (
-                  <text
-                    x={x}
-                    y={y}
-                    fill="#fff"
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                  >
-                    {`${percentage}%`}
-                  </text>
-                ) : null;
-              }}
-              onMouseEnter={(e, entry) => setActiveIndex(entry.index)}
-              onMouseLeave={() => setActiveIndex(null)}
-              series={[
-                {
-                  highlightScope: { faded: 'global', highlighted: 'item' },
-                  faded: { innerRadius: 20, additionalRadius: -20, color: 'gray' },
-                },
-              ]}
-            >
-              {getPieChartData().map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                  fillOpacity={activeIndex === index ? 1 : 0.7}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
+        <div className="right-panel">
+          {' '}
+          {/* Changed class name */}
+          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '50%', marginBottom: '-30px' }}>
+            Monthly Completion Status
+          </Typography>
+          <ResponsiveContainer width="100%" height="70%">
+            <PieChart>
+              <Pie
+                data={getPieChartData()}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="35%"
+                outerRadius={105}
+                fill="#8884d8"
+                labelLine={false}
+                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                  const radius = innerRadius + (outerRadius - innerRadius) * 0.68;
+                  const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+                  const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+                  const percentage = Math.round(percent * 100);
+                  const spaceAvailable = innerRadius < 20 || outerRadius - innerRadius > 30;
+                  return spaceAvailable ? (
+                    <text x={x} y={y} fill="#fff" textAnchor="middle" dominantBaseline="central">
+                      {`${percentage}%`}
+                    </text>
+                  ) : null;
+                }}
+                onMouseEnter={(e, entry) => setActiveIndex(entry.index)}
+                onMouseLeave={() => setActiveIndex(null)}
+                series={[
+                  {
+                    highlightScope: { faded: 'global', highlighted: 'item' },
+                    faded: { innerRadius: 20, additionalRadius: -20, color: 'gray' }
+                  }
+                ]}
+              >
+                {getPieChartData().map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={activeIndex === index ? 1 : 0.7} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

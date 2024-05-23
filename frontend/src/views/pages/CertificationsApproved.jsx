@@ -122,11 +122,12 @@ function CertificationsApproved() {
     }));
 
     return (
+        <div>
+        <h2 style={{ textAlign: 'center', paddingBottom:'8px' }}>Certifications Approved</h2>
+
         <div className="container">
             <div className="content-section" style={{ display: 'flex' }}>
-                <div className="certifications-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
-                    <h2 style={{ paddingBottom: '20px', fontSize: '23px' }}>Certifications Approved</h2>
-                    <div style={{ flex: '1', overflow: 'hidden' }}>
+                <div className="certifications-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>                    <div style={{ flex: '1', overflow: 'hidden' }}>
                         <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
                             <TableContainer
                                 style={{
@@ -164,7 +165,7 @@ function CertificationsApproved() {
                                     </TableHead>
                                     <TableBody>
                                         {certifications.map((certification, index) => (
-                                            <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#F2F2F2' }}>
+                                            <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                                                 <TableCell style={{ textAlign: 'center' }}>{certification.name}</TableCell>
                                                 <TableCell style={{ textAlign: 'center' }}>
                                                     <Typography variant="body1" style={{ fontWeight: 'bold', color: getStatusColor(certification.status) }}>
@@ -322,6 +323,7 @@ function CertificationsApproved() {
                     </div>
                 </div>
             </Modal>
+        </div>
         </div>
     );
 }

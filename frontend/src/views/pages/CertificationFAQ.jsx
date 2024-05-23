@@ -21,11 +21,13 @@ const faqs = [
   },
   {
     question: 'What are the Steps to apply for certification reimbursement?',
-    answer: 'Kindly follow the below steps to apply for certification reimbursement.\n• Please get a pre-approval from your Reporting manager and Delivery Director\n• Once you have gotten the approval, please drop an email to ld@accolitedigital.com along with the pre-approval mail.\n• Once you have gone through the material, attempted the certification examination and successfully cleared it you can apply for reimbursement.\n• For reimbursement, please raise a request in expenses in swift. You may please attach bills, certification copy, approval mail from manager in that request.\n• Please use the below project number for the expenses claim as IN-10099.'
+    answer:
+      'Kindly follow the below steps to apply for certification reimbursement.\n• Please get a pre-approval from your Reporting manager and Delivery Director\n• Once you have gotten the approval, please drop an email to ld@accolitedigital.com along with the pre-approval mail.\n• Once you have gone through the material, attempted the certification examination and successfully cleared it you can apply for reimbursement.\n• For reimbursement, please raise a request in expenses in swift. You may please attach bills, certification copy, approval mail from manager in that request.\n• Please use the below project number for the expenses claim as IN-10099.'
   },
   {
     question: 'What is the eligibility criteria to apply for a certification?',
-    answer: 'You need to collect email approval from your Reporting Manager to ensure that you are eligible to apply for the certification. Accolite will reimburse the cost of the certification, provided only if first certification attempt is successful. Only for cloud & data certifications (Mentioned in Accolite Certification List), Accolite will reimburse your certification cost for a maximum of two attempts (If you pass the certification on your second attempt, you will be reimbursed for the cost of both attempts. However, if you fail the certification on your second attempt, you will not be reimbursed for either attempt).'
+    answer:
+      'You need to collect email approval from your Reporting Manager to ensure that you are eligible to apply for the certification. Accolite will reimburse the cost of the certification, provided only if first certification attempt is successful. Only for cloud & data certifications (Mentioned in Accolite Certification List), Accolite will reimburse your certification cost for a maximum of two attempts (If you pass the certification on your second attempt, you will be reimbursed for the cost of both attempts. However, if you fail the certification on your second attempt, you will not be reimbursed for either attempt).'
   },
   {
     question: 'Can I apply for certifications not listed in the approved certification list?',
@@ -53,10 +55,9 @@ function CertificationFAQ() {
   };
 
   return (
-    <div style={{ padding: '8px' }}>
-      <Typography variant="h3" gutterBottom sx={{ marginBottom: '20px' }}>
-        Certification FAQ's
-      </Typography>
+    <div style={{ padding: '8px' }}>  
+      <h2 style={{ textAlign: 'center', paddingBottom:'8px' }}>Certification FAQ's</h2>
+
       {faqs.map((faq, index) => (
         <Accordion
           key={index}
@@ -82,7 +83,9 @@ function CertificationFAQ() {
               }
             }}
           >
-            <Typography variant="h6" sx={{ fontSize: '1.00rem' }}>{faq.question}</Typography>
+            <Typography variant="h6" sx={{ fontSize: '1.00rem' }}>
+              {faq.question}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ backgroundColor: '#fffffc', padding: '20px', borderRadius: '0 0 10px 10px' }}>
             <Typography sx={{ fontSize: '0.98rem', fontStyle: 'initial' }}>
