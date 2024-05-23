@@ -22,6 +22,7 @@ const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseE
 const CertificationApplicationRequests = Loadable(lazy(() => import('views/pages/CertificationApplicationRequests')));
 const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
 const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
+const AddCertification = Loadable(lazy(() => import('views/pages/AddCertification')));
 
 const MonthlyCourses = Loadable(lazy(() => import('views/pages/MonthlyCourses')));
 
@@ -54,6 +55,10 @@ const MainRoutes = {
         {
           path: 'certifications',
           element: <Certifications />
+        },
+        {
+          path:'certifications/add-certifications',
+          element: <AddCertification />
         },
         {
           path: 'assigned-courses',

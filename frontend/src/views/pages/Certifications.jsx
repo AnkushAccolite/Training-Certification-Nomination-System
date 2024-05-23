@@ -12,6 +12,7 @@ import Paper from '@mui/material/Paper';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import QueueIcon from '@mui/icons-material/Queue';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -95,6 +96,9 @@ function Certifications() {
 
   const handleCloseDetails = () => {
     setShowDetails(false);
+  };
+  const handleClick = () => {
+    navigate('/Certifications/add-certifications');
   };
 
   const handleCheckboxChange = (event, courseId) => {
@@ -204,10 +208,33 @@ function Certifications() {
           variant="outlined"
           startIcon={<LocalLibraryIcon />}
           onClick={openConfirmationDialog}
-          style={{ marginLeft: 'auto', marginRight: '10px' }}
+          style={{ marginLeft: 'auto', marginRight: '-5px' }}
         >
           Nominate
         </Button>
+        <Button
+          style={{
+            marginRight: '-5px',
+            color: '#3498db',
+            border: 'none',
+            backgroundColor: 'transparent',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.border = '1px solid #3498db';
+            e.currentTarget.style.backgroundColor = '#eaf5fe';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.border = 'none';
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
+          className="addCertification"
+          variant="outlined"
+          startIcon={<QueueIcon />}
+          onClick={handleClick}
+        >
+          Add Certification
+        </Button>
+
 
         <Button
           style={{
