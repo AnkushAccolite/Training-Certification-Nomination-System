@@ -5,6 +5,7 @@ import Loadable from 'ui-component/Loadable';
 import EmployeeReport from 'views/pages/EmployeeReport';
 import CourseReport from 'views/pages/CourseReport';
 import CertificationsReport from 'views/pages/CertificationsReport';
+import CourseFAQ from 'views/pages/CourseFAQ';
 
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
 const Courses = Loadable(lazy(() => import('views/pages/Courses')));
@@ -14,14 +15,19 @@ const CertificationsApproved = Loadable(lazy(() => import('views/pages/Certifica
 // const Status = Loadable(lazy(() => import('views/pages/Status')));
 const CoursesCompleted = Loadable(lazy(() => import('views/pages/CoursesCompleted')));
 const CertificationsCompleted = Loadable(lazy(() => import('views/pages/CertificationsCompleted')));
+const CertificationFAQ = Loadable(lazy(() => import('views/pages/CertificationFAQ')));
 
 const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
 // const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
 const CertificationApplicationRequests = Loadable(lazy(() => import('views/pages/CertificationApplicationRequests')));
 const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
 const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
+const AddCertification = Loadable(lazy(() => import('views/pages/AddCertification')));
 
 const MonthlyCourses = Loadable(lazy(() => import('views/pages/MonthlyCourses')));
+
+const CoursesFaq = Loadable(lazy(() => import('views/pages/CourseFAQ')))
+const CertificationsFaq = Loadable(lazy(() => import('views/pages/CertificationFAQ')))
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -52,6 +58,10 @@ const MainRoutes = {
         {
           path: 'certifications',
           element: <Certifications />
+        },
+        {
+          path:'certifications/add-certifications',
+          element: <AddCertification />
         },
         {
           path: 'assigned-courses',
@@ -98,6 +108,10 @@ const MainRoutes = {
           element: <CourseReport />
         },
         {
+          path: 'course-faq',
+          element: <CourseFAQ />
+        },
+        {
           path: 'certification-report',
           element: <CertificationsReport />
         },
@@ -105,6 +119,10 @@ const MainRoutes = {
           path: 'certifications-approved',
           element: <CertificationsApproved />
         },
+        {
+          path: 'certifications-faq',
+          element: <CertificationsFaq />
+        }
       ]
     }
   ]

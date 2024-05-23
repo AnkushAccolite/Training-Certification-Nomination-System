@@ -26,7 +26,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
-import { Bar } from 'react-chartjs-2'; // Import Bar from react-chartjs-2
+import { Bar } from 'react-chartjs-2';
 
 import './EmployeeReport.css';
 
@@ -39,27 +39,19 @@ const CertificationsReport = () => {
   const [employees, setEmployees] = useState([]);
   const [filteredCertifications, setFilteredCertifications] = useState([]);
 
-  // Dummy certifications data
   const [certifications, setCertifications] = useState([
-    { empid: 'INT-123', name: 'ABC', certifications: 'aws', category: 'technical', year: '2023' },
-    { empid: 'INT-124', name: 'DEF', certifications: 'azure', category: 'technical', year: '2022' },
-    { empid: '1235', name: 'GHI', certifications: 'aws', category: 'domain', year: '2023' },
-    { empid: 'INT-113', name: 'JKL', certifications: 'aws', category: 'technical', year: '2023' },
-    { empid: 'INT-224', name: 'MNO', certifications: 'aws', category: 'domain', year: '2022' },
-    { empid: '7784', name: 'PQR', certifications: 'hippa', category: 'technical', year: '2023' },
-    { empid: 'INT-013', name: 'JKKL', certifications: 'aws', category: 'technical', year: '2023' },
-    { empid: 'INT-224', name: 'MNNO', certifications: 'agile', category: 'domain', year: '2022' },
-    { empid: '7704', name: 'PQRR', certifications: 'agile', category: 'technical', year: '2023' },
-    { empid: '7784', name: 'PQR', certifications: 'python', category: 'technical', year: '2023' },
-    { empid: '2013', name: 'JKKL', certifications: 'spring', category: 'technical', year: '2023' },
-    { empid: '6224', name: 'MNNO', certifications: 'java', category: 'domain', year: '2022' },
-    { empid: '7804', name: 'PQRR', certifications: 'agile', category: 'technical', year: '2023' },
-    { empid: '7704', name: 'PQRR', certifications: 'email', category: 'technical', year: '2023' },
-    { empid: '7784', name: 'PQR', certifications: 'public speaking', category: 'technical', year: '2023' },
-    { empid: '2013', name: 'JKKL', certifications: 'react', category: 'technical', year: '2023' },
-    { empid: '6224', name: 'MNNO', certifications: 'git', category: 'domain', year: '2022' },
-    { empid: '7804', name: 'PQRR', certifications: 'business report', category: 'technical', year: '2023' },
-    // Add more dummy data here
+    { empid: 'INT-123', name: 'ABC', certifications: ['aws', 'azure', 'java', 'react'], category: ['technical', 'power', 'domain', 'technical'], year: ['2023', '2024', '2023', '2023'] },
+    { empid: 'INT-124', name: 'DEF', certifications: ['azure', 'git'], category: ['technical', 'domain'], year: ['2022', '2024'] },
+    { empid: '1235', name: 'GHI', certifications: ['aws', 'react'], category: ['domain', 'technical'], year: ['2023', '2024'] },
+    { empid: 'INT-113', name: 'JKL', certifications: ['aws', 'react'], category: ['technical', 'technical'], year: ['2022', '2023'] },
+    { empid: 'INT-224', name: 'MNO', certifications: ['aws', 'java'], category: ['domain', 'domain'], year: ['2022', '2024'] },
+    { empid: '7784', name: 'PQR', certifications: ['hippa', 'python', 'public speaking'], category: ['technical', 'technical', 'technical'], year: ['2021', '2022', '2023'] },
+    { empid: 'INT-013', name: 'JKKL', certifications: ['aws', 'spring'], category: ['technical', 'technical'], year: ['2023', '2024'] },
+    { empid: 'INT-224', name: 'MNNO', certifications: ['agile', 'git'], category: ['domain', 'domain'], year: ['2021', '2022'] },
+    { empid: '7704', name: 'PQRR', certifications: ['agile', 'email'], category: ['technical', 'technical'], year: ['2023', '2024'] },
+    { empid: '2013', name: 'JKKL', certifications: ['spring', 'react'], category: ['technical', 'technical'], year: ['2022', '2023'] },
+    { empid: '6224', name: 'MNNO', certifications: ['java', 'git'], category: ['domain', 'domain'], year: ['2022', '2024'] },
+    { empid: '7804', name: 'PQRR', certifications: ['agile', 'business report'], category: ['technical', 'technical'], year: ['2023', '2024'] },
   ]);
 
   const handleGenerateReport = (format) => {
@@ -67,8 +59,6 @@ const CertificationsReport = () => {
       const doc = new jsPDF();
       doc.setFontSize(20);
       doc.text('Certifications Report', 10, 10);
-
-      // Generate PDF content
       const tableRows = [];
       filteredCertifications.forEach((certification) => {
         tableRows.push([
@@ -79,16 +69,23 @@ const CertificationsReport = () => {
           certification.year
         ]);
       });
-
       doc.autoTable({
         head: [['EmpID', 'Name', 'Certifications', 'Category', 'Year']],
         body: tableRows
       });
-
-      // Save PDF
       doc.save('certifications_report.pdf');
-    } else if (format === 'xlsx') {
-      const ws = XLSX.utils.json_to_sheet(filteredCertifications);
+    }else if (format === 'xlsx') {
+      const tableData1 = filteredCertifications.flatMap(certification => {
+        return certification.certifications.map((cert, index) => ({
+          EmpID: certification.empid,
+          Name: certification.name,
+          Certification: cert,
+          Category: certification.category[index],
+          Year: certification.year[index]
+        }));
+      });
+  
+      const ws = XLSX.utils.json_to_sheet(tableData1, { header: Object.keys(tableData1[0]) });
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Certifications Report');
       XLSX.writeFile(wb, 'certifications_report.xlsx');
@@ -103,10 +100,10 @@ const CertificationsReport = () => {
       link.click();
     }
   };
+  
 
-  // Extract unique years and categories from certifications data
-  const years = ['All', ...Array.from(new Set(certifications.map(certification => certification.year)))];
-  const categories = ['All', ...Array.from(new Set(certifications.map(certification => certification.category)))];
+  const years = ['All', ...new Set(certifications.flatMap(certification => certification.year))];
+  const categories = ['All', ...new Set(certifications.flatMap(certification => certification.category))];
 
   useEffect(() => {
     filterCertifications();
@@ -114,25 +111,26 @@ const CertificationsReport = () => {
 
   const filterCertifications = () => {
     let filteredData = certifications;
-
+  
     if (selectedYear && selectedYear !== 'All') {
-      filteredData = filteredData.filter(certification => certification.year === selectedYear);
+      filteredData = filteredData.filter(certification => certification.year.includes(selectedYear));
     }
-
+  
     if (selectedCategory && selectedCategory !== 'All') {
-      filteredData = filteredData.filter(certification => certification.category === selectedCategory);
+      filteredData = filteredData.filter(certification => certification.category.includes(selectedCategory));
     }
-
+  
     if (searchQueryID) {
       filteredData = filteredData.filter(certification => certification.empid.toLowerCase().includes(searchQueryID.toLowerCase()));
     }
-
+  
     if (searchQueryName) {
       filteredData = filteredData.filter(certification => certification.name.toLowerCase().includes(searchQueryName.toLowerCase()));
     }
-
+  
     setFilteredCertifications(filteredData);
   };
+  
 
   const handleSearch = () => {
     const filteredEmployees = employees?.filter((employee) => {
@@ -166,9 +164,9 @@ const CertificationsReport = () => {
     setSelectedYear(event.target.value);
   };
 
-  // Prepare data for bar chart
-  const certificationCounts = certifications.reduce((acc, certification) => {
-    acc[certification.certifications] = (acc[certification.certifications] || 0) + 1;
+  const certificationCounts = certifications.flatMap(certification => certification.certifications)
+  .reduce((acc, certification) => {
+    acc[certification] = (acc[certification] || 0) + 1;
     return acc;
   }, {});
 
@@ -199,11 +197,13 @@ const CertificationsReport = () => {
         title: {
           display: true,
           text: 'Certifications'
+        },
+        ticks: {
+          stepSize: 1 
         }
       }
     }
   };
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div style={{ textAlign: 'center' }}>
@@ -237,7 +237,7 @@ const CertificationsReport = () => {
                 variant="outlined"
                 InputProps={{
                   ...params.InputProps,
-                  style: { paddingRight: '10px' }, // Match padding of other TextFields
+                  style: { paddingRight: '10px' },
                 }}
               />
             )}
@@ -263,6 +263,13 @@ const CertificationsReport = () => {
             style={{ marginRight: '10px' }}
           >
             Download
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
+            style={{ marginRight: '10px' }}
+          >
+            Chart
           </Button>
           <Popover
             open={Boolean(downloadAnchorEl)}
@@ -299,8 +306,8 @@ const CertificationsReport = () => {
                   backgroundColor: 'white',
                   borderRadius: '8px',
                   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                  paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                  marginBottom: '-16px' // Compensate for the added padding to avoid double scrollbars
+                  paddingRight: '8px',
+                  marginBottom: '-16px'
                 }}
                 component={Paper}
                 sx={{
@@ -308,40 +315,78 @@ const CertificationsReport = () => {
                   maxHeight: '100%',
                   overflowY: 'auto',
                   '&::-webkit-scrollbar': {
-                    width: '6px', // Reduce width of the scrollbar
-                    borderRadius: '3px' // Round scrollbar corners
+                    width: '6px',
+                    borderRadius: '3px'
                   },
                   '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#FFFFFF' // Background color of the scrollbar track
+                    backgroundColor: '#FFFFFF'
                   },
                   '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
-                    borderRadius: '3px' // Round scrollbar thumb corners
+                    backgroundColor: '#eee6ff',
+                    borderRadius: '3px'
                   }
                 }}
               >
                 <Table aria-label="certifications report table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="center">EmpID</TableCell>
-                      <TableCell align="center">Name</TableCell>
-                      <TableCell align="center">Certifications</TableCell>
-                      <TableCell align="center">Category</TableCell>
-                      <TableCell align="center">Year</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filteredCertifications.map((certification, index) => (
-                      <TableRow key={index}>
-                        <TableCell align="center">{certification.empid}</TableCell>
-                        <TableCell align="center">{certification.name}</TableCell>
-                        <TableCell align="center">{certification.certifications}</TableCell>
-                        <TableCell align="center">{certification.category}</TableCell>
-                        <TableCell align="center">{certification.year}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <TableHead>
+  <TableRow>
+    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>EmpID</TableCell>
+    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>Name</TableCell>
+    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>Certification</TableCell>
+    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>Year</TableCell>
+  </TableRow>
+</TableHead>
+  <TableBody>
+  {filteredCertifications.map((certification, certIndex) => {
+  const matchingCertifications = certification.certifications.reduce((acc, cert, index) => {
+    const certYear = certification.year[index];
+    if (
+      (!selectedYear || certYear === selectedYear) &&
+      (!selectedCategory || certification.category[index] === selectedCategory)
+    ) {
+      acc.push({
+        cert,
+        category: certification.category[index],
+        year: certYear
+      });
+    }
+    return acc;
+  }, []);
+
+  let rows = [];
+  matchingCertifications.forEach((cert, index) => {
+    if (index === 0) {
+      rows.push(
+        <TableRow key={`${certification.empid}-${cert.cert}`} style={{ backgroundColor: certIndex % 2 === 0 ? '#f2f2f2' : 'white' }}>
+          <TableCell align="center" rowSpan={matchingCertifications.length}>
+            {certification.empid}
+          </TableCell>
+          <TableCell align="center" rowSpan={matchingCertifications.length}>
+            {certification.name}
+          </TableCell>
+          <TableCell align="center">{cert.cert}</TableCell>
+          <TableCell align="center">{cert.category}</TableCell>
+          <TableCell align="center">{cert.year}</TableCell>
+        </TableRow>
+      );
+    } else {
+      rows.push(
+        <TableRow key={`${certification.empid}-${cert.cert}`} style={{ backgroundColor: certIndex % 2 === 0 ? '#f2f2f2' : 'white' }}>
+          <TableCell align="center">{cert.cert}</TableCell>
+          <TableCell align="center">{cert.category}</TableCell>
+          <TableCell align="center">{cert.year}</TableCell>
+        </TableRow>
+      );
+    }
+  });
+
+  return matchingCertifications.length > 0 ? rows : null;
+})}
+
+</TableBody>
+</Table>
+
               </TableContainer>
             </div>
           </div>

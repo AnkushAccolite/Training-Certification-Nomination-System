@@ -165,7 +165,8 @@ const AllCourses = () => {
       const bValue = b[sortConfig.key];
 
       if (sortConfig.key === 'courseName' ||sortConfig.key === 'domain' ) {
-        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+        // return searchPosts.slice().sort((a, b) => a[sortType].localeCompare(b[sortType]));
+        return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'duration') {
         return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
       }

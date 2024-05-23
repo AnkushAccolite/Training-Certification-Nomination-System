@@ -85,7 +85,7 @@ const MonthlyCourses = () => {
       const bValue = b[sortConfig.key];
 
       if (sortConfig.key === 'courseName' || sortConfig.key === 'domain') {
-        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+        return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'duration') {
         return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
       }
@@ -106,7 +106,7 @@ const MonthlyCourses = () => {
 
   return (
     <div>
-     <h2 style={{textAlign:'center'}}> Monthly Courses</h2>
+      <h2 style={{ textAlign: 'center' }}> Monthly Courses</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select value={monthFilter} onChange={handleMonthFilterChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
@@ -137,44 +137,70 @@ const MonthlyCourses = () => {
         </FormControl>
       </div>
 
-      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                Course Name
-                <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-              </TableCell>
-              <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                Duration
-                <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-              </TableCell>
-              <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                Domain
-                <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-              </TableCell>
-              <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredCourses.map((course) => (
-              <TableRow key={course?.courseId}>
-                <TableCell style={{ textAlign: 'center' }}>{course?.courseName}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{course?.domain}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>
-                  <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>
-                    Remove
-                  </Button>
-                  <Button variant="contained" style={{ marginLeft: '10px' }} onClick={() => handleViewDetails(course)}>
-                    View Details
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <div style={{ flex: '1', overflow: 'hidden' }}>
+        <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+          <TableContainer style={{
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+            paddingRight: '8px', // Adjust padding to accommodate scrollbar width
+            marginBottom: '-16px', // Compensate for the added
+          }}
+            component={Paper}
+            sx={{
+              maxHeight: '100%',
+              overflowY: 'auto',
+              '&::-webkit-scrollbar': {
+                width: '6px', // Reduce width of the scrollbar
+                borderRadius: '3px', // Round scrollbar corners
+              },
+              '&::-webkit-scrollbar-track': {
+                backgroundColor: '#FFFFFF', // Background color of the scrollbar track
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
+                borderRadius: '3px', // Round scrollbar thumb corners
+              },
+            }}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                    Course Name
+                    <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  </TableCell>
+                  <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                    Duration
+                    <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  </TableCell>
+                  <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer' }}>
+                    Domain
+                    <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  </TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredCourses.map((course) => (
+                  <TableRow key={course?.courseId}>
+                    <TableCell style={{ textAlign: 'center' }}>{course?.courseName}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{course?.domain}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>
+                      <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>
+                        Remove
+                      </Button>
+                      <Button variant="contained" style={{ marginLeft: '10px' }} onClick={() => handleViewDetails(course)}>
+                        View Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      </div>
 
       <Dialog open={showDetails} onClose={handleCloseDetails}>
         <DialogTitle>Course Details</DialogTitle>

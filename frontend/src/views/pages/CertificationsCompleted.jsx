@@ -18,13 +18,18 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
-import './CoursesCompleted.css'; 
+import './CoursesCompleted.css';
 
 function createData(SNo, CertificationName, Duration, DateOfCompletion) {
   return { SNo, CertificationName, Duration, DateOfCompletion };
 }
 
 const rows = [
+  createData(1, 'Certification 1', '2 ', '2024-04-15'),
+  createData(2, 'Certification 2', '3 ', '2024-05-01'),
+  createData(3, 'Certification 3', '4 ', '2024-03-01'),
+  createData(4, 'Certification 4', '1 ', '2024-12-01'),
+  createData(5, 'Certification 5', '6 ', '2024-06-01'),
   createData(1, 'Certification 1', '2 ', '2024-04-15'),
   createData(2, 'Certification 2', '3 ', '2024-05-01'),
   createData(3, 'Certification 3', '4 ', '2024-03-01'),
@@ -90,65 +95,46 @@ const CertificationsCompleted = () => {
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#c32148', '#777777', '#842593', '#f88379', '#AF7AC5', '#9FE2BF', '#B3B6B7', '#E727B0'];
 
   return (
-    <div className="courses-completed-container"> 
-      <div className="left-panel"> 
-        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px' }}>
-          <span style={{ fontFamily: 'Arial', fontSize: '24px', marginRight: '10px' }}>Certifications Completed</span>
+    <div className="courses-completed-container">
+      <div className="left-panel">
+        <Typography variant="h3" gutterBottom style={{ marginBottom: '25px', textAlign: 'center', marginTop: '20px' }}>
+          <span style={{ fontSize: '23px', marginRight: '10px' }}>Certifications Completed</span>
         </Typography>
-        <div className="course-filters"> 
-          <FormControl className="date-picker">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker label="Start Date" value={startDate} onChange={handleStartDateChange} />
-            </LocalizationProvider>
-          </FormControl>
-          <span className="date-separator"> - </span>
-          <FormControl className="date-picker">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker label="End Date" value={endDate} onChange={handleEndDateChange} />
-            </LocalizationProvider>
-          </FormControl>
-        </div>
         <div style={{ flex: '1', overflow: 'hidden' }}>
-          <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+          <div style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }}>
             <TableContainer
               style={{
                 backgroundColor: 'white',
                 borderRadius: '8px',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                paddingRight: '8px', 
-                marginBottom: '-16px', 
+                paddingRight: '8px', // Adjust padding to accommodate scrollbar width
+                marginBottom: '-16px', // Compensate for the added
               }}
               component={Paper}
               sx={{
                 maxHeight: '100%',
                 overflowY: 'auto',
                 '&::-webkit-scrollbar': {
-                  width: '6px', 
-                  borderRadius: '3px',
+                  width: '6px', // Reduce width of the scrollbar
+                  borderRadius: '3px', // Round scrollbar corners
                 },
                 '&::-webkit-scrollbar-track': {
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: '#FFFFFF', // Background color of the scrollbar track
                 },
                 '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: '#eee6ff',
-                  borderRadius: '3px',
+                  backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
+                  borderRadius: '3px', // Round scrollbar thumb corners
                 },
               }}
             >
               <Table aria-label="completed certifications table">
                 <TableHead>
-                  <TableRow>
-                    <TableCell style={{ textAlign: 'center' }}>S.No</TableCell>
-                    <TableCell onClick={() => handleSort('CertificationName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Certification Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                    </TableCell>
-                    <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Duration (hours) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                    </TableCell>
-                    <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Date of Completion <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                    </TableCell>
-                  </TableRow>
+                <TableRow>
+        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>S.No</TableCell>
+        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Certification Name </TableCell>
+        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Duration (hours) </TableCell>
+        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Date of Completion</TableCell>
+      </TableRow>
                 </TableHead>
                 <TableBody>
                   {sortedRows
@@ -159,9 +145,8 @@ const CertificationsCompleted = () => {
                       const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
                       return afterStartDate && beforeEndDate;
                     })
-                    .map((row) => (
-                      <TableRow key={row.SNo}>
-                        <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
+                    .map((row,index) => (
+                    <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f2f2f2' }}>                        <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row.CertificationName}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
@@ -189,7 +174,7 @@ const CertificationsCompleted = () => {
               fill="#8884d8"
               labelLine={false}
               label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-                const radius = innerRadius + (outerRadius - innerRadius) * 0.68; 
+                const radius = innerRadius + (outerRadius - innerRadius) * 0.68;
                 const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
                 const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
                 const percentage = Math.round(percent * 100);

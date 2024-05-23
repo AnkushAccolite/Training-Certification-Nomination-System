@@ -110,6 +110,10 @@ function Courses() {
   };
 
   const nominateCourses = async () => {
+    if (selectedCourseIds.length === 0) {
+      alert('Please select at least one course to nominate');
+      return;
+    }
     try {
       const payload = {
         empName: auth?.user?.empName,
@@ -267,7 +271,33 @@ function Courses() {
       </div>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
-        <TableContainer component={Paper}>
+      <div style={{ flex: '1', overflow: 'hidden' }}>
+          <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+            <TableContainer
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                paddingRight: '8px', // Adjust padding to accommodate scrollbar width
+                marginBottom: '-16px', // Compensate for the added
+              }}
+              component={Paper}
+              sx={{
+                maxHeight: '100%',
+                overflowY: 'auto',
+                '&::-webkit-scrollbar': {
+                  width: '6px', // Reduce width of the scrollbar
+                  borderRadius: '3px', // Round scrollbar corners
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: '#FFFFFF', // Background color of the scrollbar track
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
+                  borderRadius: '3px', // Round scrollbar thumb corners
+                },
+              }}
+            >
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
             <TableHead>
               <TableRow>
@@ -284,18 +314,23 @@ function Courses() {
                 <TableCell  style={{ textAlign: 'center'}}>
                   Status 
                 </TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell style={{ textAlign: 'center'}}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {sortedCourses.map((row) => (
                 <TableRow key={row?.courseId} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  {/* Render the checkbox only if the status is "Not Opted" */}
                   <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCourseIds.includes(row?.courseId)}
-                      onChange={(e) => handleCheckboxChange(e, row?.courseId)}
-                    />
+                    
+                      <Checkbox
+                        checked={selectedCourseIds.includes(row?.courseId)}
+                        onChange={(e) => handleCheckboxChange(e, row?.courseId)}
+                        disabled={getStatus(row?.courseId) !== 'Not Opted'}
+                      />
+                    
                   </TableCell>
+
                   <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.duration}</TableCell>
@@ -317,6 +352,8 @@ function Courses() {
             </TableBody>
           </Table>
         </TableContainer>
+        </div>
+        </div>
         <Dialog open={showDetails} onClose={handleCloseDetails}>
           <DialogTitle>Course Details</DialogTitle>
           <DialogContent>

@@ -52,24 +52,24 @@ public class EmployeeService {
         }
     }
 
-    public ResponseEntity<?> addCourses(String email, String courseIds) {
-        List<String> courseIdList = Arrays.asList(courseIds.split(","));
-
-        Optional<Employee> employee = employeeRepository.findByEmail(email);
-        if (employee.isPresent()) {
-            employee.ifPresent(emp -> {
-                if (emp.getCourseIds() != null) {
-                    emp.getCourseIds().addAll(courseIdList);
-                } else {
-                    emp.setCourseIds(courseIdList);
-                }
-            });
-            employeeRepository.save(employee.get());
-            return ResponseEntity.ok(employee.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    public ResponseEntity<?> addCourses(String email, String courseIds) {
+//        List<String> courseIdList = Arrays.asList(courseIds.split(","));
+//
+//        Optional<Employee> employee = employeeRepository.findByEmail(email);
+//        if (employee.isPresent()) {
+//            employee.ifPresent(emp -> {
+//                if (emp.getCourseIds() != null) {
+//                    emp.getCourseIds().addAll(courseIdList);
+//                } else {
+//                    emp.setCourseIds(courseIdList);
+//                }
+//            });
+//            employeeRepository.save(employee.get());
+//            return ResponseEntity.ok(employee.get());
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
     public Employee getEmployee(String empId) {
         return this.employeeRepository.findByEmpId(empId);

@@ -196,7 +196,7 @@ const CoursesCompleted = () => {
                       Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                     <TableCell onClick={() => handleSort('Duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                      Duration <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      Duration (hrs) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
                     <TableCell onClick={() => handleSort('DateOfCompletion')} style={{ textAlign: 'center', cursor: 'pointer' }}>
                       Completion Month <ArrowDropDownIcon style={{ fontSize: '130%' }} />
@@ -238,7 +238,7 @@ const CoursesCompleted = () => {
               nameKey="name"
               cx="50%"
               cy="35%"
-              outerRadius={105}
+              outerRadius={100}
               fill="#8884d8"
               labelLine={false}
               label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
