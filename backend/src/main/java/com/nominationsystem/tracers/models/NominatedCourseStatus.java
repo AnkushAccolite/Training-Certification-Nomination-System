@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Month;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,7 +14,6 @@ public class NominatedCourseStatus {
     private String courseId;
 
     private String approvalStatus;
-
 
     public ApprovalStatus getApprovalStatus() {
         return ApprovalStatus.valueOf(approvalStatus);

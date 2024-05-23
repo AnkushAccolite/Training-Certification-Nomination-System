@@ -8,9 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  FormControl,
-  Select,
-  MenuItem
+  FormControl
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -58,7 +56,6 @@ const CoursesCompleted = () => {
           });
 
         setRows(temp);
-        console.log(completedCourses);
       } catch (error) {
         console.log(error);
       }

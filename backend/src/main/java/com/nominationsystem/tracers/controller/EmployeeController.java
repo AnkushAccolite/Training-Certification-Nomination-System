@@ -1,7 +1,5 @@
 package com.nominationsystem.tracers.controller;
 
-import com.nominationsystem.tracers.models.CertificationStatus;
-import com.nominationsystem.tracers.models.CourseFeedback;
 import com.nominationsystem.tracers.models.EmployeeCourseStatus;
 import com.nominationsystem.tracers.models.EmployeeReportTemplate;
 import com.nominationsystem.tracers.service.EmployeeService;
@@ -9,23 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 @RequestMapping("/employee")
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-//    @PostMapping("")
-//    public ResponseEntity<?> addEmployee(@RequestBody Employee employee) {
-//        Employee save=this.employeeService.addEmployee(employee);
-//        return ResponseEntity.ok(save);
-//    }
+    // @PostMapping("")
+    // public ResponseEntity<?> addEmployee(@RequestBody Employee employee) {
+    // Employee save=this.employeeService.addEmployee(employee);
+    // return ResponseEntity.ok(save);
+    // }
 
     @GetMapping("")
     public ResponseEntity<?> getEmployees() {
@@ -37,28 +34,25 @@ public class EmployeeController {
         return this.employeeService.getEmpByEmail(requestBody);
     }
 
-//    @PatchMapping("/updateIsAdmin")
-//    public ResponseEntity<?> updateIsAdmin(@RequestParam String email, @RequestParam boolean isAdmin) {
-//        return this.employeeService.setAdmin(email,isAdmin);
-//    }
+    // @PatchMapping("/updateIsAdmin")
+    // public ResponseEntity<?> updateIsAdmin(@RequestParam String email,
+    // @RequestParam boolean isAdmin) {
+    // return this.employeeService.setAdmin(email,isAdmin);
+    // }
     @PatchMapping("/setRole")
     public ResponseEntity<?> setRole(@RequestParam String email, @RequestParam String role) {
-        return this.employeeService.setRole(email,role);
+        return this.employeeService.setRole(email, role);
     }
 
-//    @PatchMapping("/addCourses")
-//    public ResponseEntity<?> addCoursesToEmployee(@RequestParam String email, @RequestParam String courseIds) {
-//        return this.employeeService.addCourses(email,courseIds);
-//    }
+    // @PatchMapping("/addCourses")
+    // public ResponseEntity<?> addCoursesToEmployee(@RequestParam String email,
+    // @RequestParam String courseIds) {
+    // return this.employeeService.addCourses(email,courseIds);
+    // }
 
     @GetMapping("/status")
-    public Map<String,List<EmployeeCourseStatus>> getCoursesNominatedByEmployee(@RequestParam String empId) {
+    public Map<String, List<EmployeeCourseStatus>> getCoursesNominatedByEmployee(@RequestParam String empId) {
         return this.employeeService.getCoursesNominatedByEmployee(empId);
-    }
-
-    @PostMapping("/courseCompleted")
-    public ResponseEntity<?> courseCompleted(@RequestParam String courseId, @RequestParam String empId, @RequestBody CourseFeedback courseFeedback){
-       return this.employeeService.courseCompleted(empId,courseId,courseFeedback);
     }
 
     @GetMapping("/employeeReport")

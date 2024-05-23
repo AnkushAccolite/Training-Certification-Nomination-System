@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.time.Month;
 import java.util.*;
 
 @Getter
@@ -42,7 +41,7 @@ public class Employee {
 
     private ArrayList<EmployeeCourseStatus> approvedCourses = new ArrayList<>();
 
-    private ArrayList<String> pendingCertifications= new ArrayList<>();
+    private ArrayList<String> pendingCertifications = new ArrayList<>();
 
     private ArrayList<CertificationStatus> certifications = new ArrayList<>();
 
@@ -50,14 +49,13 @@ public class Employee {
 
     private String managerId;
 
-
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
-        this.email=username;
+        this.email = username;
     }
 
     public String getEmail() {
@@ -79,6 +77,7 @@ public class Employee {
         }
 
     }
+
     public void removeAssignedCourseById(String courseId) {
         Iterator<EmployeeCourseStatus> iterator = this.getApprovedCourses().iterator();
         while (iterator.hasNext()) {
@@ -88,6 +87,7 @@ public class Employee {
             }
         }
     }
+
     public boolean isCertificationPresent(String certificationId) {
         return this.certifications.stream()
                 .anyMatch(certification -> certification.getCertificationId().equals(certificationId));

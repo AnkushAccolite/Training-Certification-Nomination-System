@@ -2,7 +2,6 @@ package com.nominationsystem.tracers.controller;
 
 import com.nominationsystem.tracers.models.*;
 import com.nominationsystem.tracers.repository.CertificationRepository;
-import com.nominationsystem.tracers.repository.EmployeeRepository;
 import com.nominationsystem.tracers.service.CertificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -67,5 +66,10 @@ public class CertificationController {
     @GetMapping("/cancel")
     public void cancelNomination(@RequestParam String empId,@RequestParam String certificationId){
         this.certificationService.cancelNomination(empId,certificationId);
+    }
+
+    @GetMapping("certificationReport")
+    public List<CertificationReportTemplate> getCertificationReport() {
+        return this.certificationService.getCertificationReport();
     }
 }

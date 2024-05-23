@@ -20,13 +20,15 @@ import {
 import Autocomplete from '@mui/material/Autocomplete';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import { Bar } from 'react-chartjs-2';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import axios from '../../api/axios';
 
 import './EmployeeReport.css';
 
@@ -39,20 +41,33 @@ const CertificationsReport = () => {
   const [employees, setEmployees] = useState([]);
   const [filteredCertifications, setFilteredCertifications] = useState([]);
 
-  const [certifications, setCertifications] = useState([
-    { empid: 'INT-123', name: 'ABC', certifications: ['aws', 'azure', 'java', 'react'], category: ['technical', 'power', 'domain', 'technical'], year: ['2023', '2024', '2023', '2023'] },
-    { empid: 'INT-124', name: 'DEF', certifications: ['azure', 'git'], category: ['technical', 'domain'], year: ['2022', '2024'] },
-    { empid: '1235', name: 'GHI', certifications: ['aws', 'react'], category: ['domain', 'technical'], year: ['2023', '2024'] },
-    { empid: 'INT-113', name: 'JKL', certifications: ['aws', 'react'], category: ['technical', 'technical'], year: ['2022', '2023'] },
-    { empid: 'INT-224', name: 'MNO', certifications: ['aws', 'java'], category: ['domain', 'domain'], year: ['2022', '2024'] },
-    { empid: '7784', name: 'PQR', certifications: ['hippa', 'python', 'public speaking'], category: ['technical', 'technical', 'technical'], year: ['2021', '2022', '2023'] },
-    { empid: 'INT-013', name: 'JKKL', certifications: ['aws', 'spring'], category: ['technical', 'technical'], year: ['2023', '2024'] },
-    { empid: 'INT-224', name: 'MNNO', certifications: ['agile', 'git'], category: ['domain', 'domain'], year: ['2021', '2022'] },
-    { empid: '7704', name: 'PQRR', certifications: ['agile', 'email'], category: ['technical', 'technical'], year: ['2023', '2024'] },
-    { empid: '2013', name: 'JKKL', certifications: ['spring', 'react'], category: ['technical', 'technical'], year: ['2022', '2023'] },
-    { empid: '6224', name: 'MNNO', certifications: ['java', 'git'], category: ['domain', 'domain'], year: ['2022', '2024'] },
-    { empid: '7804', name: 'PQRR', certifications: ['agile', 'business report'], category: ['technical', 'technical'], year: ['2023', '2024'] },
-  ]);
+  const navigate = useNavigate();
+  const auth = useSelector((state) => state?.auth);
+
+  const [certifications, setCertifications] = useState([]);
+
+  useEffect(() => {
+    if (!auth?.isAuthenticated) navigate('/login');
+
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get('certifications/certificationReport');
+
+        const temp = data?.map((item) => ({
+          empid: item?.empId,
+          name: item?.empName,
+          certificationName: item?.certName,
+          category: item?.category,
+          year: item?.completionDate?.map((date) => date.split('-')[2])
+        }));
+
+        setCertifications(temp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [auth, navigate]);
 
   const handleGenerateReport = (format) => {
     if (format === 'pdf') {
@@ -64,7 +79,7 @@ const CertificationsReport = () => {
         tableRows.push([
           certification.empid,
           certification.name,
-          certification.certifications,
+          certification.certificationName,
           certification.category,
           certification.year
         ]);
@@ -74,9 +89,9 @@ const CertificationsReport = () => {
         body: tableRows
       });
       doc.save('certifications_report.pdf');
-    }else if (format === 'xlsx') {
-      const tableData1 = filteredCertifications.flatMap(certification => {
-        return certification.certifications.map((cert, index) => ({
+    } else if (format === 'xlsx') {
+      const tableData1 = filteredCertifications?.flatMap((certification) => {
+        return certification.certificationName.map((cert, index) => ({
           EmpID: certification.empid,
           Name: certification.name,
           Certification: cert,
@@ -84,7 +99,7 @@ const CertificationsReport = () => {
           Year: certification.year[index]
         }));
       });
-  
+
       const ws = XLSX.utils.json_to_sheet(tableData1, { header: Object.keys(tableData1[0]) });
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Certifications Report');
@@ -100,37 +115,35 @@ const CertificationsReport = () => {
       link.click();
     }
   };
-  
 
-  const years = ['All', ...new Set(certifications.flatMap(certification => certification.year))];
-  const categories = ['All', ...new Set(certifications.flatMap(certification => certification.category))];
+  const years = ['All', ...new Set(certifications?.flatMap((certification) => certification.year))];
+  const categories = ['All', ...new Set(certifications?.flatMap((certification) => certification.category))];
 
   useEffect(() => {
     filterCertifications();
-  }, [selectedYear, selectedCategory, searchQueryID, searchQueryName]);
+  }, [selectedYear, selectedCategory, searchQueryID, searchQueryName, certifications]);
 
   const filterCertifications = () => {
     let filteredData = certifications;
-  
+
     if (selectedYear && selectedYear !== 'All') {
-      filteredData = filteredData.filter(certification => certification.year.includes(selectedYear));
+      filteredData = filteredData.filter((certification) => certification.year.includes(selectedYear));
     }
-  
+
     if (selectedCategory && selectedCategory !== 'All') {
-      filteredData = filteredData.filter(certification => certification.category.includes(selectedCategory));
+      filteredData = filteredData.filter((certification) => certification.category.includes(selectedCategory));
     }
-  
+
     if (searchQueryID) {
-      filteredData = filteredData.filter(certification => certification.empid.toLowerCase().includes(searchQueryID.toLowerCase()));
+      filteredData = filteredData.filter((certification) => certification.empid.toLowerCase().includes(searchQueryID.toLowerCase()));
     }
-  
+
     if (searchQueryName) {
-      filteredData = filteredData.filter(certification => certification.name.toLowerCase().includes(searchQueryName.toLowerCase()));
+      filteredData = filteredData.filter((certification) => certification.name.toLowerCase().includes(searchQueryName.toLowerCase()));
     }
-  
+
     setFilteredCertifications(filteredData);
   };
-  
 
   const handleSearch = () => {
     const filteredEmployees = employees?.filter((employee) => {
@@ -164,11 +177,12 @@ const CertificationsReport = () => {
     setSelectedYear(event.target.value);
   };
 
-  const certificationCounts = certifications.flatMap(certification => certification.certifications)
-  .reduce((acc, certification) => {
-    acc[certification] = (acc[certification] || 0) + 1;
-    return acc;
-  }, {});
+  const certificationCounts = certifications
+    ?.flatMap((certification) => certification.certificationName)
+    .reduce((acc, certification) => {
+      acc[certification] = (acc[certification] || 0) + 1;
+      return acc;
+    }, {});
 
   const chartData = {
     labels: Object.keys(certificationCounts),
@@ -178,7 +192,7 @@ const CertificationsReport = () => {
         data: Object.values(certificationCounts),
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
+        borderWidth: 1
       }
     ]
   };
@@ -199,7 +213,7 @@ const CertificationsReport = () => {
           text: 'Certifications'
         },
         ticks: {
-          stepSize: 1 
+          stepSize: 1
         }
       }
     }
@@ -218,7 +232,7 @@ const CertificationsReport = () => {
             onChange={(e) => setSelectedYear(e.target.value)}
             style={{ marginRight: '10px' }}
           >
-            {years.map(year => (
+            {years.map((year) => (
               <MenuItem key={year} value={year}>
                 {year}
               </MenuItem>
@@ -237,7 +251,7 @@ const CertificationsReport = () => {
                 variant="outlined"
                 InputProps={{
                   ...params.InputProps,
-                  style: { paddingRight: '10px' },
+                  style: { paddingRight: '10px' }
                 }}
               />
             )}
@@ -328,65 +342,79 @@ const CertificationsReport = () => {
                 }}
               >
                 <Table aria-label="certifications report table">
-                <TableHead>
-  <TableRow>
-    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>EmpID</TableCell>
-    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>Name</TableCell>
-    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>Certification</TableCell>
-    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
-    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>Year</TableCell>
-  </TableRow>
-</TableHead>
-  <TableBody>
-  {filteredCertifications.map((certification, certIndex) => {
-  const matchingCertifications = certification.certifications.reduce((acc, cert, index) => {
-    const certYear = certification.year[index];
-    if (
-      (!selectedYear || certYear === selectedYear) &&
-      (!selectedCategory || certification.category[index] === selectedCategory)
-    ) {
-      acc.push({
-        cert,
-        category: certification.category[index],
-        year: certYear
-      });
-    }
-    return acc;
-  }, []);
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                        EmpID
+                      </TableCell>
+                      <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                        Name
+                      </TableCell>
+                      <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                        Certification
+                      </TableCell>
+                      <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                        Category
+                      </TableCell>
+                      <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                        Year
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {filteredCertifications?.map((certification, certIndex) => {
+                      const matchingCertifications = certification.certificationName.reduce((acc, cert, index) => {
+                        const certYear = certification.year[index];
+                        if (
+                          (!selectedYear || certYear === selectedYear) &&
+                          (!selectedCategory || certification.category[index] === selectedCategory)
+                        ) {
+                          acc.push({
+                            cert,
+                            category: certification.category[index],
+                            year: certYear
+                          });
+                        }
+                        return acc;
+                      }, []);
 
-  let rows = [];
-  matchingCertifications.forEach((cert, index) => {
-    if (index === 0) {
-      rows.push(
-        <TableRow key={`${certification.empid}-${cert.cert}`} style={{ backgroundColor: certIndex % 2 === 0 ? '#f2f2f2' : 'white' }}>
-          <TableCell align="center" rowSpan={matchingCertifications.length}>
-            {certification.empid}
-          </TableCell>
-          <TableCell align="center" rowSpan={matchingCertifications.length}>
-            {certification.name}
-          </TableCell>
-          <TableCell align="center">{cert.cert}</TableCell>
-          <TableCell align="center">{cert.category}</TableCell>
-          <TableCell align="center">{cert.year}</TableCell>
-        </TableRow>
-      );
-    } else {
-      rows.push(
-        <TableRow key={`${certification.empid}-${cert.cert}`} style={{ backgroundColor: certIndex % 2 === 0 ? '#f2f2f2' : 'white' }}>
-          <TableCell align="center">{cert.cert}</TableCell>
-          <TableCell align="center">{cert.category}</TableCell>
-          <TableCell align="center">{cert.year}</TableCell>
-        </TableRow>
-      );
-    }
-  });
+                      let rows = [];
+                      matchingCertifications.forEach((cert, index) => {
+                        if (index === 0) {
+                          rows.push(
+                            <TableRow
+                              key={`${certification.empid}-${cert.cert}`}
+                              style={{ backgroundColor: certIndex % 2 === 0 ? '#f2f2f2' : 'white' }}
+                            >
+                              <TableCell align="center" rowSpan={matchingCertifications.length}>
+                                {certification.empid}
+                              </TableCell>
+                              <TableCell align="center" rowSpan={matchingCertifications.length}>
+                                {certification.name}
+                              </TableCell>
+                              <TableCell align="center">{cert.cert}</TableCell>
+                              <TableCell align="center">{cert.category}</TableCell>
+                              <TableCell align="center">{cert.year}</TableCell>
+                            </TableRow>
+                          );
+                        } else {
+                          rows.push(
+                            <TableRow
+                              key={`${certification.empid}-${cert.cert}`}
+                              style={{ backgroundColor: certIndex % 2 === 0 ? '#f2f2f2' : 'white' }}
+                            >
+                              <TableCell align="center">{cert.cert}</TableCell>
+                              <TableCell align="center">{cert.category}</TableCell>
+                              <TableCell align="center">{cert.year}</TableCell>
+                            </TableRow>
+                          );
+                        }
+                      });
 
-  return matchingCertifications.length > 0 ? rows : null;
-})}
-
-</TableBody>
-</Table>
-
+                      return matchingCertifications.length > 0 ? rows : null;
+                    })}
+                  </TableBody>
+                </Table>
               </TableContainer>
             </div>
           </div>

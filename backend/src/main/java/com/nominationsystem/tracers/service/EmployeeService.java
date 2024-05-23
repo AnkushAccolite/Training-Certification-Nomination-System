@@ -127,23 +127,6 @@ public class EmployeeService {
         this.employeeRepository.save(employee);
     }
 
-    public ResponseEntity<?> courseCompleted(String empId, String courseId, CourseFeedback courseFeedback) {
-        Employee employee = this.getEmployee(empId);
-
-        EmployeeCourseStatus employeeCourseStatus = new EmployeeCourseStatus(courseId, currentMonth);
-        if (employee.getCompletedCourses() != null) {
-            employee.getCompletedCourses().add(employeeCourseStatus);
-        } else {
-            ArrayList<EmployeeCourseStatus> temp = new ArrayList<>();
-            temp.add(employeeCourseStatus);
-            employee.setCompletedCourses(temp);
-        }
-        employeeRepository.save(employee);
-        this.courseFeedbackRepository.save(courseFeedback);
-
-        return ResponseEntity.ok().build();
-    }
-
     // Rename the method correctly
     public Boolean isApprovedCoursePresent(String courseId, String empId) {
         return this.employeeRepository.findByEmpId(empId)
