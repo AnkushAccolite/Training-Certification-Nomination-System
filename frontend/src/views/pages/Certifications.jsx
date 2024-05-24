@@ -380,7 +380,8 @@ function Certifications() {
             <b>Confirmation</b>
           </DialogTitle>
           <DialogContent className="confirmation-content" style={{ textAlign: 'center' }}>
-            By clicking on Nominate, you are agreeing to the certification reimbursement policies. Do you still want to proceed?
+            By clicking on Nominate, you are agreeing to the certification reimbursement policies. 
+            <br /> Do you still want to proceed?
           </DialogContent>
           <DialogActions className="confirmation-actions">
             <Button
