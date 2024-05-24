@@ -162,7 +162,7 @@ function CertificationsApproved() {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
 
-      if (sortConfig.key === 'certName' || sortConfig.key === 'status') {
+      if (sortConfig.key === 'certificationName' || sortConfig.key === 'status') {
         return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'attempts') {
         return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
@@ -208,7 +208,7 @@ function CertificationsApproved() {
                     <TableHead style={{ textAlign: 'center' }}>
                       <TableRow>
                         <TableCell
-                          onClick={() => handleSort('certName')}
+                          onClick={() => handleSort('certificationName')}
                           style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                         >
                           Certification Name
