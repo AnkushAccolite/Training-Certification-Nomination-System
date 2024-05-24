@@ -111,10 +111,10 @@ const items = {
           breadcrumbs: false
         },
         {
-          id: 'certification-enrolled',
-          title: 'Certifications Enrolled',
+          id: 'certification-approved',
+          title: 'Certifications Approved',
           type: 'item',
-          url: '/certifications-enrolled',
+          url: '/certifications-approved',
           icon: icons.IconFileCertificate,
           roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false

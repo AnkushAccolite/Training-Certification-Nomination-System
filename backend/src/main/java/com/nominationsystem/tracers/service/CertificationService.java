@@ -63,7 +63,7 @@ public class CertificationService {
                 }
             });
         } else {
-            certifications.add(new CertificationStatus(certificationId, currentDate, null, "inProgress", 1));
+            certifications.add(new CertificationStatus(certificationId, currentDate, null, "inProgress", 1, null));
         }
 
         employee.setCertifications(certifications);
@@ -78,7 +78,8 @@ public class CertificationService {
         return ResponseEntity.ok().build();
     }
 
-    public void certificationCompleted(String empId, String certificationId, CertificationFeedback certificationFeedback) {
+    public void certificationCompleted(String empId, String certificationId,
+            CertificationFeedback certificationFeedback) {
         this.certificationFeedbackRepository.save(certificationFeedback);
         Employee employee = this.employeeRepository.findByEmpId(empId);
 
@@ -88,6 +89,7 @@ public class CertificationService {
             if (Objects.equals(x.getCertificationId(), certificationId)) {
                 x.setCompletionDate(new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
                 x.setStatus("completed");
+                x.setUploadedCertificate(url);
             }
         });
 
@@ -150,7 +152,7 @@ public class CertificationService {
                 certificationReport.add(report);
             }
         });
-        
+
         return certificationReport;
     }
 }
