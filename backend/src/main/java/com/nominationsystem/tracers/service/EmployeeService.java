@@ -6,7 +6,6 @@ import com.nominationsystem.tracers.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -31,8 +30,7 @@ public class EmployeeService {
         return new ArrayList<>(this.employeeRepository.findAll());
     }
 
-    public ResponseEntity<?> getEmpByEmail(@RequestBody Map<String, String> requestBody) {
-        String email = requestBody.get("email");
+    public ResponseEntity<?> getEmpByEmail(String email) {
         if (email == null) {
             return ResponseEntity.badRequest().body("Email is required in the request body.");
         }

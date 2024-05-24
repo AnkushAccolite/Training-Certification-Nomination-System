@@ -1,34 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl } from '@mui/material';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import './CoursesCompleted.css';
+
+import getEmployee from '../../utils/getEmployee';
+import getAllCertifications from '../../utils/getAllCertifications';
 
 function createData(SNo, CertificationName, Duration, DateOfCompletion) {
   return { SNo, CertificationName, Duration, DateOfCompletion };
 }
-
-const rows = [
-  createData(1, 'Certification 1', '2', '2024-04-15'),
-  createData(2, 'Certification 2', '3', '2024-05-01'),
-  createData(3, 'Certification 3', '4', '2024-03-01'),
-  createData(4, 'Certification 4', '1', '2024-12-01'),
-  createData(5, 'Certification 5', '6', '2024-06-01'),
-  createData(6, 'Certification 1', '2', '2024-04-15'),
-  createData(7, 'Certification 2', '3', '2024-05-01'),
-  createData(8, 'Certification 3', '4', '2024-03-01'),
-  createData(9, 'Certification 4', '1', '2024-12-01'),
-  createData(10, 'Certification 5', '6', '2024-06-01')
-];
 
 const CertificationsCompleted = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [activeIndex, setActiveIndex] = useState(null);
+  const [rows, setRows] = useState([]);
 
   const handleStartDateChange = (date) => {
     setStartDate(date);
@@ -66,6 +56,30 @@ const CertificationsCompleted = () => {
 
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
+
+    const fetchData = async () => {
+      try {
+        const allCertifications = await getAllCertifications();
+
+        const employee = await getEmployee(auth?.user?.email);
+        const completedCertifications = employee?.certifications?.filter((cert) => cert.status === 'completed');
+
+        const temp = completedCertifications?.map((completedCertificate, index) => {
+          const certificateDetails = allCertifications?.find((cert) => cert?.certificationId === completedCertificate?.certificationId);
+          return {
+            SNo: index + 1,
+            CertificationName: certificateDetails?.name,
+            Duration: certificateDetails?.duration,
+            DateOfCompletion: completedCertificate?.completionDate
+          };
+        });
+
+        setRows(temp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
   }, [auth, navigate]);
 
   const getPieChartData = () => {
