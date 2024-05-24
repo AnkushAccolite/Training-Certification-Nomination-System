@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, FormControl, InputLabel, OutlinedInput, Button } from '@mui/material';
+import { Box, FormControl, InputLabel, OutlinedInput, Button, Select, MenuItem } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from "../../api/axios"
@@ -92,15 +92,19 @@ const AddCertification = ({ onCourseAdd }) => {
         </FormControl>
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
           <InputLabel htmlFor="domain">Domain</InputLabel>
-          <OutlinedInput
+          <Select
             id="domain"
-            type="text"
             name="domain"
             value={formData.domain}
             onChange={handleChange}
             label="Domain"
             required
-          />
+          >
+            <MenuItem value="technical">Technical</MenuItem>
+            <MenuItem value="domain">Domain</MenuItem>
+            <MenuItem value="power">Power</MenuItem>
+            <MenuItem value="process">Process</MenuItem>
+          </Select>
         </FormControl>
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
           <InputLabel htmlFor="description">Description</InputLabel>

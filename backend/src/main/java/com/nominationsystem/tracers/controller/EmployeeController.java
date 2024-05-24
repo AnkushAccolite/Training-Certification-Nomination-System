@@ -29,9 +29,9 @@ public class EmployeeController {
         return ResponseEntity.ok(this.employeeService.getAllEmployees());
     }
 
-    @PostMapping("/getByEmail")
-    public ResponseEntity<?> getEmployeeByEmail(@RequestBody Map<String, String> requestBody) {
-        return this.employeeService.getEmpByEmail(requestBody);
+    @GetMapping("/getByEmail")
+    public ResponseEntity<?> getEmployeeByEmail(@RequestParam String email) {
+        return this.employeeService.getEmpByEmail(email);
     }
 
     // @PatchMapping("/updateIsAdmin")
