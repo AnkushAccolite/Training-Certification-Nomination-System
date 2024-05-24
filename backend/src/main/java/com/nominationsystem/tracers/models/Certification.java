@@ -20,4 +20,7 @@ public class Certification {
     private String category;
 
     private Boolean isDeleted = false;
+
+    public void setId(String cert1) {
+    }
 }
