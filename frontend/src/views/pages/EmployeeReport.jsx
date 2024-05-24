@@ -57,7 +57,7 @@ const EmployeeReport = () => {
 
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
-
+  
 
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
@@ -145,25 +145,7 @@ const EmployeeReport = () => {
     setFilteredEmployees(filteredData);
   };
 
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const sortedEmployees = [...employees].sort((a, b) => {
-    if (sortConfig.key) {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-
-      if (sortConfig.key === 'name'  ) {
-        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-      } 
-    }
-    return 0;
-  });
+  
 
 
   
@@ -426,9 +408,9 @@ const EmployeeReport = () => {
                     <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }} >
                       Employee ID
                     </TableCell>
-                    <TableCell align="center" style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('name')}>
+                    <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }} >
                       Name
-                      <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      {/* <ArrowDropDownIcon style={{ fontSize: '130%' }} /> */}
                     </TableCell>
                     <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
                       Courses
@@ -442,7 +424,7 @@ const EmployeeReport = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {sortedEmployees?.map((employee, employeeIndex) => {
+                  {filteredEmployees?.map((employee, employeeIndex) => {
                     const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
                       const completionMonth = employee.completionMonth[index];
                       if (
