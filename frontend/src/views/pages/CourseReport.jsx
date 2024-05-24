@@ -50,25 +50,16 @@ const CourseReport = () => {
   const auth = useSelector((state) => state?.auth);
 
   const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
 
   const calculateAttendance = (completed, enrolled) => {
     return Math.round((completed / enrolled) * 100);
   };
 
-  const [months, setMonths] = useState([
-    'JANUARY',
-    'FEBRUARY',
-    'MARCH',
-    'APRIL',
-    'MAY',
-    'JUNE',
-    'JULY',
-    'AUGUST',
-    'SEPTEMBER',
-    'OCTOBER',
-    'NOVEMBER',
-    'DECEMBER'
-  ]);
+  const months = [
+    'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+  ];
 
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
@@ -101,33 +92,25 @@ const CourseReport = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [selectedMonth, selectedQuarter, selectedCategory, searchQueryID, searchQueryName]);
+  }, [selectedMonth, selectedQuarter, selectedCategory, searchQueryID, searchQueryName,courses]);
 
   const generateChartData = () => {
     const colors = [
-      '#00C49F',
-      '#D29CC5',
-      '#777777',
-      '#842593',
-      'rgba(153, 102, 255, 0.6)',
-      'rgba(255, 159, 64, 0.6)',
-      'rgba(255, 99, 132, 0.6)',
-      'rgba(54, 162, 235, 0.6)',
-      'rgba(255, 206, 86, 0.6)',
-      'rgba(75, 192, 192, 0.6)'
+      '#00C49F', '#D29CC5', '#777777', '#842593',
+      'rgba(153, 102, 255, 0.6)', 'rgba(255, 159, 64, 0.6)',
+      'rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)',
+      'rgba(255, 206, 86, 0.6)', 'rgba(75, 192, 192, 0.6)'
     ];
 
     const data = {
       labels: [],
-      datasets: [
-        {
-          data: [],
-          backgroundColor: []
-        }
-      ]
+      datasets: [{
+        data: [],
+        backgroundColor: []
+      }]
     };
 
-    courses.forEach((course, index) => {
+    filteredCourses.forEach((course, index) => {
       const totalAttendance = course.monthlyDetails.reduce(
         (acc, cur) => acc + calculateAttendance(cur.employeesCompleted, cur.employeesEnrolled),
         0
@@ -140,47 +123,40 @@ const CourseReport = () => {
 
     return data;
   };
+
+ 
   const handleGenerateReport = (format) => {
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text('Course Report', 10, 10);
 
-    const tableData = courses
-      .map((course) => {
-        return course.monthlyDetails.map((data) => [
-          
-          course.name,
-          course.category,
-          data.employeesEnrolled,
-          data.employeesCompleted,
-          `${data.attendance}%`,
-          getMonthName(data.completionMonth)
-        ]);
-      })
-      .flat();
+    const tableData = filteredCourses
+      .map((course) => course.monthlyDetails.map((data) => [
+        course.name,
+        course.category,
+        data.employeesEnrolled,
+        data.employeesCompleted,
+        `${data.attendance}%`,
+        getMonthName(data.completionMonth)
+      ])).flat();
 
-    const tableData1 = courses
-      .map((course) => {
-        return course.monthlyDetails.map((data) => ({
-          Name: course.name,
-          Category: course.category,
-          'Employees Enrolled': data.employeesEnrolled,
-          'Employees Completed': data.employeesCompleted,
-          Attendance: `${data.attendance}%`,
-          'Completion Month': getMonthName(data.completionMonth)
-        }));
-      })
-      .flat();
+    const tableData1 = filteredCourses
+      .map((course) => course.monthlyDetails.map((data) => ({
+        Name: course.name,
+        Category: course.category,
+        'Employees Enrolled': data.employeesEnrolled,
+        'Employees Completed': data.employeesCompleted,
+        Attendance: `${data.attendance}%`,
+        'Completion Month': getMonthName(data.completionMonth)
+      }))).flat();
 
-   
     switch (format) {
       case 'pdf':
         doc.autoTable({
-          head: [[ 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month']],
+          head: [['Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month']],
           body: tableData,
           startY: 20
         });
-
         doc.save('course_report.pdf');
         break;
       case 'excel':
@@ -202,26 +178,19 @@ const CourseReport = () => {
         document.body.appendChild(link);
         link.click();
         break;
+      default:
+        break;
     }
   };
 
   const getMonthName = (month) => {
     const monthNames = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
     ];
     return monthNames[month - 1];
   };
+
 
   const handleSearch = () => {
     const filteredCourses = courses.filter((course) => {
@@ -255,7 +224,7 @@ const CourseReport = () => {
       );
     });
 
-    setCourses(filteredCourses);
+    setFilteredCourses(filteredCourses);
   };
 
   const handleFilterChange = (event) => {
@@ -279,7 +248,7 @@ const CourseReport = () => {
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
             <MenuItem value="HalfYearly">Half Yearly</MenuItem>
-            <MenuItem value="Yearly">Yearly</MenuItem>
+            {/* <MenuItem value="Yearly">Yearly</MenuItem> */}
           </TextField>
           {selectedFilter === 'Monthly' && (
             <TextField
@@ -346,14 +315,14 @@ const CourseReport = () => {
           <TextField
             label="Search by Name"
             value={searchQueryName}
-            onChange={(e) => setSearchQueryName(e.target.value)}
+            onChange={(event) => setSearchQueryName(event.target.value)}
             style={{ marginRight: '10px' }}
           />
          
           <Button
             variant="contained"
             endIcon={<DownloadIcon />}
-            onClick={(event) => setDownloadAnchorEl(event.currentTarget)}
+            onClick={handleDownloadClick}
             style={{ marginRight: '10px' }}
           >
             Download
@@ -424,7 +393,7 @@ const CourseReport = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-  {courses?.map((course, courseIndex) => {
+  {filteredCourses?.map((course, courseIndex) => {
     const matchingDetails = course.monthlyDetails.filter((data) => {
       const completionMonth = getMonthName(data.completionMonth);
       return (
