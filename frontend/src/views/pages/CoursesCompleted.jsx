@@ -118,10 +118,10 @@ const CoursesCompleted = () => {
 
   return (
     <div>
-      <h2 style={{ textAlign: 'center' }}>Courses Completed</h2>
+      <h2 style={{paddingBottom: '20px',  textAlign: 'center' }}>Courses Completed</h2>
       <div className="courses-completed-container" style={{ overflowX: 'hidden' }}>
         <div className="left-panel" style={{ overflowX: 'hidden' }}>
-          <div className="course-filters">
+          {/* <div className="course-filters">
             <FormControl className="date-picker">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker views={['year', 'month']} label="Start Month" value={startDate} onChange={handleStartDateChange} />
@@ -133,7 +133,7 @@ const CoursesCompleted = () => {
                 <DatePicker views={['year', 'month']} label="End Month" value={endDate} onChange={handleEndDateChange} />
               </LocalizationProvider>
             </FormControl>
-          </div>
+          </div> */}
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', overflowX: 'hidden' }}>
               <TableContainer
@@ -216,8 +216,8 @@ const CoursesCompleted = () => {
             </div>
           </div>
         </div>
-        <div className="right-panel" style={{ flex: '0 1 30%', position: 'sticky', top: 20 }}>
-          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '34%', marginBottom: '-20px', fontSize: '18px' }}>
+        <div className="right-panel">
+          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '0%', marginBottom: '-20px', fontSize: '18px' }}>
           Courses Completed Per Month
           </Typography>
           <ResponsiveContainer width="100%" height="70%">

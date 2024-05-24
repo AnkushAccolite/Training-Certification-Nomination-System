@@ -53,9 +53,9 @@ public class CertificationController {
     }
 
     @PostMapping("/completed")
-    public void completeCourse(@RequestParam String empId, @RequestParam String certificationId,
+    public void completeCourse(@RequestParam String empId, @RequestParam String certificationId, @RequestParam String url,
                                @RequestBody CertificationFeedback certificationFeedback) {
-        this.certificationService.certificationCompleted(empId, certificationId, certificationFeedback);
+        this.certificationService.certificationCompleted(empId, certificationId,url, certificationFeedback);
     }
 
     @GetMapping("/failed")

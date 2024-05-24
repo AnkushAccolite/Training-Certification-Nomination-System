@@ -18,4 +18,5 @@ public class CertificationStatus {
     private String completionDate;
     private String status;
     private Integer attempt = 1;
+    private String uploadedCertificate;
 }

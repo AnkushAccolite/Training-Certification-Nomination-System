@@ -82,7 +82,7 @@ function CertificationFAQ() {
           >
             <Typography variant="h6" sx={{ fontSize: '1.00rem' }}>{faq.question}</Typography>
           </AccordionSummary>
-          <AccordionDetails sx={{ backgroundColor: '#fffffc', padding: '20px', borderRadius: '0 0 10px 10px' }}>
+          <AccordionDetails sx={{ backgroundColor: '#fffffc', padding: '20px', borderRadius: '0 0 10px 10px' }} style={{ backgroundColor:  '#f2f2f2',color:'black' }}>
             <Typography sx={{ fontSize: '0.98rem', fontStyle: 'initial' }}>
               {faq.answer.split('\n').map((line, idx) => (
                 <span key={idx}>

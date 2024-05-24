@@ -22,6 +22,7 @@ import './Courses.css';
 import axios from '../../api/axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -46,7 +47,7 @@ function Certifications() {
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [showPDF, setShowPDF] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [courses, setCourses] = useState([]);
 
   const navigate = useNavigate();
@@ -120,17 +121,17 @@ function Certifications() {
     setSelectedStatus(event.target.value);
   };
 
-  const filterCourses = (course) => {
-    if (selectedDomain === 'All' && selectedStatus === 'All') {
-      return true;
-    } else if (selectedDomain === 'All') {
-      return course?.status === selectedStatus;
-    } else if (selectedStatus === 'All') {
-      return course?.category === selectedDomain;
-    } else {
-      return course?.category === selectedDomain && course?.status === selectedStatus;
-    }
-  };
+  // const filterCourses = (course) => {
+  //   if (selectedDomain === 'All' && selectedStatus === 'All') {
+  //     return true;
+  //   } else if (selectedDomain === 'All') {
+  //     return course?.status === selectedStatus;
+  //   } else if (selectedStatus === 'All') {
+  //     return course?.category === selectedDomain;
+  //   } else {
+  //     return course?.category === selectedDomain && course?.status === selectedStatus;
+  //   }
+  // };
 
   const openConfirmationDialog = () => {
     if (selectedCourseIds.length === 0) {
@@ -162,6 +163,37 @@ function Certifications() {
 
   const handleClosePDF = () => {
     setShowPDF(false);
+  };
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedCourses = [...courses].sort((a, b) => {
+    if (sortConfig.key) {
+      const aValue = a[sortConfig.key];
+      const bValue = b[sortConfig.key];
+      if (sortConfig.key === 'name') {
+        return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+      }
+      // return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
+    }
+
+    return 0;
+  });
+  const filterCourses = (course) => {
+    if (selectedDomain === 'All' && selectedStatus === 'All') {
+      return true;
+    } else if (selectedDomain === 'All') {
+      return course?.status === selectedStatus;
+    } else if (selectedStatus === 'All') {
+      return course?.category === selectedDomain;
+    } else {
+      return course?.category === selectedDomain && course?.status === selectedStatus;
+    }
   };
 
   return (
@@ -266,16 +298,21 @@ function Certifications() {
             <TableHead>
               <TableRow>
                 <TableCell></TableCell>
-                <TableCell style={{ fontSize: '16px', fontWeight: 'bold' }}>Certification Name</TableCell>
-                <TableCell style={{ fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
-                <TableCell style={{ fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
-                <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                  Actions
+                <TableCell
+                  onClick={() => handleSort('name')}
+                  style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                >
+                  Certification Name
+                  <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                 </TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {courses.filter(filterCourses).map((row, index) => (
+            {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
+              {sortedCourses.filter(filterCourses).map((row, index) => (
                 <TableRow
                   key={row?.certificationId}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -288,8 +325,8 @@ function Certifications() {
                       disabled={row?.status !== 'Not Opted'}
                     />
                   </TableCell>
-                  <TableCell>{row?.name}</TableCell>
-                  <TableCell>{row?.category}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row?.name}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row?.category}</TableCell>
                   <TableCell
                     style={{
                       color:
@@ -299,12 +336,13 @@ function Certifications() {
                             ? 'green'
                             : row?.status === 'Completed'
                               ? 'blue'
-                              : 'inherit'
+                              : 'inherit',
+                      textAlign: 'center'
                     }}
                   >
                     {row?.status}
                   </TableCell>
-                  <TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>
                     <Button variant="contained" onClick={() => handleViewDetails(row)}>
                       View Details
                     </Button>
@@ -342,7 +380,8 @@ function Certifications() {
             <b>Confirmation</b>
           </DialogTitle>
           <DialogContent className="confirmation-content" style={{ textAlign: 'center' }}>
-            By clicking on Nominate, you are agreeing to the certification reimbursement policies. Do you still want to proceed?
+            By clicking on Nominate, you are agreeing to the certification reimbursement policies. 
+            <br /> Do you still want to proceed?
           </DialogContent>
           <DialogActions className="confirmation-actions">
             <Button
