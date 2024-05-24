@@ -5,15 +5,19 @@ import Loadable from 'ui-component/Loadable';
 import EmployeeReport from 'views/pages/EmployeeReport';
 import CourseReport from 'views/pages/CourseReport';
 import CertificationsReport from 'views/pages/CertificationsReport';
-// import CourseFAQ from 'views/pages/CourseFAQ';
 
 const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
+
 const Courses = Loadable(lazy(() => import('views/pages/Courses')));
-const Certifications = Loadable(lazy(() => import('views/pages/Certifications')));
+const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
+const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
 const AssignedCourses = Loadable(lazy(() => import('views/pages/AssignedCourses')));
-// const AssignedCertifications = Loadable(lazy(() => import('views/pages/As')));
-// const Status = Loadable(lazy(() => import('views/pages/Status')));
 const CoursesCompleted = Loadable(lazy(() => import('views/pages/CoursesCompleted')));
+const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
+const MonthlyCourses = Loadable(lazy(() => import('views/pages/MonthlyCourses')));
+const CoursesFaq = Loadable(lazy(() => import('views/pages/CourseFAQ')));
+
+const Certifications = Loadable(lazy(() => import('views/pages/Certifications')));
 const CertificationsCompleted = Loadable(lazy(() => import('views/pages/CertificationsCompleted')));
 const CertificationsApproved = Loadable(lazy(() => import('views/pages/CertificationsApproved')));
 // const CertificationFAQ = Loadable(lazy(() => import('views/pages/CertificationFAQ')));
@@ -25,10 +29,6 @@ const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
 const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
 // const AddCertification = Loadable(lazy(() => import('views/pages/AddCertification')));
 const AddCertification = Loadable(lazy(() => import('views/pages/AddCertification')));
-
-const MonthlyCourses = Loadable(lazy(() => import('views/pages/MonthlyCourses')));
-
-const CoursesFaq = Loadable(lazy(() => import('views/pages/CourseFAQ')));
 const CertificationsFaq = Loadable(lazy(() => import('views/pages/CertificationFAQ')));
 
 // ==============================|| MAIN ROUTING ||============================== //
@@ -97,10 +97,6 @@ const MainRoutes = {
           path: 'certification-request',
           element: <CertificationApplicationRequests />
         },
-        // {
-        //   path: '/MonthlyCourses/add-course',
-        //   element: <AddCourse />,
-        // }
         {
           path: 'employee-report',
           element: <EmployeeReport />

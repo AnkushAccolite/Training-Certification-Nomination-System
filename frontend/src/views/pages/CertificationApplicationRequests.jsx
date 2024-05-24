@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import CertificationCard from './CertificationCard';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import axios from '../../api/axios';
 
 const CertificationApplicationRequests = () => {
     const auth = useSelector((state) => state.auth);
@@ -20,18 +19,18 @@ const CertificationApplicationRequests = () => {
                 employeeName: 'John Doe',
                 certifications: [
                     {
-                        certificationId: 1, // Add certificationId
+                        certificationId: 1,
                         certificationName: 'AWS Certified Solutions Architect',
                         category: 'Cloud',
                         price: 150,
-                        status: 'Pending', // Add status field
+                        status: 'Pending',
                     },
                     {
-                        certificationId: 2, // Add certificationId
+                        certificationId: 2,
                         certificationName: 'AWS Certified Solutions ',
                         category: 'Cloud',
                         price: 200,
-                        status: 'Pending', // Add status field
+                        status: 'Pending',
                     },
                 ],
             },
@@ -40,11 +39,11 @@ const CertificationApplicationRequests = () => {
                 employeeName: 'Jane Smith',
                 certifications: [
                     {
-                        certificationId: 3, // Add certificationId
+                        certificationId: 3,
                         certificationName: 'Certified Information Systems Security Professional (CISSP)',
                         category: 'Security',
                         price: 700,
-                        status: 'Pending', // Add status field
+                        status: 'Pending',
                     },
                 ],
             },
