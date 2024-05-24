@@ -86,7 +86,8 @@ const CertificationsReport = () => {
       });
       doc.autoTable({
         head: [['EmpID', 'Name', 'Certifications', 'Category', 'Year']],
-        body: tableRows
+        body: tableRows,
+        startY: 20
       });
       doc.save('certifications_report.pdf');
     } else if (format === 'xlsx') {

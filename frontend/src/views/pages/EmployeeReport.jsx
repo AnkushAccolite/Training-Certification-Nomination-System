@@ -90,73 +90,69 @@ const EmployeeReport = () => {
   }, [auth, navigate]);
 
   useEffect(() => {
-    const filteredEmployees = employees?.filter((employee) => {
-      const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
-        const completionMonth = employee.completionMonth[index];
-        if (
-          (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
-          (!selectedCategory || employee.category[index] === selectedCategory) &&
-          (!selectedQuarter ||
-            (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
-            (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
-            (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
-            (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
-            (selectedQuarter === 'H1' && completionMonth >= 1 && completionMonth <= 6) ||
-            (selectedQuarter === 'H2' && completionMonth >= 7 && completionMonth <= 12))
-        ) {
-          acc.push({
-            course,
-            category: employee.category[index],
-            completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
-          });
-        }
-        return acc;
-      }, []);
+    filterEmployees();
+  }, [selectedMonth, selectedCategory, selectedQuarter, searchQueryID, searchQueryName]);
 
-      return (
-        (!searchQueryName || employee.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
-        (!searchQueryID || employee.empID.toLowerCase().includes(searchQueryID.toLowerCase())) &&
-        matchingCourses.length > 0
-      );
+  const filterEmployees = () => {
+    setEmployees(prevEmployees => {
+      let filteredData = prevEmployees;
+  
+      if (selectedMonth) {
+        filteredData = filteredData.filter((employee) =>
+          employee.completionMonth.some((month) => month === parseInt(selectedMonth))
+        );
+      }
+  
+      if (selectedCategory) {
+        filteredData = filteredData.filter((employee) =>
+          employee.category.some((category) => category === selectedCategory)
+        );
+      }
+  
+      if (selectedQuarter) {
+        filteredData = filteredData.filter((employee) =>
+          employee.completionMonth.some((month) => {
+            const quarterStart = {
+              Q1: 1,
+              Q2: 4,
+              Q3: 7,
+              Q4: 10,
+              H1: 1,
+              H2: 7
+            }[selectedQuarter];
+  
+            const quarterEnd = {
+              Q1: 3,
+              Q2: 6,
+              Q3: 9,
+              Q4: 12,
+              H1: 6,
+              H2: 12
+            }[selectedQuarter];
+  
+            return month >= quarterStart && month <= quarterEnd;
+          })
+        );
+      }
+  
+      if (searchQueryID) {
+        filteredData = filteredData.filter((employee) =>
+          employee.empID.toLowerCase().includes(searchQueryID.toLowerCase())
+        );
+      }
+  
+      if (searchQueryName) {
+        filteredData = filteredData.filter((employee) =>
+          employee.name.toLowerCase().includes(searchQueryName.toLowerCase())
+        );
+      }
+  
+      return filteredData;
     });
+  };
 
-    setEmployees(filteredEmployees);
-  }, [selectedMonth, selectedCategory, selectedQuarter, searchQueryID, searchQueryName, employees]);
-
-  useEffect(() => {
-    const filteredEmployees = employees?.filter((employee) => {
-      const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
-        const completionMonth = employee.completionMonth[index];
-        if (
-          (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
-          (!selectedCategory || employee.category[index] === selectedCategory) &&
-          (!selectedQuarter ||
-            (selectedQuarter === 'Q1' && completionMonth >= 1 && completionMonth <= 3) ||
-            (selectedQuarter === 'Q2' && completionMonth >= 4 && completionMonth <= 6) ||
-            (selectedQuarter === 'Q3' && completionMonth >= 7 && completionMonth <= 9) ||
-            (selectedQuarter === 'Q4' && completionMonth >= 10 && completionMonth <= 12) ||
-            (selectedQuarter === 'H1' && completionMonth >= 1 && completionMonth <= 6) ||
-            (selectedQuarter === 'H2' && completionMonth >= 7 && completionMonth <= 12))
-        ) {
-          acc.push({
-            course,
-            category: employee.category[index],
-            completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
-          });
-        }
-        return acc;
-      }, []);
-
-      return (
-        (!searchQueryName || employee.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
-        (!searchQueryID || employee.empID.toLowerCase().includes(searchQueryID.toLowerCase())) &&
-        matchingCourses.length > 0
-      );
-    });
-
-    setEmployees(filteredEmployees);
-  }, [selectedMonth, selectedCategory, selectedQuarter, searchQueryID, searchQueryName, employees]);
-
+  
+  
   const generatePieChartData = () => {
     const completionCounts = {
       January: 0,
