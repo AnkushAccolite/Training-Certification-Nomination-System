@@ -174,7 +174,7 @@ function CertificationsApproved() {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
 
-      if (sortConfig.key === 'certificationName' || sortConfig.key === 'status') {
+      if (sortConfig.key === 'name') {
         return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'attempts') {
         return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
@@ -220,18 +220,16 @@ function CertificationsApproved() {
                     <TableHead style={{ textAlign: 'center' }}>
                       <TableRow>
                         <TableCell
-                          onClick={() => handleSort('certificationName')}
+                          onClick={() => handleSort('name')}
                           style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                         >
                           Certification Name
                           <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                         </TableCell>
                         <TableCell
-                          onClick={() => handleSort('status')}
-                          style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                          style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}
                         >
                           Status
-                          <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                         </TableCell>
                         <TableCell
                           onClick={() => handleSort('attempts')}
@@ -273,7 +271,7 @@ function CertificationsApproved() {
             </div>
           </div>
           <div className="pie-chart-section" style={{ flex: '0 1 30%', position: 'sticky', top: 20 }}>
-            <Typography variant="h4" style={{ textAlign: 'center', marginTop: '45%', marginBottom: '-60px', fontSize: '18px' }}>
+            <Typography variant="h4" style={{ textAlign: 'center', marginTop: '0%', marginBottom: '-60px', fontSize: '18px' }}>
               Progress Tracker
             </Typography>
             <ResponsiveContainer width="100%" height={400}>

@@ -6,12 +6,11 @@ import { useSelector } from 'react-redux';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import './CoursesCompleted.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-
 import getEmployee from '../../utils/getEmployee';
 import getAllCertifications from '../../utils/getAllCertifications';
 
-function createData(SNo, CertificationName, Duration, DateOfCompletion) {
-  return { SNo, CertificationName, Duration, DateOfCompletion };
+function createData( CertificationName, Duration, DateOfCompletion) {
+  return { CertificationName, Duration, DateOfCompletion };
 }
 
 const CertificationsCompleted = () => {
@@ -37,7 +36,6 @@ const CertificationsCompleted = () => {
         const temp = completedCertifications?.map((completedCertificate, index) => {
           const certificateDetails = allCertifications?.find((cert) => cert?.certificationId === completedCertificate?.certificationId);
           return {
-            SNo: index + 1,
             CertificationName: certificateDetails?.name,
             Duration: certificateDetails?.duration,
             DateOfCompletion: completedCertificate?.completionDate
@@ -148,13 +146,6 @@ const CertificationsCompleted = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell
-                        onClick={() => handleSort('SNo')}
-                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-                      >
-                        S.No
-                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                      </TableCell>
-                      <TableCell
                         onClick={() => handleSort('CertificationName')}
                         style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
@@ -188,8 +179,7 @@ const CertificationsCompleted = () => {
                         return afterStartDate && beforeEndDate;
                       })
                       .map((row, index) => (
-                        <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
-                          <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
+                        <TableRow  style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                           <TableCell style={{ textAlign: 'center' }}>{row.CertificationName}</TableCell>
                           <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
                           <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
