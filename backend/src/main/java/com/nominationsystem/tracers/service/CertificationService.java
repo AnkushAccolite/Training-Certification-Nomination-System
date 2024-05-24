@@ -78,7 +78,7 @@ public class CertificationService {
         return ResponseEntity.ok().build();
     }
 
-    public void certificationCompleted(String empId, String certificationId,
+    public void certificationCompleted(String empId, String certificationId,String url,
             CertificationFeedback certificationFeedback) {
         this.certificationFeedbackRepository.save(certificationFeedback);
         Employee employee = this.employeeRepository.findByEmpId(empId);
