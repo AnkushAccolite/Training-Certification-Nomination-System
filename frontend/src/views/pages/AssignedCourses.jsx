@@ -17,13 +17,14 @@ import {
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { ArrowDropDownIcon } from '@mui/x-date-pickers';
+
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-
 import getNominationCourses from 'utils/getNominationCourses';
 import getAllCourses from 'utils/getAllCourses';
 import axios from '../../api/axios';
-import { ArrowDropDownIcon } from '@mui/x-date-pickers';
+
 
 const AssignedCourses = () => {
   const navigate = useNavigate();
@@ -133,10 +134,6 @@ const AssignedCourses = () => {
     if (sortConfig.key) {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
-      // if (sortConfig.key === 'duration') {
-      //   return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-      // } else if (sortConfig.key === 'courseName' || sortConfig.key === 'status')
-      //   return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
 
       if (sortConfig.key === 'courseName' || sortConfig.key === 'status') {
         return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
@@ -184,28 +181,30 @@ const AssignedCourses = () => {
         <div className="courses-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
+
+              {/* Table */}
               <TableContainer
                 style={{
                   backgroundColor: 'white',
                   borderRadius: '8px',
                   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                  paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                  marginBottom: '-16px' // Compensate for the added padding to avoid double scrollbars
+                  paddingRight: '8px',
+                  marginBottom: '-16px'
                 }}
                 component={Paper}
                 sx={{
                   maxHeight: '100%',
                   overflowY: 'auto',
                   '&::-webkit-scrollbar': {
-                    width: '6px', // Reduce width of the scrollbar
-                    borderRadius: '3px' // Round scrollbar corners
+                    width: '6px',
+                    borderRadius: '3px'
                   },
                   '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#FFFFFF' // Background color of the scrollbar track
+                    backgroundColor: '#FFFFFF'
                   },
                   '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
-                    borderRadius: '3px' // Round scrollbar thumb corners
+                    backgroundColor: '#eee6ff',
+                    borderRadius: '3px'
                   }
                 }}
               >
@@ -267,6 +266,7 @@ const AssignedCourses = () => {
           </div>
         </div>
 
+        {/* Pie Chart */}
         <div className="pie-chart-section" style={{ flex: '0 1 30%', position: 'sticky', top: 20 }}>
           <Typography variant="h4" style={{ textAlign: 'center', marginBottom: '-60px', fontSize: '18px' }}>
             Progress Tracker
@@ -281,8 +281,7 @@ const AssignedCourses = () => {
                 cy="50%"
                 outerRadius={105}
                 fill="#8884D8"
-                labelLine={false} // Remove lines extending from the numbers
-                // Render custom label inside the pie chart
+                labelLine={false}
                 label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
                   const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
                   const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
@@ -291,11 +290,11 @@ const AssignedCourses = () => {
                     <text
                       x={x}
                       y={y}
-                      fill="#fff" // Set text color to white
+                      fill="#fff"
                       textAnchor={x > cx ? 'start' : 'end'}
                       dominantBaseline="central"
                     >
-                      {`${Math.round(percent * 100)}%`} {/* Round the percentage value */}
+                      {`${Math.round(percent * 100)}%`}
                     </text>
                   );
                 }}
@@ -310,6 +309,7 @@ const AssignedCourses = () => {
         </div>
       </div>
 
+      {/* Modal for Self Assessment */}
       <Modal open={modalOpen} onClose={() => handleCloseModal(false)}>
         <div
           style={{
@@ -350,16 +350,7 @@ const AssignedCourses = () => {
         </div>
       </Modal>
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000} // Duration for the Snackbar to remain open (3 seconds)
-        onClose={handleSnackbarClose}
-      >
-        <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-          Thank you for submitting your feedback!
-        </MuiAlert>
-      </Snackbar>
-
+      {/* Modal for Course Feedback*/}
       <Modal open={feedbackOpen} onClose={handleFeedbackClose}>
         <div
           style={{
@@ -381,7 +372,6 @@ const AssignedCourses = () => {
           <div style={{ marginBottom: '20px', textAlign: 'center' }}>
             <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px' }}>
               Rate the course: <span style={{ color: '#3453cf', fontWeight: 'bold' }}>{courses[selectedCourseIndex]?.name}</span>{' '}
-              {/* Display course name in blue */}
             </Typography>
             <div style={{ display: 'inline-block' }}>
               <Rating
@@ -389,7 +379,7 @@ const AssignedCourses = () => {
                 value={feedbackData.rating}
                 onChange={(event, newValue) => setFeedbackData({ ...feedbackData, rating: newValue })}
                 aria-required
-                size="large" // Set the size of the stars to large
+                size="large"
               />
             </div>
           </div>
@@ -413,6 +403,17 @@ const AssignedCourses = () => {
           </div>
         </div>
       </Modal>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Thank you for submitting your feedback!
+        </MuiAlert>
+      </Snackbar>
+
     </div>
   );
 };

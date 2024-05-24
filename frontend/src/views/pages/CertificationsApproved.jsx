@@ -35,8 +35,8 @@ function CertificationsApproved() {
   const [feedbackData, setFeedbackData] = useState({ rating: 0, comments: '' });
   const [selectedCertificationIndex, setSelectedCertificationIndex] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState(''); // State to hold selected file
-  const [selectedFile, setSelectedFile] = useState(null); // State to hold selected file object
+  const [selectedFileName, setSelectedFileName] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null); 
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   useEffect(() => {
