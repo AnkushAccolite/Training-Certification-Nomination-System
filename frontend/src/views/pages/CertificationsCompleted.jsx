@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import './CoursesCompleted.css';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 import getEmployee from '../../utils/getEmployee';
 import getAllCertifications from '../../utils/getAllCertifications';
@@ -19,37 +20,6 @@ const CertificationsCompleted = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [activeIndex, setActiveIndex] = useState(null);
   const [rows, setRows] = useState([]);
-
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
-  };
-
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
-  };
-
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  const sortedRows = [...rows].sort((a, b) => {
-    if (sortConfig.key) {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-      if (sortConfig.key === 'DateOfCompletion') {
-        return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
-      } else if (sortConfig.key === 'CertificationName') {
-        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-      }
-      return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
-    }
-
-    return 0;
-  });
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
@@ -81,6 +51,37 @@ const CertificationsCompleted = () => {
     };
     fetchData();
   }, [auth, navigate]);
+
+  const handleStartDateChange = (date) => {
+    setStartDate(date);
+  };
+
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
+  };
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedRows = [...rows].sort((a, b) => {
+    if (sortConfig.key) {
+      const aValue = a[sortConfig.key];
+      const bValue = b[sortConfig.key];
+      if (sortConfig.key === 'DateOfCompletion') {
+        return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
+      } else if (sortConfig.key === 'CertificationName') {
+        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+      }
+      return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
+    }
+
+    return 0;
+  });
 
   const getPieChartData = () => {
     const data = rows.reduce((acc, row) => {
