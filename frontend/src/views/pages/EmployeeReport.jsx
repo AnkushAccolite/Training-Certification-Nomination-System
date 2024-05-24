@@ -27,7 +27,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
-
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
@@ -43,6 +43,7 @@ const EmployeeReport = () => {
   const [searchQueryName, setSearchQueryName] = useState('');
   const [downloadAnchorEl, setDownloadAnchorEl] = useState(null);
   const chartRef = useRef(null);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
@@ -151,7 +152,27 @@ const EmployeeReport = () => {
     });
   };
 
-  
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedEmployees = [...employees].sort((a, b) => {
+    if (sortConfig.key) {
+      const aValue = a[sortConfig.key];
+      const bValue = b[sortConfig.key];
+
+      if (sortConfig.key === 'name'  ) {
+        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+      } 
+    }
+    return 0;
+  });
+
+
   
   const generatePieChartData = () => {
     const completionCounts = {
@@ -455,25 +476,26 @@ const EmployeeReport = () => {
               <Table aria-label="employee report table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                      EmpID
+                    <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }} >
+                      Employee ID
                     </TableCell>
-                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                    <TableCell align="center" style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('name')}>
                       Name
+                      <ArrowDropDownIcon style={{ fontSize: '130%' }} />
                     </TableCell>
-                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                    <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
                       Courses
                     </TableCell>
-                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                    <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
                       Category
                     </TableCell>
-                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                    <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
                       Completion Month
                     </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {employees?.map((employee, employeeIndex) => {
+                  {sortedEmployees?.map((employee, employeeIndex) => {
                     const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
                       const completionMonth = employee.completionMonth[index];
                       if (
