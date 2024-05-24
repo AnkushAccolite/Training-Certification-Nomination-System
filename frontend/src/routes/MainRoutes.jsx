@@ -22,11 +22,7 @@ const CertificationsCompleted = Loadable(lazy(() => import('views/pages/Certific
 const CertificationsApproved = Loadable(lazy(() => import('views/pages/CertificationsApproved')));
 // const CertificationFAQ = Loadable(lazy(() => import('views/pages/CertificationFAQ')));
 
-const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
-// const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
 const CertificationApplicationRequests = Loadable(lazy(() => import('views/pages/CertificationApplicationRequests')));
-const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
-const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
 // const AddCertification = Loadable(lazy(() => import('views/pages/AddCertification')));
 const AddCertification = Loadable(lazy(() => import('views/pages/AddCertification')));
 const CertificationsFaq = Loadable(lazy(() => import('views/pages/CertificationFAQ')));
