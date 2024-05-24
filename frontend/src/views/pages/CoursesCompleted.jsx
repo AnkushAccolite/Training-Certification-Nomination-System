@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Paper,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  FormControl
-} from '@mui/material';
+import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -172,64 +162,63 @@ const CoursesCompleted = () => {
                   }
                 }}
               >
-<Table aria-label="completed courses table">
-  <TableHead>
-    <TableRow>
-      <TableCell
-        onClick={() => handleSort('SNo')}
-        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-      >
-        S.No <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-      </TableCell>
-      <TableCell
-        onClick={() => handleSort('CourseName')}
-        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-      >
-        Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-      </TableCell>
-      <TableCell
-        onClick={() => handleSort('Duration')}
-        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-      >
-        Duration (hrs) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-      </TableCell>
-      <TableCell
-        onClick={() => handleSort('DateOfCompletion')}
-        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-      >
-        Completion Month <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-      </TableCell>
-    </TableRow>
-  </TableHead>
-  <TableBody>
-    {sortedRows
-      .filter((row) => {
-        if (!startDate && !endDate) return true;
-        const completionDate = dayjs(row.DateOfCompletion);
-        const afterStartDate =
-          !startDate || completionDate.isAfter(startDate, 'month') || completionDate.isSame(startDate, 'month');
-        const beforeEndDate =
-          !endDate || completionDate.isBefore(endDate, 'month') || completionDate.isSame(endDate, 'month');
-        return afterStartDate && beforeEndDate;
-      })
-      .map((row, index) => (
-        <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? '#F2F2F2' : '#FFFFFF' }}>
-          <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
-          <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
-          <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
-          <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
-        </TableRow>
-      ))}
-  </TableBody>
-</Table>
-
+                <Table aria-label="completed courses table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                        onClick={() => handleSort('SNo')}
+                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                      >
+                        S.No <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
+                      <TableCell
+                        onClick={() => handleSort('CourseName')}
+                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                      >
+                        Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
+                      <TableCell
+                        onClick={() => handleSort('Duration')}
+                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                      >
+                        Duration (hrs) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
+                      <TableCell
+                        onClick={() => handleSort('DateOfCompletion')}
+                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                      >
+                        Completion Month <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {sortedRows
+                      .filter((row) => {
+                        if (!startDate && !endDate) return true;
+                        const completionDate = dayjs(row.DateOfCompletion);
+                        const afterStartDate =
+                          !startDate || completionDate.isAfter(startDate, 'month') || completionDate.isSame(startDate, 'month');
+                        const beforeEndDate =
+                          !endDate || completionDate.isBefore(endDate, 'month') || completionDate.isSame(endDate, 'month');
+                        return afterStartDate && beforeEndDate;
+                      })
+                      .map((row, index) => (
+                        <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? '#F2F2F2' : '#FFFFFF' }}>
+                          <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
+                          <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
+                          <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
+                          <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
               </TableContainer>
             </div>
           </div>
         </div>
-        <div className="right-panel" style={{ overflowX: 'hidden' }}>
-          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '50%', marginBottom: '-30px' }}>
-            Courses Completed Per Month
+        <div className="right-panel" style={{ flex: '0 1 30%', position: 'sticky', top: 20 }}>
+          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '34%', marginBottom: '-20px', fontSize: '18px' }}>
+          Courses Completed Per Month
           </Typography>
           <ResponsiveContainer width="100%" height="70%">
             <PieChart>
