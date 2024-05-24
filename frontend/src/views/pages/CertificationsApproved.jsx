@@ -21,28 +21,14 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
+import getEmployee from '../../utils/getEmployee';
+import getAllCertifications from '../../utils/getAllCertifications';
+
 function CertificationsApproved() {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (!auth?.isAuthenticated) navigate('/login');
-  }, [auth, navigate]);
-
-  const [certifications, setCertifications] = useState([
-    { name: 'Certification 1', status: 'ongoing', attempts: 1 },
-    { name: 'Certification 2', status: 'ongoing', attempts: 2 },
-    { name: 'Certification 3', status: 'passed', attempts: 2 },
-    { name: 'Certification 4', status: 'ongoing', attempts: 1 },
-    { name: 'Certification 5', status: 'passed', attempts: 2 },
-    { name: 'Certification 6', status: 'passed', attempts: 1 },
-    { name: 'Certification 7', status: 'passed', attempts: 2 },
-    { name: 'Certification 8', status: 'passed', attempts: 1 },
-    { name: 'Certification 9', status: 'passed', attempts: 2 },
-    { name: 'Certification 10', status: 'passed', attempts: 1 },
-    { name: 'Certification 11', status: 'passed', attempts: 1 },
-    { name: 'Certification 12', status: 'passed', attempts: 1 }
-  ]);
+  const [certifications, setCertifications] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [certificateModalOpen, setCertificateModalOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -52,6 +38,32 @@ function CertificationsApproved() {
   const [selectedFileName, setSelectedFileName] = useState(''); // State to hold selected file
   const [selectedFile, setSelectedFile] = useState(null); // State to hold selected file object
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+  useEffect(() => {
+    if (!auth?.isAuthenticated) navigate('/login');
+
+    const fetchData = async () => {
+      try {
+        const allCertifications = await getAllCertifications();
+
+        const employee = await getEmployee(auth?.user?.email);
+
+        const temp = employee?.certifications?.map((completedCertificate) => {
+          const certificateDetails = allCertifications?.find((cert) => cert?.certificationId === completedCertificate?.certificationId);
+          return {
+            name: certificateDetails?.name,
+            status: completedCertificate?.status,
+            attempts: completedCertificate?.attempt
+          };
+        });
+
+        setCertifications(temp);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [auth, navigate]);
 
   const handleSelfAssessmentClick = (index) => {
     setSelectedCertificationIndex(index);
@@ -91,9 +103,9 @@ function CertificationsApproved() {
       return;
     }
 
-    // Change the status of the certification to passed
+    // Change the status of the certification to completed
     const updatedCertifications = [...certifications];
-    updatedCertifications[selectedCertificationIndex].status = 'passed';
+    updatedCertifications[selectedCertificationIndex].status = 'completed';
     setCertifications(updatedCertifications);
 
     // Close the certificate upload modal
@@ -134,7 +146,7 @@ function CertificationsApproved() {
     switch (status) {
       case 'ongoing':
         return '#3498db'; // Blue color for Ongoing
-      case 'passed':
+      case 'completed':
         return '#2ecc71'; // Green color for Passed
       case 'failed':
         return '#e74c3c'; // Red color for Failed
@@ -162,7 +174,7 @@ function CertificationsApproved() {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
 
-      if (sortConfig.key === 'certName' || sortConfig.key === 'status') {
+      if (sortConfig.key === 'certificationName' || sortConfig.key === 'status') {
         return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'attempts') {
         return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
@@ -208,7 +220,7 @@ function CertificationsApproved() {
                     <TableHead style={{ textAlign: 'center' }}>
                       <TableRow>
                         <TableCell
-                          onClick={() => handleSort('certName')}
+                          onClick={() => handleSort('certificationName')}
                           style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                         >
                           Certification Name
