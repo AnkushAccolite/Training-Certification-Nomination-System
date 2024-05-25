@@ -25,12 +25,12 @@ import currentMonth from 'utils/currentMonth';
 import FormControl from '@mui/material/FormControl';
 import './allcourses.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 const AllCourses = () => {
-  // Dummy data for courses (replace with actual data)
+
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
-  // const [courses, setCourses] = useState([]);
   const { courses, loading, error } = useCourses();
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const AllCourses = () => {
   const currentMonthUppercase = currentMonth();
 
   const [selectedDomain, setSelectedDomain] = useState('All');
-  const [selectedStatus, setSelectedStatus] = useState('All'); // State for selected status filter
+  const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedMonth, setSelectedMonth] = useState(currentMonthUppercase);
   const [editingCourseId, setEditingCourseId] = useState(null);
   const [editFields, setEditFields] = useState({});
@@ -164,7 +164,7 @@ const AllCourses = () => {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
 
-      if (sortConfig.key === 'courseName' ||sortConfig.key === 'domain' ) {
+      if (sortConfig.key === 'courseName' || sortConfig.key === 'domain') {
         return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'duration') {
         return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
@@ -187,7 +187,7 @@ const AllCourses = () => {
       return (
         course?.domain === selectedDomain &&
         course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus ===
-          (selectedStatus === 'Active')
+        (selectedStatus === 'Active')
       );
     }
   });
@@ -208,24 +208,24 @@ const AllCourses = () => {
 
   let buttonText = 'Change Status';
   let buttonStyle = {
-    backgroundColor: 'blue', // Default background color
-    color: 'white', // Default text color
+    backgroundColor: 'blue',
+    color: 'white',
     marginRight: '30px',
     width: '100px'
   };
 
   if (selectedRows.length === 0) {
     buttonText = 'Activate';
-    buttonStyle.backgroundColor = 'lightgrey'; // Make button grey when disabled
+    buttonStyle.backgroundColor = 'lightgrey';
   } else if (allSelectedActive) {
     buttonText = 'Deactivate';
-    buttonStyle.backgroundColor = '#eb4034'; // Deactivate
+    buttonStyle.backgroundColor = '#eb4034';
   } else if (allSelectedInactive) {
     buttonText = 'Activate';
-    buttonStyle.backgroundColor = '#3ea115'; // Activate
+    buttonStyle.backgroundColor = '#3ea115';
   } else {
     buttonText = 'Invert ';
-    buttonStyle.backgroundColor = '#3453cf'; // Invert Status
+    buttonStyle.backgroundColor = '#3453cf';
   }
 
   return (
@@ -284,7 +284,7 @@ const AllCourses = () => {
           className="addCourse"
           variant="outlined"
           onClick={handleClick}
-          style={{ marginLeft: '150px' }} // This will move the button to the right
+          style={{ marginLeft: '150px' }}
         >
           Add Course
         </Button>
@@ -292,130 +292,184 @@ const AllCourses = () => {
           variant="contained"
           disabled={!isActivateButtonEnabled}
           onClick={handleActivateButtonClick}
-          style={buttonStyle} // Apply buttonStyle here
+          style={buttonStyle}
         >
           {buttonText}
         </Button>
       </div>
 
+      {/* Table */}
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
-        {/* Table */}
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    indeterminate={selectedRows.length > 0 && selectedRows.length < filteredCourses.length}
-                    checked={selectedRows.length === filteredCourses.length}
-                    onChange={handleSelectAllClick}
-                    inputProps={{ 'aria-label': 'select all courses' }}
-                  />
-                </TableCell>
-                <TableCell style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('courseName')}>
-                  Course Name
-                  <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                </TableCell>
-                <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Details</TableCell>
-                <TableCell style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('duration')}>
-                  Duration
-                  <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                </TableCell>
-                <TableCell style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('domain')}>
-                  Domain <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                </TableCell>
-                <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold'}}>
-                  Status
-                </TableCell>
-                <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredCourses.map((course, index) => (
-                <TableRow key={course?.courseId} hover role="checkbox" tabIndex={-1} selected={isSelected(course?.courseId)} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={isSelected(course?.courseId)}
-                      onChange={(event) => handleRowCheckboxChange(event, course?.courseId)}
-                      inputProps={{ 'aria-labelledby': `checkbox-${course?.courseId}` }}
-                    />
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    {editingCourseId === course?.courseId ? (
-                      <TextField
-                        value={editFields?.courseName || course?.courseName}
-                        onChange={(event) => handleEditFieldChange(event, 'courseName')}
+        <div style={{ flex: '1', overflow: 'hidden' }}>
+          <div style={{ height: 'calc(100vh - 280px)', overflowY: 'auto' }}>
+            <TableContainer
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                paddingRight: '8px',
+                marginBottom: '-16px'
+              }}
+              component={Paper}
+              sx={{
+                maxHeight: '100%',
+                overflowY: 'auto',
+                '&::-webkit-scrollbar': {
+                  width: '6px',
+                  borderRadius: '3px'
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: '#FFFFFF'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#eee6ff',
+                  borderRadius: '3px'
+                }
+              }}
+            >
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        indeterminate={selectedRows.length > 0 && selectedRows.length < filteredCourses.length}
+                        checked={selectedRows.length === filteredCourses.length}
+                        onChange={handleSelectAllClick}
+                        inputProps={{ 'aria-label': 'select all courses' }}
                       />
-                    ) : (
-                      <div>{course?.courseName}</div>
-                    )}
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    <Button variant="contained" onClick={() => handleViewDetails(course)}>
-                      View Details
-                    </Button>
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    {editingCourseId === course?.courseId ? (
-                      <TextField
-                        value={editFields?.duration || course?.duration}
-                        type="number"
-                        onChange={(event) => handleEditFieldChange(event, 'duration')}
-                      />
-                    ) : (
-                      course?.duration
-                    )}
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    {editingCourseId === course?.courseId ? (
-                      <TextField
-                        value={editFields?.domain || course?.domain}
-                        onChange={(event) => handleEditFieldChange(event, 'domain')}
-                      />
-                    ) : (
-                      course?.domain
-                    )}
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    <span
-                      style={{
-                        color:
-                          course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus === false
-                            ? 'red'
-                            : 'green'
-                      }}
+                    </TableCell>
+                    <TableCell
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleSort('courseName')}
                     >
-                      {course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus
-                        ? 'Active'
-                        : 'Inactive'}
-                    </span>
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    {editingCourseId === course?.courseId ? (
-                      <>
-                        <Button variant="contained" onClick={saveEditedCourse}>
-                          Save
+                      <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                        Course Name
+                        {sortConfig.key === 'courseName' ? (
+                          sortConfig.direction === 'asc' ? (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          ) : (
+                            <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Details</TableCell>
+                    <TableCell
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleSort('duration')}
+                    >
+                      <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                        Duration (hrs)
+                        {sortConfig.key === 'duration' ? (
+                          sortConfig.direction === 'asc' ? (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          ) : (
+                            <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon style={{ fontSize: '130%'}} />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
+                      Category
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
+                      Status
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredCourses.map((course, index) => (
+                    <TableRow key={course?.courseId} hover role="checkbox" tabIndex={-1} selected={isSelected(course?.courseId)} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isSelected(course?.courseId)}
+                          onChange={(event) => handleRowCheckboxChange(event, course?.courseId)}
+                          inputProps={{ 'aria-labelledby': `checkbox-${course?.courseId}` }}
+                        />
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        {editingCourseId === course?.courseId ? (
+                          <TextField
+                            value={editFields?.courseName || course?.courseName}
+                            onChange={(event) => handleEditFieldChange(event, 'courseName')}
+                          />
+                        ) : (
+                          <div>{course?.courseName}</div>
+                        )}
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        <Button variant="contained" onClick={() => handleViewDetails(course)}>
+                          View Details
                         </Button>
-                        <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
-                          Cancel
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)}>
-                          Edit
-                        </Button>
-                        <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px' }}>
-                          Delete
-                        </Button>
-                      </>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>{' '}
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        {editingCourseId === course?.courseId ? (
+                          <TextField
+                            value={editFields?.duration || course?.duration}
+                            type="number"
+                            onChange={(event) => handleEditFieldChange(event, 'duration')}
+                          />
+                        ) : (
+                          course?.duration
+                        )}
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        {editingCourseId === course?.courseId ? (
+                          <TextField
+                            value={editFields?.domain || course?.domain}
+                            onChange={(event) => handleEditFieldChange(event, 'domain')}
+                          />
+                        ) : (
+                          course?.domain
+                        )}
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        <span
+                          style={{
+                            color:
+                              course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus === false
+                                ? 'red'
+                                : 'green'
+                          }}
+                        >
+                          {course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus
+                            ? 'Active'
+                            : 'Inactive'}
+                        </span>
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        {editingCourseId === course?.courseId ? (
+                          <>
+                            <Button variant="contained" onClick={saveEditedCourse} style={{ marginBottom: '10px' }}>
+                              Save
+                            </Button>
+                            <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
+                              Cancel
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)} style={{ marginBottom: '10px' }}>
+                              Edit
+                            </Button>
+                            <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px', marginBottom: '10px' }}>
+                              Delete
+                            </Button>
+                          </>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+        </div>
       </div>
 
       {/* Course Details Dialog */}

@@ -23,6 +23,7 @@ import useCourses from 'hooks/useCourses';
 import currentMonth from 'utils/currentMonth';
 import './MonthlyCourses.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 const MonthlyCourses = () => {
   const auth = useSelector((state) => state.auth);
@@ -141,41 +142,66 @@ const MonthlyCourses = () => {
             backgroundColor: 'white',
             borderRadius: '8px',
             boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-            paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-            marginBottom: '-16px', // Compensate for the added
+            paddingRight: '8px',
+            marginBottom: '-16px',
           }}
             component={Paper}
             sx={{
               maxHeight: '100%',
               overflowY: 'auto',
               '&::-webkit-scrollbar': {
-                width: '6px', // Reduce width of the scrollbar
-                borderRadius: '3px', // Round scrollbar corners
+                width: '6px',
+                borderRadius: '3px',
               },
               '&::-webkit-scrollbar-track': {
-                backgroundColor: '#FFFFFF', // Background color of the scrollbar track
+                backgroundColor: '#FFFFFF',
               },
               '&::-webkit-scrollbar-thumb': {
-                backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
-                borderRadius: '3px', // Round scrollbar thumb corners
+                backgroundColor: '#eee6ff',
+                borderRadius: '3px',
               },
             }}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
-                    Course Name
-                    <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  <TableCell
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleSort('courseName')}
+                  >
+                    <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                      Course Name
+                      {sortConfig.key === 'courseName' ? (
+                        sortConfig.direction === 'asc' ? (
+                          <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        ) : (
+                          <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                        )
+                      ) : (
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      )}
+                    </div>
                   </TableCell>
-                  <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
-                    Duration
-                    <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  <TableCell
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleSort('duration')}
+                  >
+                    <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                      Duration (hrs)
+                      {sortConfig.key === 'duration' ? (
+                        sortConfig.direction === 'asc' ? (
+                          <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        ) : (
+                          <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                        )
+                      ) : (
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      )}
+                    </div>
                   </TableCell>
-                  <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer',fontSize: '16px', fontWeight: 'bold' }}>
-                    Domain
-                    <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
+                    Category
                   </TableCell>
-                  <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+                  <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
