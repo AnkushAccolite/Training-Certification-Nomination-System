@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import dayjs from 'dayjs';
+import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
+import dayjs from 'dayjs';
 import './CoursesCompleted.css';
-
-import getNominationCourses from 'utils/getNominationCourses';
 import getAllCourses from 'utils/getAllCourses';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import getNominationCourses from 'utils/getNominationCourses';
 
 const CoursesCompleted = () => {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [activeIndex, setActiveIndex] = useState(null);
   const [rows, setRows] = useState([]);
@@ -39,9 +34,9 @@ const CoursesCompleted = () => {
             const completedCourse = completedCourses?.find((completed) => completed?.courseId === course?.courseId);
             return {
               SNo: index + 1,
-              CourseName: course?.courseName,
-              Duration: `${course?.duration}`,
-              DateOfCompletion: completedCourse?.month
+              CourseName: course?.courseName || '',
+              Duration: `${course?.duration}` || '',
+              DateOfCompletion: completedCourse?.month || ''
             };
           });
 
@@ -53,14 +48,6 @@ const CoursesCompleted = () => {
     fetchData();
   }, [auth, navigate]);
 
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
-  };
-
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
-  };
-
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -71,8 +58,8 @@ const CoursesCompleted = () => {
 
   const sortedRows = [...rows].sort((a, b) => {
     if (sortConfig.key) {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
+      const aValue = a[sortConfig.key] || '';
+      const bValue = b[sortConfig.key] || '';
       if (sortConfig.key === 'DateOfCompletion') {
         return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'SNo') {
@@ -82,10 +69,6 @@ const CoursesCompleted = () => {
     }
     return 0;
   });
-
-  useEffect(() => {
-    if (!auth?.isAuthenticated) navigate('/login');
-  }, [auth, navigate]);
 
   const getPieChartData = () => {
     const data = rows.reduce((acc, row) => {
@@ -116,24 +99,18 @@ const CoursesCompleted = () => {
     '#E727B0'
   ];
 
+  const renderSortIcon = (key) => {
+    if (sortConfig.key === key) {
+      return sortConfig.direction === 'asc' ? <ArrowDropDownIcon style={{ fontSize: '130%' }} /> : <ArrowDropUpIcon style={{ fontSize: '130%' }} />;
+    }
+    return <ArrowDropDownIcon style={{ fontSize: '130%' }} />;
+  };
+
   return (
     <div>
-      <h2 style={{paddingBottom: '20px',  textAlign: 'center' }}>Courses Completed</h2>
       <div className="courses-completed-container" style={{ overflowX: 'hidden' }}>
         <div className="left-panel" style={{ overflowX: 'hidden' }}>
-          {/* <div className="course-filters">
-            <FormControl className="date-picker">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker views={['year', 'month']} label="Start Month" value={startDate} onChange={handleStartDateChange} />
-              </LocalizationProvider>
-            </FormControl>
-            <span className="date-separator"> - </span>
-            <FormControl className="date-picker">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker views={['year', 'month']} label="End Month" value={endDate} onChange={handleEndDateChange} />
-              </LocalizationProvider>
-            </FormControl>
-          </div> */}
+          <h2 style={{ paddingBottom: '20px', textAlign: 'center' }}>Courses Completed</h2>
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', overflowX: 'hidden' }}>
               <TableContainer
@@ -166,50 +143,39 @@ const CoursesCompleted = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell
-                        onClick={() => handleSort('SNo')}
-                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-                      >
-                        S.No <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                      </TableCell>
-                      <TableCell
                         onClick={() => handleSort('CourseName')}
                         style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
-                        Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          Course Name {renderSortIcon('CourseName')}
+                        </div>
                       </TableCell>
                       <TableCell
                         onClick={() => handleSort('Duration')}
                         style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
-                        Duration (hrs) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          Duration (hrs) {renderSortIcon('Duration')}
+                        </div>
                       </TableCell>
                       <TableCell
                         onClick={() => handleSort('DateOfCompletion')}
                         style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
-                        Completion Month <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          Completion Month {renderSortIcon('DateOfCompletion')}
+                        </div>
                       </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {sortedRows
-                      .filter((row) => {
-                        if (!startDate && !endDate) return true;
-                        const completionDate = dayjs(row.DateOfCompletion);
-                        const afterStartDate =
-                          !startDate || completionDate.isAfter(startDate, 'month') || completionDate.isSame(startDate, 'month');
-                        const beforeEndDate =
-                          !endDate || completionDate.isBefore(endDate, 'month') || completionDate.isSame(endDate, 'month');
-                        return afterStartDate && beforeEndDate;
-                      })
-                      .map((row, index) => (
-                        <TableRow key={row.SNo} style={{ backgroundColor: index % 2 === 0 ? '#F2F2F2' : '#FFFFFF' }}>
-                          <TableCell style={{ textAlign: 'center' }}>{row.SNo}</TableCell>
-                          <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
-                          <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
-                          <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
-                        </TableRow>
-                      ))}
+                    {sortedRows.map((row, index) => (
+                      <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? '#F2F2F2' : '#FFFFFF' }}>
+                        <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -217,8 +183,8 @@ const CoursesCompleted = () => {
           </div>
         </div>
         <div className="right-panel">
-          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '0%', marginBottom: '-20px', fontSize: '18px' }}>
-          Courses Completed Per Month
+          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '25%', marginBottom: '-20px', fontSize: '18px' }}>
+            Courses Completed Per Month
           </Typography>
           <ResponsiveContainer width="100%" height="70%">
             <PieChart>
@@ -245,12 +211,6 @@ const CoursesCompleted = () => {
                 }}
                 onMouseEnter={(e, entry) => setActiveIndex(entry.index)}
                 onMouseLeave={() => setActiveIndex(null)}
-                series={[
-                  {
-                    highlightScope: { faded: 'global', highlighted: 'item' },
-                    faded: { innerRadius: 20, additionalRadius: -20, color: 'gray' }
-                  }
-                ]}
               >
                 {getPieChartData().map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={activeIndex === index ? 1 : 0.7} />
