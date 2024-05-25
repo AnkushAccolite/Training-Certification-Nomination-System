@@ -21,6 +21,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import UploadWidget from 'ui-component/UploadWidget';
 import axios from '../../api/axios';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 function CertificationsApproved() {
   const navigate = useNavigate();
@@ -37,6 +38,8 @@ function CertificationsApproved() {
     if (status === 'completed') return 'Passed';
     return 'Not Cleared';
   };
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -214,10 +217,22 @@ function CertificationsApproved() {
                 <Table stickyHeader>
                   <TableHead style={{ textAlign: 'center' }}>
                     <TableRow>
-                      <TableCell style={{ textAlign: 'center' }}>Certification Name</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Status</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Attempts</TableCell>
-                      <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
+                    <TableCell
+                        onClick={() => handleSort('CertificationName')}
+                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                      >
+                        Certification Name
+                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
+                      <TableCell
+                        onClick={() => handleSort('attempts')}
+                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                      >
+                        Attempts
+                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center',fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>

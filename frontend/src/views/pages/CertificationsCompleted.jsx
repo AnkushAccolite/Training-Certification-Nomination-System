@@ -156,7 +156,7 @@ const CertificationsCompleted = () => {
                         onClick={() => handleSort('Duration')}
                         style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
-                        Duration (hours)
+                        Duration (hrs)
                         <ArrowDropDownIcon style={{ fontSize: '80%' }} />
                       </TableCell>
                       <TableCell
