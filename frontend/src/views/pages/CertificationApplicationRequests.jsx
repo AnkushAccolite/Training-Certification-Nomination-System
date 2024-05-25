@@ -2,101 +2,74 @@ import React, { useEffect, useState } from 'react';
 import CertificationCard from './CertificationCard';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import axios from '../../api/axios';
 
 const CertificationApplicationRequests = () => {
-    const auth = useSelector((state) => state.auth);
-    const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
-    const [requests, setRequests] = useState([]);
+  const [requests, setRequests] = useState([]);
 
-    useEffect(() => {
-        if (!(auth?.isAuthenticated && auth?.user?.role === 'MANAGER')) navigate('/login');
+  useEffect(() => {
+    if (!(auth?.isAuthenticated && auth?.user?.role === 'MANAGER')) navigate('/login');
 
-        // Dummy data for certification requests
-        const dummyRequests = [
-            {
-                certificationId: 1,
-                employeeName: 'John Doe',
-                certifications: [
-                    {
-                        certificationId: 1,
-                        certificationName: 'AWS Certified Solutions Architect',
-                        category: 'Cloud',
-                        price: 150,
-                        status: 'Pending',
-                    },
-                    {
-                        certificationId: 2,
-                        certificationName: 'AWS Certified Solutions ',
-                        category: 'Cloud',
-                        price: 200,
-                        status: 'Pending',
-                    },
-                ],
-            },
-            {
-                certificationId: 2,
-                employeeName: 'Jane Smith',
-                certifications: [
-                    {
-                        certificationId: 3,
-                        certificationName: 'Certified Information Systems Security Professional (CISSP)',
-                        category: 'Security',
-                        price: 700,
-                        status: 'Pending',
-                    },
-                ],
-            },
-        ];
+    const fetchData = async () => {
+      try {
+        const { data: pendingRequests } = await axios.get(`/employee/pending-certifications?managerId=${auth?.user?.empId}`);
 
-        setRequests(dummyRequests);
-    }, []);
+        const temp = pendingRequests?.map((request) => ({
+          empId: request?.empId,
+          employeeName: request?.empName,
+          certifications: request?.pendingCertDetails?.map((cert) => ({
+            certificationId: cert?.certificationId,
+            certificationName: cert?.name,
+            category: cert?.category
+          }))
+        }));
 
-    const handleAccept = (certificationId) => {
-        // Update status to 'Accepted' for the specific certification
-        setRequests((prevRequests) => {
-            return prevRequests.map((request) => {
-                const updatedCertifications = request.certifications.map((certification) => {
-                    if (certification.certificationId === certificationId) {
-                        return { ...certification, status: 'Accepted' };
-                    }
-                    return certification;
-                });
-                return { ...request, certifications: updatedCertifications };
-            });
-        });
+        setRequests(temp);
+        console.log(temp);
+      } catch (error) {
+        console.log(error);
+      }
     };
+    fetchData();
+  }, [auth, navigate]);
 
-    const handleReject = (certificationId) => {
-        // Update status to 'Rejected' for the specific certification
-        setRequests((prevRequests) => {
-            return prevRequests.map((request) => {
-                const updatedCertifications = request.certifications.map((certification) => {
-                    if (certification.certificationId === certificationId) {
-                        return { ...certification, status: 'Rejected' };
-                    }
-                    return certification;
-                });
-                return { ...request, certifications: updatedCertifications };
-            });
-        });
-    };
+  const handleAccept = async (empId, certificationId) => {
+    console.log(empId);
+    try {
+      const res = await axios.get(`/certifications/approveCertification?empId=${empId}&certificationId=${certificationId}`);
+      navigate(0);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    return (
-        <div className="requests">
-            <h2>Pending Certification Requests</h2>
+  const handleReject = async (empId, certificationId) => {
+    try {
+      const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
+      navigate(0);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-            {requests?.map((card) => (
-                <CertificationCard
-                    key={card?.certificationId}
-                    employeeName={card?.employeeName}
-                    certifications={card?.certifications}
-                    onAccept={handleAccept}
-                    onReject={handleReject}
-                />
-            ))}
-        </div>
-    );
+  return (
+    <div className="requests">
+      <h2>Pending Certification Requests</h2>
+
+      {requests?.map((card) => (
+        <CertificationCard
+          key={card?.certificationId}
+          employeeName={card?.employeeName}
+          certifications={card?.certifications}
+          onAccept={(certId) => handleAccept(card?.empId, certId)}
+          onReject={(certId) => handleReject(card?.empId, certId)}
+        />
+      ))}
+    </div>
+  );
 };
 
 export default CertificationApplicationRequests;

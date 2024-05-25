@@ -66,6 +66,7 @@ function CertificationsApproved() {
   const [url, setUrl] = useState('');
   const [fileName, setFilename] = useState('');
   const [index, setIndex] = useState(null);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const handleSelfAssessmentClick = (id, index) => {
     setSelectedCertification(id);
