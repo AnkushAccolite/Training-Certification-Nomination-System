@@ -150,21 +150,21 @@ const CertificationsCompleted = () => {
                         style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
                         Certification Name
-                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
                       </TableCell>
                       <TableCell
                         onClick={() => handleSort('Duration')}
                         style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
                         Duration (hours)
-                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
                       </TableCell>
                       <TableCell
                         onClick={() => handleSort('DateOfCompletion')}
                         style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
                         Date of Completion
-                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
                       </TableCell>
                     </TableRow>
                   </TableHead>

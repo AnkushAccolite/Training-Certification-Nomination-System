@@ -303,7 +303,7 @@ function Certifications() {
                   style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                 >
                   Certification Name
-                  <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  <ArrowDropDownIcon style={{ fontSize: '80%' }} />
                 </TableCell>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
