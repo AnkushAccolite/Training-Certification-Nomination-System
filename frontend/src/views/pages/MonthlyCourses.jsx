@@ -36,7 +36,6 @@ const MonthlyCourses = () => {
 
   const currentMonthUppercase = currentMonth();
 
-  const [sortingOrder, setSortingOrder] = useState('ascending');
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [domainFilter, setDomainFilter] = useState('All');
