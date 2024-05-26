@@ -2,50 +2,51 @@ import React, { useEffect, useState } from 'react';
 import { Box, FormControl, InputLabel, OutlinedInput, Button, Select, MenuItem } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import axios from "../../api/axios"
+import axios from '../../api/axios';
+import toast from 'react-hot-toast';
 
 const AddCertification = ({ onCourseAdd }) => {
-
-  const auth = useSelector(state=>state.auth);
-    const navigate = useNavigate();
-    useEffect(()=>{
-        if(!(auth?.isAuthenticated && auth?.user?.role==="ADMIN"))navigate("/login");
-    },[])
-
+  const auth = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!(auth?.isAuthenticated && auth?.user?.role === 'ADMIN')) navigate('/login');
+  }, []);
 
   const [formData, setFormData] = useState({
     certificationname: '',
     duration: '',
     domain: '',
-    description:''
+    description: ''
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
       [name]: value
     }));
   };
-  const handleSubmit = async(e) => {
-    try{
+  const handleSubmit = async (e) => {
+    try {
       e.preventDefault();
       const newCourse = {
-      certificationName: formData.certificationname,
-      duration: formData.duration,
-      domain: formData.domain,
-      description: formData.description,
-      isApprovalReq: true,
+        certificationName: formData.certificationname,
+        duration: formData.duration,
+        domain: formData.domain,
+        description: formData.description,
+        isApprovalReq: true
       };
 
-    const res = await axios.post("/course",newCourse);
-    setFormData({
-      certificationname: '',
-      duration: '',
-      domain: '',
-      description:'',
-    });
-    }catch(err){
+      const res = await axios.post('/course', newCourse);
+      setFormData({
+        certificationname: '',
+        duration: '',
+        domain: '',
+        description: ''
+      });
+      toast.success('Certification added successfully');
+    } catch (err) {
       console.log(err);
+      toast.error('Something went wrong');
     }
   };
   return (
@@ -61,7 +62,7 @@ const AddCertification = ({ onCourseAdd }) => {
         border: '1px solid #ccc',
         borderRadius: 5,
         backgroundColor: '#fff',
-        boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.2)',
+        boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.2)'
       }}
     >
       <h2 style={{ textAlign: 'center', marginTop: 0 }}>ADD CERTIFICATION</h2>
@@ -92,14 +93,7 @@ const AddCertification = ({ onCourseAdd }) => {
         </FormControl>
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
           <InputLabel htmlFor="domain">Domain</InputLabel>
-          <Select
-            id="domain"
-            name="domain"
-            value={formData.domain}
-            onChange={handleChange}
-            label="Domain"
-            required
-          >
+          <Select id="domain" name="domain" value={formData.domain} onChange={handleChange} label="Domain" required>
             <MenuItem value="technical">Technical</MenuItem>
             <MenuItem value="domain">Domain</MenuItem>
             <MenuItem value="power">Power</MenuItem>

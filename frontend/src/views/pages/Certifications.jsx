@@ -23,6 +23,7 @@ import axios from '../../api/axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import toast from 'react-hot-toast';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -70,23 +71,24 @@ function Certifications() {
     return 'Not Opted';
   };
 
+  const fetchData = async () => {
+    try {
+      const { data } = await axios.get('/certifications');
+
+      const res = await axios.get(`/certifications/employee/${empId}`);
+
+      const pendingCertifications = res.data.pendingCertifications;
+      const certifications = res.data.certifications;
+
+      const temp = data?.map((cert) => ({ ...cert, status: getStatus(pendingCertifications, certifications, cert?.certificationId) }));
+
+      setCourses(temp);
+    } catch (error) {
+      console.log(error);
+      toast.error('Error fetching courses');
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axios.get('/certifications');
-
-        const res = await axios.get(`/certifications/employee/${empId}`);
-
-        const pendingCertifications = res.data.pendingCertifications;
-        const certifications = res.data.certifications;
-
-        const temp = data?.map((cert) => ({ ...cert, status: getStatus(pendingCertifications, certifications, cert?.certificationId) }));
-
-        setCourses(temp);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchData();
   }, [empId]);
 
@@ -145,16 +147,30 @@ function Certifications() {
     setShowConfirmation(false);
   };
 
-  const nominateCourses = async () => {
-    const res = await axios.post(`/certifications/nominateCertification?empId=${empId}`, selectedCourseIds);
-    setSelectedCourseIds([]);
-    closeConfirmationDialog();
-    navigate(0);
+  const nominateCertifications = async () => {
+    try {
+      const res = await axios.post(`/certifications/nominateCertification?empId=${empId}`, selectedCourseIds);
+      setSelectedCourseIds([]);
+      closeConfirmationDialog();
+      toast.success('Certifications nominated');
+      fetchData();
+      // navigate(0);
+    } catch (error) {
+      console.log('error');
+      toast.error('Something went wrong');
+    }
   };
 
   const cancelNomination = async (certificationId) => {
-    const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
-    navigate(0);
+    try {
+      const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
+      toast.success('Nomination cancelled successfully');
+      fetchData();
+      // navigate(0);
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong');
+    }
   };
 
   const handlePDFClick = () => {
@@ -293,73 +309,87 @@ function Certifications() {
       </div>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell></TableCell>
-                <TableCell
-                  onClick={() => handleSort('name')}
-                  style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-                >
-                  Certification Name
-                  <ArrowDropDownIcon style={{ fontSize: '80%' }} />
-                </TableCell>
-                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
-                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
-                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-            {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
-              {sortedCourses.filter(filterCourses).map((row, index) => (
-                <TableRow
-                  key={row?.certificationId}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCourseIds.includes(row?.certificationId)}
-                      onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
-                      disabled={row?.status !== 'Not Opted'}
-                    />
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row?.name}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row?.category}</TableCell>
+        {sortedCourses.length === 0 ? (
+          <div
+            style={{
+              width: '100%',
+              height: '30vh',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            No Certifications Available
+          </div>
+        ) : (
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell></TableCell>
                   <TableCell
-                    style={{
-                      color:
-                        row?.status === 'Pending for Approval'
-                          ? 'red'
-                          : row?.status === 'Approved'
-                            ? 'green'
-                            : row?.status === 'Completed'
-                              ? 'blue'
-                              : 'inherit',
-                      textAlign: 'center'
-                    }}
+                    onClick={() => handleSort('name')}
+                    style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                   >
-                    {row?.status}
+                    Certification Name
+                    <ArrowDropDownIcon style={{ fontSize: '80%' }} />
                   </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    <Button variant="contained" onClick={() => handleViewDetails(row)}>
-                      View Details
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => cancelNomination(row?.certificationId)}
-                      disabled={row?.status !== 'Pending for Approval'}
-                      style={{ marginLeft: '8px' }}
-                    >
-                      Cancel
-                    </Button>
-                  </TableCell>
+                  <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                  <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
+                  <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {sortedCourses.filter(filterCourses).map((row, index) => (
+                  <TableRow
+                    key={row?.certificationId}
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={selectedCourseIds.includes(row?.certificationId)}
+                        onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
+                        disabled={row?.status !== 'Not Opted'}
+                      />
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{row?.name}</TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>{row?.category}</TableCell>
+                    <TableCell
+                      style={{
+                        color:
+                          row?.status === 'Pending for Approval'
+                            ? 'red'
+                            : row?.status === 'Approved'
+                              ? 'green'
+                              : row?.status === 'Completed'
+                                ? 'blue'
+                                : 'inherit',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {row?.status}
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'center' }}>
+                      <Button variant="contained" onClick={() => handleViewDetails(row)}>
+                        View Details
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        onClick={() => cancelNomination(row?.certificationId)}
+                        disabled={row?.status !== 'Pending for Approval'}
+                        style={{ marginLeft: '8px' }}
+                      >
+                        Cancel
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+
         <Dialog open={showDetails} onClose={handleCloseDetails}>
           <DialogTitle style={{ fontSize: '17px', textAlign: 'center' }}>Course Details</DialogTitle>
           <DialogContent>
@@ -380,12 +410,12 @@ function Certifications() {
             <b>Confirmation</b>
           </DialogTitle>
           <DialogContent className="confirmation-content" style={{ textAlign: 'center' }}>
-            By clicking on Nominate, you are agreeing to the certification reimbursement policies. 
+            By clicking on Nominate, you are agreeing to the certification reimbursement policies.
             <br /> Do you still want to proceed?
           </DialogContent>
           <DialogActions className="confirmation-actions">
             <Button
-              onClick={nominateCourses}
+              onClick={nominateCertifications}
               className="confirmation-button-yes"
               style={{
                 backgroundColor: '#4caf50',
