@@ -24,6 +24,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import toast from 'react-hot-toast';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -71,23 +72,24 @@ function Certifications() {
     return 'Not Opted';
   };
 
+  const fetchData = async () => {
+    try {
+      const { data } = await axios.get('/certifications');
+
+      const res = await axios.get(`/certifications/employee/${empId}`);
+
+      const pendingCertifications = res.data.pendingCertifications;
+      const certifications = res.data.certifications;
+
+      const temp = data?.map((cert) => ({ ...cert, status: getStatus(pendingCertifications, certifications, cert?.certificationId) }));
+
+      setCourses(temp);
+    } catch (error) {
+      console.log(error);
+      toast.error('Error fetching courses');
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axios.get('/certifications');
-
-        const res = await axios.get(`/certifications/employee/${empId}`);
-
-        const pendingCertifications = res.data.pendingCertifications;
-        const certifications = res.data.certifications;
-
-        const temp = data?.map((cert) => ({ ...cert, status: getStatus(pendingCertifications, certifications, cert?.certificationId) }));
-
-        setCourses(temp);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchData();
   }, [empId]);
 
@@ -134,16 +136,30 @@ function Certifications() {
     setShowConfirmation(false);
   };
 
-  const nominateCourses = async () => {
-    const res = await axios.post(`/certifications/nominateCertification?empId=${empId}`, selectedCourseIds);
-    setSelectedCourseIds([]);
-    closeConfirmationDialog();
-    navigate(0);
+  const nominateCertifications = async () => {
+    try {
+      const res = await axios.post(`/certifications/nominateCertification?empId=${empId}`, selectedCourseIds);
+      setSelectedCourseIds([]);
+      closeConfirmationDialog();
+      toast.success('Certifications nominated');
+      fetchData();
+      // navigate(0);
+    } catch (error) {
+      console.log('error');
+      toast.error('Something went wrong');
+    }
   };
 
   const cancelNomination = async (certificationId) => {
-    const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
-    navigate(0);
+    try {
+      const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
+      toast.success('Nomination cancelled successfully');
+      fetchData();
+      // navigate(0);
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong');
+    }
   };
 
   const handlePDFClick = () => {
@@ -287,21 +303,11 @@ function Certifications() {
               <TableRow>
                 <TableCell></TableCell>
                 <TableCell
-                  style={{ cursor: 'pointer' }}
                   onClick={() => handleSort('name')}
+                  style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                 >
-                  <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
-                    Certification Name
-                    {sortConfig.key === 'name' ? (
-                      sortConfig.direction === 'asc' ? (
-                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                      ) : (
-                        <ArrowDropUpIcon style={{ fontSize: '130%' }} />
-                      )
-                    ) : (
-                      <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                    )}
-                  </div>
+                  Certification Name
+                  <ArrowDropDownIcon style={{ fontSize: '80%' }} />
                 </TableCell>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
@@ -383,7 +389,7 @@ function Certifications() {
           </DialogContent>
           <DialogActions className="confirmation-actions">
             <Button
-              onClick={nominateCourses}
+              onClick={nominateCertifications}
               className="confirmation-button-yes"
               style={{
                 backgroundColor: '#4caf50',

@@ -101,7 +101,11 @@ const CoursesCompleted = () => {
 
   const renderSortIcon = (key) => {
     if (sortConfig.key === key) {
-      return sortConfig.direction === 'asc' ? <ArrowDropDownIcon style={{ fontSize: '130%' }} /> : <ArrowDropUpIcon style={{ fontSize: '130%' }} />;
+      return sortConfig.direction === 'asc' ? (
+        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+      ) : (
+        <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+      );
     }
     return <ArrowDropDownIcon style={{ fontSize: '130%' }} />;
   };
@@ -113,72 +117,89 @@ const CoursesCompleted = () => {
           <h2 style={{ paddingBottom: '20px', textAlign: 'center' }}>Courses Completed</h2>
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', overflowX: 'hidden' }}>
-              <TableContainer
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: '8px',
-                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                  paddingRight: '8px',
-                  marginBottom: '-16px',
-                  overflowX: 'hidden'
-                }}
-                component={Paper}
-                sx={{
-                  maxHeight: '100%',
-                  overflowY: 'auto',
-                  '&::-webkit-scrollbar': {
-                    width: '6px',
-                    borderRadius: '3px'
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    backgroundColor: '#FFFFFF'
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#eee6ff',
-                    borderRadius: '3px'
-                  }
-                }}
-              >
-                <Table aria-label="completed courses table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell
-                        onClick={() => handleSort('CourseName')}
-                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          Course Name {renderSortIcon('CourseName')}
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        onClick={() => handleSort('Duration')}
-                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          Duration (hrs) {renderSortIcon('Duration')}
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        onClick={() => handleSort('DateOfCompletion')}
-                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          Completion Month {renderSortIcon('DateOfCompletion')}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {sortedRows.map((row, index) => (
-                      <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? '#F2F2F2' : '#FFFFFF' }}>
-                        <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
+              {sortedRows.length === 0 ? (
+                <div
+                  style={{
+                    width: '100%',
+                    height: '70%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    background: 'white',
+                    borderRadius: '15px',
+                    letterSpacing: '1px'
+                  }}
+                >
+                  <b>No Courses Completed</b>
+                </div>
+              ) : (
+                <TableContainer
+                  style={{
+                    backgroundColor: 'white',
+                    borderRadius: '8px',
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                    paddingRight: '8px',
+                    marginBottom: '-16px',
+                    overflowX: 'hidden'
+                  }}
+                  component={Paper}
+                  sx={{
+                    maxHeight: '100%',
+                    overflowY: 'auto',
+                    '&::-webkit-scrollbar': {
+                      width: '6px',
+                      borderRadius: '3px'
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      backgroundColor: '#FFFFFF'
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      backgroundColor: '#eee6ff',
+                      borderRadius: '3px'
+                    }
+                  }}
+                >
+                  <Table aria-label="completed courses table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell
+                          onClick={() => handleSort('CourseName')}
+                          style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            Course Name {renderSortIcon('CourseName')}
+                          </div>
+                        </TableCell>
+                        <TableCell
+                          onClick={() => handleSort('Duration')}
+                          style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            Duration (hrs) {renderSortIcon('Duration')}
+                          </div>
+                        </TableCell>
+                        <TableCell
+                          onClick={() => handleSort('DateOfCompletion')}
+                          style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            Completion Month {renderSortIcon('DateOfCompletion')}
+                          </div>
+                        </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                      {sortedRows.map((row, index) => (
+                        <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? '#F2F2F2' : '#FFFFFF' }}>
+                          <TableCell style={{ textAlign: 'center' }}>{row.CourseName}</TableCell>
+                          <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
+                          <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </div>
           </div>
         </div>

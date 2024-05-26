@@ -37,6 +37,7 @@ import axios from 'axios';
 import { login, logout } from '../../../../store/actions';
 import { useNavigate } from 'react-router-dom';
 import parseUser from 'utils/parseUser';
+import toast from 'react-hot-toast';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -74,13 +75,10 @@ const AuthLogin = ({ ...others }) => {
       dispatch(login(user, token));
 
       navigate('/courses');
-
-      console.log('Auth --> ', auth);
     } catch (err) {
       console.log(err);
+      toast.error('Invalid Credentials Try again!!!');
     }
-
-    console.log(values);
   };
 
   return (
