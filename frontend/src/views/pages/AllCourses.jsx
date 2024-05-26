@@ -22,8 +22,8 @@ import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
 import currentMonth from 'utils/currentMonth';
 import FormControl from '@mui/material/FormControl';
-import './allcourses.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import './allcourses.css';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import toast from 'react-hot-toast';
 
@@ -248,6 +248,8 @@ const AllCourses = () => {
   return (
     <div>
       <h2 style={{ textAlign: 'center' }}>All Courses</h2>
+
+      {/* Filters */}
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select value={selectedMonth} onChange={handleMonthFilterChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>

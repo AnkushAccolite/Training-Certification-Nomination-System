@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 @RequestMapping("/certifications")
 public class CertificationController {
 
@@ -23,52 +23,52 @@ public class CertificationController {
 
 
     @GetMapping
-    public ResponseEntity<?> getAllCertifications(){
+    public ResponseEntity<?> getAllCertifications() {
         return ResponseEntity.ok(this.certificationRepository.findAll());
     }
 
     @PostMapping
-    public Certification addCertification(@RequestBody Certification certification){
+    public Certification addCertification(@RequestBody Certification certification) {
         return this.certificationRepository.save(certification);
     }
 
     @GetMapping("/employee/{empId}")
-    public EmployeeCertification getEmployeeCertifications(@PathVariable("empId") String empId){
+    public EmployeeCertification getEmployeeCertifications(@PathVariable("empId") String empId) {
         return this.certificationService.getEmployeeCertification(empId);
     }
 
     @PatchMapping("/{certificationId}")
-    public void deleteCertification(@PathVariable("certificationId") String certificationId){
+    public void deleteCertification(@PathVariable("certificationId") String certificationId) {
         this.certificationService.deleteCertification(certificationId);
     }
 
     @PostMapping("/nominateCertification")
-    public void nominateCertification(@RequestParam String empId,@RequestBody ArrayList<String> certificationId){
-        this.certificationService.nominateCertification(empId,certificationId);
+    public void nominateCertification(@RequestParam String empId, @RequestBody ArrayList<String> certificationId) {
+        this.certificationService.nominateCertification(empId, certificationId);
     }
 
     @GetMapping("/approveCertification")
-    public ResponseEntity<?> assignCertification(@RequestParam String empId,@RequestParam String certificationId){
-        return this.certificationService.approveCertification(empId,certificationId);
+    public ResponseEntity<?> assignCertification(@RequestParam String empId, @RequestParam String certificationId) {
+        return this.certificationService.approveCertification(empId, certificationId);
     }
 
     @PostMapping("/completed")
     public void completeCourse(@RequestParam String empId, @RequestParam String certificationId, @RequestParam String url,
                                @RequestBody CertificationFeedback certificationFeedback) {
-        this.certificationService.certificationCompleted(empId, certificationId,url, certificationFeedback);
+        this.certificationService.certificationCompleted(empId, certificationId, url, certificationFeedback);
     }
 
     @GetMapping("/failed")
-    public void courseFailed(@RequestParam String empId, @RequestParam String certificationId){
-        this.certificationService.certificationFailed(empId,certificationId);
+    public void courseFailed(@RequestParam String empId, @RequestParam String certificationId) {
+        this.certificationService.certificationFailed(empId, certificationId);
     }
 
     @GetMapping("/cancel")
-    public void cancelNomination(@RequestParam String empId,@RequestParam String certificationId){
-        this.certificationService.cancelNomination(empId,certificationId);
+    public void cancelNomination(@RequestParam String empId, @RequestParam String certificationId) {
+        this.certificationService.cancelNomination(empId, certificationId);
     }
 
-    @GetMapping("certificationReport")
+    @GetMapping("/certificationReport")
     public List<CertificationReportTemplate> getCertificationReport() {
         return this.certificationService.getCertificationReport();
     }

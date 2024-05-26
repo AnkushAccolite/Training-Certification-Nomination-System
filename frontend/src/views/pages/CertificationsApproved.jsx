@@ -40,7 +40,6 @@ function CertificationsApproved() {
     return 'Not Cleared';
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await axios.get(`/certifications/employee/${auth?.user?.empId}`);
@@ -217,11 +216,10 @@ function CertificationsApproved() {
                 <Table stickyHeader>
                   <TableHead style={{ textAlign: 'center' }}>
                     <TableRow>
-                      <TableCell
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleSort('name')}
-                      >
-                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('name')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
                           Certification Name
                           {sortConfig.key === 'name' ? (
                             sortConfig.direction === 'asc' ? (
@@ -235,11 +233,10 @@ function CertificationsApproved() {
                         </div>
                       </TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
-                      <TableCell
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleSort('attempts')}
-                      >
-                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('attempts')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
                           Attempts
                           {sortConfig.key === 'attempts' ? (
                             sortConfig.direction === 'asc' ? (
@@ -304,14 +301,7 @@ function CertificationsApproved() {
                   const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
                   const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
                   return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill="#fff"
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize={14}
-                    >
+                    <text x={x} y={y} fill="#fff" textAnchor="middle" dominantBaseline="middle" fontSize={14}>
                       {`${Math.round(percent * 100)}%`}
                     </text>
                   );
@@ -400,11 +390,7 @@ function CertificationsApproved() {
         </div>
       </Modal>
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-      >
+      <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>
         <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
           Thank you for submitting your feedback!
         </MuiAlert>
