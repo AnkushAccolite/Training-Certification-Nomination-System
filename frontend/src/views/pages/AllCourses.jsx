@@ -20,19 +20,32 @@ import {
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
-import useCourses from 'hooks/useCourses';
 import currentMonth from 'utils/currentMonth';
 import FormControl from '@mui/material/FormControl';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import './allcourses.css';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import toast from 'react-hot-toast';
 
 const AllCourses = () => {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
-  const { courses, loading, error } = useCourses();
+
+  const [courses, setCourses] = useState([]);
+
+  const fetchCourses = async () => {
+    try {
+      const { data } = await axios.get('/course');
+      setCourses(data);
+    } catch (error) {
+      setError(error.message);
+      toast.error('Error fetching data');
+    }
+  };
 
   useEffect(() => {
     if (!(auth?.isAuthenticated && auth?.user?.role === 'ADMIN')) navigate('/login');
+    fetchCourses();
   }, []);
   const handleClick = () => {
     navigate('/AllCourses/add-course');
@@ -73,9 +86,11 @@ const AllCourses = () => {
   const deleteCourse = async (id) => {
     try {
       const res = await axios.put(`/course/delete/${id}`);
-      navigate(0);
+      toast.success('Course Deleted Successfully');
+      fetchCourses();
     } catch (error) {
       console.log(error);
+      toast.error('Something went wrong');
     }
   };
 
@@ -98,9 +113,11 @@ const AllCourses = () => {
       const updatedCourse = { ...temp, ...editFields };
       console.log(updatedCourse);
       const res = await axios.put(`/course/${editingCourseId}`, updatedCourse);
-      navigate(0);
+      toast.success('Course updated Successfully');
+      fetchCourses();
     } catch (error) {
       console.log(error);
+      toast.error('Something went wrong');
     }
   };
 
@@ -139,9 +156,11 @@ const AllCourses = () => {
   const handleActivateButtonClick = async () => {
     try {
       const res = await axios.post(`/course/change-status?month=${selectedMonth}`, selectedRows);
-      navigate(0);
+      toast.success('Successfully changed Status');
+      fetchCourses();
     } catch (error) {
       console.log(error);
+      toast.error('Something went wrong');
     }
   };
 
@@ -280,30 +299,31 @@ const AllCourses = () => {
           </Select>
         </FormControl>
 
-        <Button
-          className="addCourse"
-          variant="outlined"
-          onClick={handleClick}
-          style={{ marginLeft: '150px' }}
-        >
+        <Button className="addCourse" variant="outlined" onClick={handleClick} style={{ marginLeft: '150px' }}>
           Add Course
         </Button>
-        <Button
-          variant="contained"
-          disabled={!isActivateButtonEnabled}
-          onClick={handleActivateButtonClick}
-          style={buttonStyle}
-        >
+        <Button variant="contained" disabled={!isActivateButtonEnabled} onClick={handleActivateButtonClick} style={buttonStyle}>
           {buttonText}
         </Button>
       </div>
 
+      {/* Table */}
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
-
-        {/* Table */}
-        <div className="certifications-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
-          <div style={{ flex: '1', overflow: 'hidden' }}>
-            <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+        <div style={{ flex: '1', overflow: 'hidden' }}>
+          <div style={{ height: 'calc(100vh - 280px)', overflowY: 'auto' }}>
+            {filteredCourses.length === 0 ? (
+              <div
+                style={{
+                  width: '100%',
+                  height: '70%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                No Courses Available
+              </div>
+            ) : (
               <TableContainer
                 style={{
                   backgroundColor: 'white',
@@ -325,7 +345,7 @@ const AllCourses = () => {
                   },
                   '&::-webkit-scrollbar-thumb': {
                     backgroundColor: '#eee6ff',
-                    borderRadius: '3px' 
+                    borderRadius: '3px'
                   }
                 }}
               >
@@ -340,27 +360,54 @@ const AllCourses = () => {
                           inputProps={{ 'aria-label': 'select all courses' }}
                         />
                       </TableCell>
-                      <TableCell style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('courseName')}>
-                        Course Name
-                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('courseName')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          Course Name
+                          {sortConfig.key === 'courseName' ? (
+                            sortConfig.direction === 'asc' ? (
+                              <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                            ) : (
+                              <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                            )
+                          ) : (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Details</TableCell>
-                      <TableCell style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('duration')}>
-                        Duration
-                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('duration')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          Duration (hrs)
+                          {sortConfig.key === 'duration' ? (
+                            sortConfig.direction === 'asc' ? (
+                              <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                            ) : (
+                              <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                            )
+                          ) : (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          )}
+                        </div>
                       </TableCell>
-                      <TableCell style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }} onClick={() => handleSort('domain')}>
-                        Domain <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                      </TableCell>
-                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
-                        Status
-                      </TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {filteredCourses.map((course, index) => (
-                      <TableRow key={course?.courseId} hover role="checkbox" tabIndex={-1} selected={isSelected(course?.courseId)} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
+                      <TableRow
+                        key={course?.courseId}
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        selected={isSelected(course?.courseId)}
+                        style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
+                      >
                         <TableCell padding="checkbox">
                           <Checkbox
                             checked={isSelected(course?.courseId)}
@@ -408,7 +455,8 @@ const AllCourses = () => {
                           <span
                             style={{
                               color:
-                                course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus === false
+                                course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus ===
+                                false
                                   ? 'red'
                                   : 'green'
                             }}
@@ -421,7 +469,7 @@ const AllCourses = () => {
                         <TableCell style={{ textAlign: 'center' }}>
                           {editingCourseId === course?.courseId ? (
                             <>
-                              <Button variant="contained" onClick={saveEditedCourse}>
+                              <Button variant="contained" onClick={saveEditedCourse} style={{ marginBottom: '10px' }}>
                                 Save
                               </Button>
                               <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
@@ -430,10 +478,18 @@ const AllCourses = () => {
                             </>
                           ) : (
                             <>
-                              <Button variant="contained" onClick={() => handleEditCourse(course?.courseId)}>
+                              <Button
+                                variant="contained"
+                                onClick={() => handleEditCourse(course?.courseId)}
+                                style={{ marginBottom: '10px' }}
+                              >
                                 Edit
                               </Button>
-                              <Button variant="contained" onClick={() => deleteCourse(course?.courseId)} style={{ marginLeft: '10px' }}>
+                              <Button
+                                variant="contained"
+                                onClick={() => deleteCourse(course?.courseId)}
+                                style={{ marginLeft: '10px', marginBottom: '10px' }}
+                              >
                                 Delete
                               </Button>
                             </>
@@ -444,7 +500,7 @@ const AllCourses = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -469,4 +525,3 @@ const AllCourses = () => {
 };
 
 export default AllCourses;
-

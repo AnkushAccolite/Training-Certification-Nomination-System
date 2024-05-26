@@ -18,12 +18,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import useCourses from 'hooks/useCourses';
 import currentMonth from 'utils/currentMonth';
 import getNominationCourses from 'utils/getNominationCourses';
 import axios from '../../api/axios';
 import './Courses.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import toast from 'react-hot-toast';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -58,7 +59,32 @@ function Courses() {
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
 
-  const { courses, loading, error } = useCourses();
+  // const { courses, loading, error } = useCourses();
+  const [courses, setCourses] = useState([]);
+
+  const fetchCourses = async () => {
+    try {
+      const { data } = await axios.get('/course');
+      setCourses(data);
+    } catch (error) {
+      setError(error.message);
+      toast.error('Error fetching data');
+    }
+  };
+
+  const getNominations = async () => {
+    const nominationCourses = await getNominationCourses(auth?.user?.empId);
+
+    // console.log('nominationCourses->', nominationCourses?.pendingCourses);
+
+    const pendingCourseIds = nominationCourses?.pendingCourses?.map((course) => course.courseId);
+    const approvedCourseIds = nominationCourses?.approvedCourses?.map((course) => course.courseId);
+    const completedCourseIds = nominationCourses?.completedCourses?.map((course) => course.courseId);
+
+    setPendingCourses(pendingCourseIds);
+    setApprovedCourses(approvedCourseIds);
+    setCompletedCourses(completedCourseIds);
+  };
 
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
@@ -66,19 +92,7 @@ function Courses() {
       localStorage.setItem('refresh', true);
       navigate(0);
     }
-    const getNominations = async () => {
-      const nominationCourses = await getNominationCourses(auth?.user?.empId);
-
-      // console.log('nominationCourses->', nominationCourses?.pendingCourses);
-
-      const pendingCourseIds = nominationCourses?.pendingCourses?.map((course) => course.courseId);
-      const approvedCourseIds = nominationCourses?.approvedCourses?.map((course) => course.courseId);
-      const completedCourseIds = nominationCourses?.completedCourses?.map((course) => course.courseId);
-
-      setPendingCourses(pendingCourseIds);
-      setApprovedCourses(approvedCourseIds);
-      setCompletedCourses(completedCourseIds);
-    };
+    fetchCourses();
     getNominations();
   }, [auth, navigate]);
 
@@ -124,18 +138,22 @@ function Courses() {
       };
       console.log('payload', payload);
       const res = await axios.post(`/nomination?month=${selectedMonth}`, payload);
-      navigate(0);
+      toast.success('Succesfully Nominated');
+      getNominations();
     } catch (error) {
       console.log(error);
+      toast.error('Something went wrong');
     }
   };
 
   const cancelNomination = async (courseId) => {
     try {
       const res = await axios.get(`/nomination/cancel?empId=${auth?.user?.empId}&courseId=${courseId}`);
-      navigate(0);
+      toast.success('Nomination cancelled successfully');
+      getNominations();
     } catch (error) {
       console.log(error);
+      toast.error('Something went wrong');
     }
   };
 
@@ -210,7 +228,7 @@ function Courses() {
 
   return (
     <div>
-      <h2 style={{textAlign:'center'}}>Available Courses</h2>
+      <h2 style={{ textAlign: 'center' }}>Available Courses</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select value={selectedMonth} onChange={handleMonthChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
@@ -271,107 +289,130 @@ function Courses() {
       </div>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
-      <div style={{ flex: '1', overflow: 'hidden' }}>
+        <div style={{ flex: '1', overflow: 'hidden' }}>
           <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
-            <TableContainer
-              style={{
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                paddingRight: '8px', // Adjust padding to accommodate scrollbar width
-                marginBottom: '-16px', // Compensate for the added
-              }}
-              component={Paper}
-              sx={{
-                maxHeight: '100%',
-                overflowY: 'auto',
-                '&::-webkit-scrollbar': {
-                  width: '6px', // Reduce width of the scrollbar
-                  borderRadius: '3px', // Round scrollbar corners
-                },
-                '&::-webkit-scrollbar-track': {
-                  backgroundColor: '#FFFFFF', // Background color of the scrollbar track
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
-                  borderRadius: '3px', // Round scrollbar thumb corners
-                },
-              }}
-            >
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-  <TableRow>
-    <TableCell></TableCell>
-    <TableCell
-      onClick={() => handleSort('courseName')}
-      style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-    >
-      Course Name <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-    </TableCell>
-    <TableCell
-      onClick={() => handleSort('domain')}
-      style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-    >
-      Category <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-    </TableCell>
-    <TableCell
-      onClick={() => handleSort('duration')}
-      style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-    >
-      Duration (Hours) <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-    </TableCell>
-    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
-      Status
-    </TableCell>
-    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
-      Actions
-    </TableCell>
-  </TableRow>
-</TableHead>
-<TableBody>
-  {sortedCourses.map((row, index) => (
-    <TableRow
-      key={row?.courseId}
-      sx={{
-        '&:last-child td, &:last-child th': { border: 0 },
-        backgroundColor: index % 2 === 0 ? '#F2F2F2' : 'white'
-      }}
-    >
-      {/* Render the checkbox only if the status is "Not Opted" */}
-      <TableCell padding="checkbox">
-        <Checkbox
-          checked={selectedCourseIds.includes(row?.courseId)}
-          onChange={(e) => handleCheckboxChange(e, row?.courseId)}
-          disabled={getStatus(row?.courseId) !== 'Not Opted'}
-        />
-      </TableCell>
+            {sortedCourses.length !== 0 ? (
+              <TableContainer
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                  paddingRight: '8px', // Adjust padding to accommodate scrollbar width
+                  marginBottom: '-16px' // Compensate for the added
+                }}
+                component={Paper}
+                sx={{
+                  maxHeight: '100%',
+                  overflowY: 'auto',
+                  '&::-webkit-scrollbar': {
+                    width: '6px', // Reduce width of the scrollbar
+                    borderRadius: '3px' // Round scrollbar corners
+                  },
+                  '&::-webkit-scrollbar-track': {
+                    backgroundColor: '#FFFFFF' // Background color of the scrollbar track
+                  },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#eee6ff', // Color of the scrollbar thumb (handle)
+                    borderRadius: '3px' // Round scrollbar thumb corners
+                  }
+                }}
+              >
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell></TableCell>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('courseName')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          Course Name
+                          {sortConfig.key === 'courseName' ? (
+                            sortConfig.direction === 'asc' ? (
+                              <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                            ) : (
+                              <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                            )
+                          ) : (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('duration')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          Duration (hrs)
+                          {sortConfig.key === 'duration' ? (
+                            sortConfig.direction === 'asc' ? (
+                              <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                            ) : (
+                              <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                            )
+                          ) : (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {sortedCourses.map((row, index) => (
+                      <TableRow
+                        key={row?.courseId}
+                        sx={{
+                          '&:last-child td, &:last-child th': { border: 0 },
+                          backgroundColor: index % 2 === 0 ? '#F2F2F2' : 'white'
+                        }}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedCourseIds.includes(row?.courseId)}
+                            onChange={(e) => handleCheckboxChange(e, row?.courseId)}
+                            disabled={getStatus(row?.courseId) !== 'Not Opted'}
+                          />
+                        </TableCell>
 
-      <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
-      <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
-      <TableCell style={{ textAlign: 'center' }}>{row?.duration}</TableCell>
-      <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)), textAlign: 'center' }}>
-        {getStatus(row?.courseId)}
-      </TableCell>
-      <TableCell>
-        <Button variant="contained" onClick={() => handleViewDetails(row)}>
-          View Details
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={() => cancelNomination(row?.courseId)}
-          disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
-          style={{ marginLeft: '8px' }}
-        >
-          Cancel
-        </Button>
-      </TableCell>
-    </TableRow>
-  ))}
-</TableBody>
-
-          </Table>
-        </TableContainer>
-        </div>
+                        <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{row?.duration}</TableCell>
+                        <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)), textAlign: 'center' }}>
+                          {getStatus(row?.courseId)}
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="contained" onClick={() => handleViewDetails(row)}>
+                            View Details
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            onClick={() => cancelNomination(row?.courseId)}
+                            disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
+                            style={{ marginLeft: '8px' }}
+                          >
+                            Cancel
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <div
+                style={{
+                  width: '100%',
+                  height: '70%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                No Courses Available for This month
+              </div>
+            )}
+          </div>
         </div>
         <Dialog open={showDetails} onClose={handleCloseDetails}>
           <DialogTitle>Course Details</DialogTitle>

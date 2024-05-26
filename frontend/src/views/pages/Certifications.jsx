@@ -23,6 +23,8 @@ import axios from '../../api/axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import toast from 'react-hot-toast';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -70,23 +72,24 @@ function Certifications() {
     return 'Not Opted';
   };
 
+  const fetchData = async () => {
+    try {
+      const { data } = await axios.get('/certifications');
+
+      const res = await axios.get(`/certifications/employee/${empId}`);
+
+      const pendingCertifications = res.data.pendingCertifications;
+      const certifications = res.data.certifications;
+
+      const temp = data?.map((cert) => ({ ...cert, status: getStatus(pendingCertifications, certifications, cert?.certificationId) }));
+
+      setCourses(temp);
+    } catch (error) {
+      console.log(error);
+      toast.error('Error fetching courses');
+    }
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await axios.get('/certifications');
-
-        const res = await axios.get(`/certifications/employee/${empId}`);
-
-        const pendingCertifications = res.data.pendingCertifications;
-        const certifications = res.data.certifications;
-
-        const temp = data?.map((cert) => ({ ...cert, status: getStatus(pendingCertifications, certifications, cert?.certificationId) }));
-
-        setCourses(temp);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchData();
   }, [empId]);
 
@@ -121,18 +124,6 @@ function Certifications() {
     setSelectedStatus(event.target.value);
   };
 
-  // const filterCourses = (course) => {
-  //   if (selectedDomain === 'All' && selectedStatus === 'All') {
-  //     return true;
-  //   } else if (selectedDomain === 'All') {
-  //     return course?.status === selectedStatus;
-  //   } else if (selectedStatus === 'All') {
-  //     return course?.category === selectedDomain;
-  //   } else {
-  //     return course?.category === selectedDomain && course?.status === selectedStatus;
-  //   }
-  // };
-
   const openConfirmationDialog = () => {
     if (selectedCourseIds.length === 0) {
       alert('Please select at least one certification for nomination.');
@@ -145,16 +136,30 @@ function Certifications() {
     setShowConfirmation(false);
   };
 
-  const nominateCourses = async () => {
-    const res = await axios.post(`/certifications/nominateCertification?empId=${empId}`, selectedCourseIds);
-    setSelectedCourseIds([]);
-    closeConfirmationDialog();
-    navigate(0);
+  const nominateCertifications = async () => {
+    try {
+      const res = await axios.post(`/certifications/nominateCertification?empId=${empId}`, selectedCourseIds);
+      setSelectedCourseIds([]);
+      closeConfirmationDialog();
+      toast.success('Certifications nominated');
+      fetchData();
+      // navigate(0);
+    } catch (error) {
+      console.log('error');
+      toast.error('Something went wrong');
+    }
   };
 
   const cancelNomination = async (certificationId) => {
-    const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
-    navigate(0);
+    try {
+      const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
+      toast.success('Nomination cancelled successfully');
+      fetchData();
+      // navigate(0);
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong');
+    }
   };
 
   const handlePDFClick = () => {
@@ -179,7 +184,6 @@ function Certifications() {
       if (sortConfig.key === 'name') {
         return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       }
-      // return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
     }
 
     return 0;
@@ -303,7 +307,7 @@ function Certifications() {
                   style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                 >
                   Certification Name
-                  <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                  <ArrowDropDownIcon style={{ fontSize: '80%' }} />
                 </TableCell>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
@@ -311,7 +315,7 @@ function Certifications() {
               </TableRow>
             </TableHead>
             <TableBody>
-            {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
+              {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
               {sortedCourses.filter(filterCourses).map((row, index) => (
                 <TableRow
                   key={row?.certificationId}
@@ -380,12 +384,12 @@ function Certifications() {
             <b>Confirmation</b>
           </DialogTitle>
           <DialogContent className="confirmation-content" style={{ textAlign: 'center' }}>
-            By clicking on Nominate, you are agreeing to the certification reimbursement policies. 
+            By clicking on Nominate, you are agreeing to the certification reimbursement policies.
             <br /> Do you still want to proceed?
           </DialogContent>
           <DialogActions className="confirmation-actions">
             <Button
-              onClick={nominateCourses}
+              onClick={nominateCertifications}
               className="confirmation-button-yes"
               style={{
                 backgroundColor: '#4caf50',
