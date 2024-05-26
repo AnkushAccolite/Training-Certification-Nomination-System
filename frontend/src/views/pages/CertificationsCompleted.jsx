@@ -6,16 +6,11 @@ import { useSelector } from 'react-redux';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import './CoursesCompleted.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import getEmployee from '../../utils/getEmployee';
 import getAllCertifications from '../../utils/getAllCertifications';
 
-function createData( CertificationName, Duration, DateOfCompletion) {
-  return { CertificationName, Duration, DateOfCompletion };
-}
-
 const CertificationsCompleted = () => {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [activeIndex, setActiveIndex] = useState(null);
   const [rows, setRows] = useState([]);
@@ -49,14 +44,6 @@ const CertificationsCompleted = () => {
     };
     fetchData();
   }, [auth, navigate]);
-
-  const handleStartDateChange = (date) => {
-    setStartDate(date);
-  };
-
-  const handleEndDateChange = (date) => {
-    setEndDate(date);
-  };
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -112,9 +99,9 @@ const CertificationsCompleted = () => {
 
   return (
     <div>
-      <h2 style={{ paddingBottom: '20px', textAlign: 'center' }}>Certifications Completed</h2>
       <div className="courses-completed-container">
         <div className="left-panel">
+        <h2 style={{ paddingBottom: '20px', textAlign: 'center' }}>Certifications Completed</h2>
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }}>
               <TableContainer
@@ -146,40 +133,62 @@ const CertificationsCompleted = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell
-                        onClick={() => handleSort('CertificationName')}
-                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleSort('name')}
                       >
-                        Certification Name
-                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                          Certification Name
+                          {sortConfig.key === 'name' ? (
+                            sortConfig.direction === 'asc' ? (
+                              <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                            ) : (
+                              <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                            )
+                          ) : (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell
+                        style={{ cursor: 'pointer' }}
                         onClick={() => handleSort('Duration')}
-                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
-                        Duration (hrs)
-                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                          Duration (hrs)
+                          {sortConfig.key === 'Duration' ? (
+                            sortConfig.direction === 'asc' ? (
+                              <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                            ) : (
+                              <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                            )
+                          ) : (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell
+                        style={{ cursor: 'pointer' }}
                         onClick={() => handleSort('DateOfCompletion')}
-                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
-                        Date of Completion
-                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                          Completion Date
+                          {sortConfig.key === 'DateOfCompletion' ? (
+                            sortConfig.direction === 'asc' ? (
+                              <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                            ) : (
+                              <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                            )
+                          ) : (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {sortedRows
-                      .filter((row) => {
-                        if (!startDate && !endDate) return true;
-                        const completionDate = dayjs(row.DateOfCompletion);
-                        const afterStartDate =
-                          !startDate || completionDate.isAfter(startDate, 'day') || completionDate.isSame(startDate, 'day');
-                        const beforeEndDate = !endDate || completionDate.isBefore(endDate, 'day') || completionDate.isSame(endDate, 'day');
-                        return afterStartDate && beforeEndDate;
-                      })
                       .map((row, index) => (
-                        <TableRow  style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
+                        <TableRow style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                           <TableCell style={{ textAlign: 'center' }}>{row.CertificationName}</TableCell>
                           <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
                           <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
@@ -192,8 +201,8 @@ const CertificationsCompleted = () => {
           </div>
         </div>
         <div className="right-panel">
-          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '0%', marginBottom: '-20px', fontSize: '18px' }}>
-          Monthly Completion Status
+          <Typography variant="h4" style={{ textAlign: 'center', marginTop: '25%', marginBottom: '-20px', fontSize: '18px' }}>
+            Monthly Completion Status
           </Typography>
           <ResponsiveContainer width="100%" height="70%">
             <PieChart>

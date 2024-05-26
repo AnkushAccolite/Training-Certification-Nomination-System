@@ -23,6 +23,7 @@ import axios from '../../api/axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -121,18 +122,6 @@ function Certifications() {
     setSelectedStatus(event.target.value);
   };
 
-  // const filterCourses = (course) => {
-  //   if (selectedDomain === 'All' && selectedStatus === 'All') {
-  //     return true;
-  //   } else if (selectedDomain === 'All') {
-  //     return course?.status === selectedStatus;
-  //   } else if (selectedStatus === 'All') {
-  //     return course?.category === selectedDomain;
-  //   } else {
-  //     return course?.category === selectedDomain && course?.status === selectedStatus;
-  //   }
-  // };
-
   const openConfirmationDialog = () => {
     if (selectedCourseIds.length === 0) {
       alert('Please select at least one certification for nomination.');
@@ -179,7 +168,6 @@ function Certifications() {
       if (sortConfig.key === 'name') {
         return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       }
-      // return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
     }
 
     return 0;
@@ -299,11 +287,21 @@ function Certifications() {
               <TableRow>
                 <TableCell></TableCell>
                 <TableCell
+                  style={{ cursor: 'pointer' }}
                   onClick={() => handleSort('name')}
-                  style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                 >
-                  Certification Name
-                  <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+                  <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                    Certification Name
+                    {sortConfig.key === 'name' ? (
+                      sortConfig.direction === 'asc' ? (
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      ) : (
+                        <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                      )
+                    ) : (
+                      <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
@@ -311,7 +309,7 @@ function Certifications() {
               </TableRow>
             </TableHead>
             <TableBody>
-            {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
+              {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
               {sortedCourses.filter(filterCourses).map((row, index) => (
                 <TableRow
                   key={row?.certificationId}
@@ -380,7 +378,7 @@ function Certifications() {
             <b>Confirmation</b>
           </DialogTitle>
           <DialogContent className="confirmation-content" style={{ textAlign: 'center' }}>
-            By clicking on Nominate, you are agreeing to the certification reimbursement policies. 
+            By clicking on Nominate, you are agreeing to the certification reimbursement policies.
             <br /> Do you still want to proceed?
           </DialogContent>
           <DialogActions className="confirmation-actions">
