@@ -23,6 +23,7 @@ import axios from '../../api/axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import toast from 'react-hot-toast';
 
 const ITEM_HEIGHT = 48;
@@ -123,18 +124,6 @@ function Certifications() {
     setSelectedStatus(event.target.value);
   };
 
-  // const filterCourses = (course) => {
-  //   if (selectedDomain === 'All' && selectedStatus === 'All') {
-  //     return true;
-  //   } else if (selectedDomain === 'All') {
-  //     return course?.status === selectedStatus;
-  //   } else if (selectedStatus === 'All') {
-  //     return course?.category === selectedDomain;
-  //   } else {
-  //     return course?.category === selectedDomain && course?.status === selectedStatus;
-  //   }
-  // };
-
   const openConfirmationDialog = () => {
     if (selectedCourseIds.length === 0) {
       alert('Please select at least one certification for nomination.');
@@ -195,7 +184,6 @@ function Certifications() {
       if (sortConfig.key === 'name') {
         return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       }
-      // return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
     }
 
     return 0;
@@ -309,87 +297,73 @@ function Certifications() {
       </div>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
-        {sortedCourses.length === 0 ? (
-          <div
-            style={{
-              width: '100%',
-              height: '30vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            No Certifications Available
-          </div>
-        ) : (
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell
-                    onClick={() => handleSort('name')}
-                    style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-                  >
-                    Certification Name
-                    <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell></TableCell>
+                <TableCell
+                  onClick={() => handleSort('name')}
+                  style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                >
+                  Certification Name
+                  <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+                </TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
+              {sortedCourses.filter(filterCourses).map((row, index) => (
+                <TableRow
+                  key={row?.certificationId}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={selectedCourseIds.includes(row?.certificationId)}
+                      onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
+                      disabled={row?.status !== 'Not Opted'}
+                    />
                   </TableCell>
-                  <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
-                  <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
-                  <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {sortedCourses.filter(filterCourses).map((row, index) => (
-                  <TableRow
-                    key={row?.certificationId}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
+                  <TableCell style={{ textAlign: 'center' }}>{row?.name}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row?.category}</TableCell>
+                  <TableCell
+                    style={{
+                      color:
+                        row?.status === 'Pending for Approval'
+                          ? 'red'
+                          : row?.status === 'Approved'
+                            ? 'green'
+                            : row?.status === 'Completed'
+                              ? 'blue'
+                              : 'inherit',
+                      textAlign: 'center'
+                    }}
                   >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={selectedCourseIds.includes(row?.certificationId)}
-                        onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
-                        disabled={row?.status !== 'Not Opted'}
-                      />
-                    </TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>{row?.name}</TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>{row?.category}</TableCell>
-                    <TableCell
-                      style={{
-                        color:
-                          row?.status === 'Pending for Approval'
-                            ? 'red'
-                            : row?.status === 'Approved'
-                              ? 'green'
-                              : row?.status === 'Completed'
-                                ? 'blue'
-                                : 'inherit',
-                        textAlign: 'center'
-                      }}
+                    {row?.status}
+                  </TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>
+                    <Button variant="contained" onClick={() => handleViewDetails(row)}>
+                      View Details
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      onClick={() => cancelNomination(row?.certificationId)}
+                      disabled={row?.status !== 'Pending for Approval'}
+                      style={{ marginLeft: '8px' }}
                     >
-                      {row?.status}
-                    </TableCell>
-                    <TableCell style={{ textAlign: 'center' }}>
-                      <Button variant="contained" onClick={() => handleViewDetails(row)}>
-                        View Details
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        onClick={() => cancelNomination(row?.certificationId)}
-                        disabled={row?.status !== 'Pending for Approval'}
-                        style={{ marginLeft: '8px' }}
-                      >
-                        Cancel
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-
+                      Cancel
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
         <Dialog open={showDetails} onClose={handleCloseDetails}>
           <DialogTitle style={{ fontSize: '17px', textAlign: 'center' }}>Course Details</DialogTitle>
           <DialogContent>
