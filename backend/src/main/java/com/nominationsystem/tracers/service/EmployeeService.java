@@ -1,6 +1,7 @@
 package com.nominationsystem.tracers.service;
 
 import com.nominationsystem.tracers.models.*;
+import com.nominationsystem.tracers.repository.CertificationRepository;
 import com.nominationsystem.tracers.repository.CourseFeedbackRepository;
 import com.nominationsystem.tracers.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -22,6 +24,9 @@ public class EmployeeService {
 
     @Autowired
     private CourseFeedbackRepository courseFeedbackRepository;
+
+    @Autowired
+    private CertificationRepository certificationRepository;
 
     LocalDate currentDate = LocalDate.now();
     Month currentMonth = currentDate.getMonth();
@@ -166,5 +171,31 @@ public class EmployeeService {
             courseDetailsList.add(courseDetails);
         });
         return courseDetailsList;
+    }
+
+    public List<CertificationRequestsTemplate> getCertificationRequests(String managerId) {
+        List<Employee> employees = this.employeeRepository.findByManagerId(managerId);
+        List<Certification> certifications = this.certificationRepository.findAll();
+        List<CertificationRequestsTemplate> empCertDetailsList = new ArrayList<>();
+
+        Map<String, Certification> certIdToDetailsMap = certifications.stream()
+                .collect(Collectors.toMap(
+                        Certification::getCertificationId,
+                        cert -> cert));
+
+        employees.forEach(employee -> {
+            List<Certification> pendingCertificationDetails = employee.getPendingCertifications().stream()
+                    .map(certIdToDetailsMap::get)
+                    .toList();
+
+            if (!pendingCertificationDetails.isEmpty()) {
+                CertificationRequestsTemplate empCertDetails = new CertificationRequestsTemplate();
+                empCertDetails.setEmpId(employee.getEmpId());
+                empCertDetails.setEmpName(employee.getEmpName());
+                empCertDetails.setPendingCertDetails(pendingCertificationDetails);
+                empCertDetailsList.add(empCertDetails);
+            }
+        });
+        return empCertDetailsList;
     }
 }

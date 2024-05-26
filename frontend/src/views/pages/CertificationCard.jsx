@@ -18,14 +18,14 @@ const CertificationCard = ({ employeeName, certifications = [], onAccept, onReje
   useEffect(() => {
     // Initialize certification status map with 'Pending' status for each certification
     const initialStatusMap = {};
-    certifications.forEach(certification => {
+    certifications.forEach((certification) => {
       initialStatusMap[certification.certificationId] = certification.status || 'Pending';
     });
     setCertificationStatus(initialStatusMap);
   }, [certifications]);
 
   const handleAccept = (certificationId) => {
-    setCertificationStatus(prevStatusMap => ({
+    setCertificationStatus((prevStatusMap) => ({
       ...prevStatusMap,
       [certificationId]: 'Accepted'
     }));
@@ -33,7 +33,7 @@ const CertificationCard = ({ employeeName, certifications = [], onAccept, onReje
   };
 
   const handleReject = (certificationId) => {
-    setCertificationStatus(prevStatusMap => ({
+    setCertificationStatus((prevStatusMap) => ({
       ...prevStatusMap,
       [certificationId]: 'Rejected'
     }));
@@ -52,7 +52,6 @@ const CertificationCard = ({ employeeName, certifications = [], onAccept, onReje
               <TableRow>
                 <TableCell>Certification Name</TableCell>
                 <TableCell>Category</TableCell>
-                <TableCell>Price</TableCell>
                 <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
@@ -64,7 +63,6 @@ const CertificationCard = ({ employeeName, certifications = [], onAccept, onReje
                 >
                   <TableCell>{certification.certificationName}</TableCell>
                   <TableCell>{certification.category}</TableCell>
-                  <TableCell>{certification.price}</TableCell>
                   <TableCell>
                     {certificationStatus[certification.certificationId] === 'Pending' && (
                       <>
@@ -87,8 +85,7 @@ const CertificationCard = ({ employeeName, certifications = [], onAccept, onReje
                       </>
                     )}
                     {certificationStatus[certification.certificationId] !== 'Pending' && (
-                     <span className={`status ${certificationStatus[certification.certificationId]?.toLowerCase()}`}>
-
+                      <span className={`status ${certificationStatus[certification.certificationId]?.toLowerCase()}`}>
                         {certificationStatus[certification.certificationId]}
                       </span>
                     )}

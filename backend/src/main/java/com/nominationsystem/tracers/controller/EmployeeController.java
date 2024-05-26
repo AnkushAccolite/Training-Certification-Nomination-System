@@ -1,5 +1,6 @@
 package com.nominationsystem.tracers.controller;
 
+import com.nominationsystem.tracers.models.CertificationRequestsTemplate;
 import com.nominationsystem.tracers.models.EmployeeCourseStatus;
 import com.nominationsystem.tracers.models.EmployeeReportTemplate;
 import com.nominationsystem.tracers.service.EmployeeService;
@@ -58,6 +59,11 @@ public class EmployeeController {
     @GetMapping("/employeeReport")
     public List<EmployeeReportTemplate> getEmployeeReport() {
         return this.employeeService.getEmployeeReport();
+    }
+
+    @GetMapping("/pending-certifications")
+    public List<CertificationRequestsTemplate> getCertificationRequests(@RequestParam String managerId) {
+        return this.employeeService.getCertificationRequests(managerId);
     }
 
 }

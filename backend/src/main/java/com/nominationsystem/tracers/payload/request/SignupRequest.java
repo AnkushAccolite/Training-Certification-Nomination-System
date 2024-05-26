@@ -52,4 +52,6 @@ public class SignupRequest {
         this.role = role;
     }
 
+    public void setEmail(String mail) {
+    }
 }

@@ -17,6 +17,8 @@ import {
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { ArrowDropDownIcon } from '@mui/x-date-pickers';
+
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import getNominationCourses from 'utils/getNominationCourses';
@@ -338,6 +340,7 @@ const AssignedCourses = () => {
         </div>
       </div>
 
+      {/* Modal for Self Assessment */}
       <Modal open={modalOpen} onClose={() => handleCloseModal(false)}>
         <div
           style={{
@@ -436,6 +439,17 @@ const AssignedCourses = () => {
           </div>
         </div>
       </Modal>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Thank you for submitting your feedback!
+        </MuiAlert>
+      </Snackbar>
+
     </div>
   );
 };
