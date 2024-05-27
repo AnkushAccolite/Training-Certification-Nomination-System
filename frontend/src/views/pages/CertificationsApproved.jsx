@@ -23,6 +23,7 @@ import UploadWidget from 'ui-component/UploadWidget';
 import axios from '../../api/axios';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import toast from 'react-hot-toast';
 
 function CertificationsApproved() {
   const navigate = useNavigate();
@@ -37,24 +38,24 @@ function CertificationsApproved() {
   const getStatus = (status) => {
     if (status === 'inProgress') return 'Ongoing';
     if (status === 'completed') return 'Passed';
-    return 'Not Cleared';
+    return 'Failed';
   };
 
+  const fetchData = async () => {
+    const { data } = await axios.get(`/certifications/employee/${auth?.user?.empId}`);
+    const res = await axios.get('/certifications');
+    const allCertifications = res.data;
+
+    const approvedCertifications = data?.certifications?.map((item) => ({
+      certificationId: item?.certificationId,
+      name: allCertifications?.find((cert) => cert?.certificationId === item?.certificationId)?.name,
+      status: getStatus(item?.status),
+      attempts: item?.attempt
+    }));
+    setCertifications(approvedCertifications);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(`/certifications/employee/${auth?.user?.empId}`);
-      const res = await axios.get('/certifications');
-      const allCertifications = res.data;
-
-      const approvedCertifications = data?.certifications?.map((item) => ({
-        certificationId: item?.certificationId,
-        name: allCertifications?.find((cert) => cert?.certificationId === item?.certificationId)?.name,
-        status: getStatus(item?.status),
-        attempts: item?.attempt
-      }));
-      setCertifications(approvedCertifications);
-    };
     fetchData();
   }, []);
 
@@ -77,9 +78,20 @@ function CertificationsApproved() {
     setModalOpen(true);
   };
 
-  const handleCloseModal = (completed) => {
-    setModalOpen(false);
-    setCertificateModalOpen(true);
+  const handleCloseModal = async (completed) => {
+    if (completed) {
+      setModalOpen(false);
+      setCertificateModalOpen(true);
+    } else {
+      try {
+        const res = await axios.get(`/certifications/failed?empId=${auth.user.empId}&certificationId=${selectedCertification}`);
+        setModalOpen(false);
+        fetchData();
+      } catch (error) {
+        console.log(error);
+        toast.error('Something went wrong');
+      }
+    }
   };
 
   const handleCertificateUpload = () => {
@@ -97,7 +109,7 @@ function CertificationsApproved() {
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
-    navigate(0);
+    fetchData();
   };
 
   const handleFeedbackSubmit = async () => {
@@ -147,7 +159,7 @@ function CertificationsApproved() {
         return '#3498db';
       case 'Passed':
         return '#2ecc71';
-      case 'Not Cleared':
+      case 'Failed':
         return '#e74c3c';
       default:
         return '#000';
@@ -217,11 +229,10 @@ function CertificationsApproved() {
                 <Table stickyHeader>
                   <TableHead style={{ textAlign: 'center' }}>
                     <TableRow>
-                      <TableCell
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleSort('name')}
-                      >
-                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('name')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
                           Certification Name
                           {sortConfig.key === 'name' ? (
                             sortConfig.direction === 'asc' ? (
@@ -235,11 +246,10 @@ function CertificationsApproved() {
                         </div>
                       </TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
-                      <TableCell
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleSort('attempts')}
-                      >
-                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('attempts')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
                           Attempts
                           {sortConfig.key === 'attempts' ? (
                             sortConfig.direction === 'asc' ? (
@@ -304,14 +314,7 @@ function CertificationsApproved() {
                   const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
                   const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
                   return (
-                    <text
-                      x={x}
-                      y={y}
-                      fill="#fff"
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fontSize={14}
-                    >
+                    <text x={x} y={y} fill="#fff" textAnchor="middle" dominantBaseline="middle" fontSize={14}>
                       {`${Math.round(percent * 100)}%`}
                     </text>
                   );
@@ -400,11 +403,7 @@ function CertificationsApproved() {
         </div>
       </Modal>
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-      >
+      <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>
         <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
           Thank you for submitting your feedback!
         </MuiAlert>

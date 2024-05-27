@@ -93,4 +93,7 @@ public class Employee {
                 .anyMatch(certification -> certification.getCertificationId().equals(certificationId));
     }
 
+    public void setAssignedCourses(ArrayList<Object> objects) {
+
+    }
 }

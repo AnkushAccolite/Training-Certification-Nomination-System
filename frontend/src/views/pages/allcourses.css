@@ -1,8 +1,3 @@
-/* .filters-container {
-    display: flex;
-    align-items: center;
-  } */
-  
   .filters {
     position: relative;
       display: flex;
@@ -36,7 +31,7 @@
         
       }
       .filters .MuiSelect-root {
-        width: 120px; /* Adjust the width as needed */
+        width: 120px;
       }
       
       
@@ -44,33 +39,26 @@
         color: inherit;
       }
       .filters .MuiFormControl-root {
-        min-width: 120px; /* Adjust the width as needed */
+        min-width: 120px;
         margin-bottom:5px;
       }
       
       
       .filters .MuiOutlinedInput-input {
-        padding-top: 8px; /* Adjust the top padding as needed */
+        padding-top: 8px;
         padding-bottom: 8px;
-         /* Adjust the bottom padding as needed */
       }
       
       .filters .MuiSelect-select {
-        padding-top: 8px; /* Adjust the top padding as needed */
-        padding-bottom: 8px; /* Adjust the bottom padding as needed */
+        padding-top: 8px; 
+        padding-bottom: 8px; 
       }
       
-      /* Optionally, adjust the font size of the dropdown items */
       .filters .MuiMenuItem-root {
         font-size: 14px;
-        width: 50px; /* Adjust the font size as needed */
+        width: 50px; 
       }
       .addCourse{
-        /* background-color: blue;
-        color: white;
-        border-color: #ccc;
-        border-radius: 7px;
-        transition: background-color 0.3s ease;  */
         width: 180px;
         border-color: transparent;
       }
