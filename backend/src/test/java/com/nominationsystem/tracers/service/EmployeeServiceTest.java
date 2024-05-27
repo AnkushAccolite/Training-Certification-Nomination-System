@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 
@@ -55,16 +54,17 @@ public class EmployeeServiceTest {
         assertEquals(employees, result);
     }
 
-//    @Test
-//    public void testGetEmpByEmail() {
-//        String email = "john@example.com";
-//        when(employeeRepository.findByEmail(email)).thenReturn(Optional.of(employee));
-//
-//        Map<String, String> requestBody = new HashMap<>();
-//        requestBody.put("email", email);
-//
-//        ResponseEntity<?> result = employeeService.getEmpByEmail(requestBody.toString());
-//
-//        assertEquals(ResponseEntity.ok(employee), result);
-//    }
+    // @Test
+    // public void testGetEmpByEmail() {
+    // String email = "john@example.com";
+    // when(employeeRepository.findByEmail(email)).thenReturn(Optional.of(employee));
+    //
+    // Map<String, String> requestBody = new HashMap<>();
+    // requestBody.put("email", email);
+    //
+    // ResponseEntity<?> result =
+    // employeeService.getEmpByEmail(requestBody.toString());
+    //
+    // assertEquals(ResponseEntity.ok(employee), result);
+    // }
 }
