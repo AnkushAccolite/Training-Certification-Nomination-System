@@ -126,7 +126,7 @@ function Certifications() {
 
   const openConfirmationDialog = () => {
     if (selectedCourseIds.length === 0) {
-      alert('Please select at least one certification for nomination.');
+      toast.error('Please select at least one certification for nomination.');
     } else {
       setShowConfirmation(true);
     }

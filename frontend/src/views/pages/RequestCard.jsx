@@ -50,7 +50,6 @@ const RequestCard = ({ employeeName, nominations = [], onAccept, onReject }) => 
                           className={`accept-button ${isSelected(course?.courseId) ? 'highlighted' : ''}`}
                           onClick={() => {
                             onAccept(course?.courseId);
-                            console.log('--------', course?.courseId);
                           }}
                           variant="outlined"
                           startIcon={<CheckCircleOutlineIcon />}
