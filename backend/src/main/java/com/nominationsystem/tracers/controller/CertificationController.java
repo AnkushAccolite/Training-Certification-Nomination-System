@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/certifications")
 public class CertificationController {
 
@@ -53,8 +52,8 @@ public class CertificationController {
     }
 
     @PostMapping("/completed")
-    public void completeCourse(@RequestParam String empId, @RequestParam String certificationId, @RequestParam String url,
-                               @RequestBody CertificationFeedback certificationFeedback) {
+    public void completeCourse(@RequestParam String empId, @RequestParam String certificationId,
+                               @RequestParam String url, @RequestBody CertificationFeedback certificationFeedback) {
         this.certificationService.certificationCompleted(empId, certificationId, url, certificationFeedback);
     }
 

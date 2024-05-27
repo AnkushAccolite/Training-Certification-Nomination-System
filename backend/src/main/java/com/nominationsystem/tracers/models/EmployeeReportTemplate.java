@@ -10,7 +10,9 @@ import java.util.ArrayList;
 public class EmployeeReportTemplate {
 
     private String empId;
+
     private String empName;
+
     private ArrayList<EmployeeReportCourseDetails> completedCourses;
 
 }

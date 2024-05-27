@@ -21,6 +21,7 @@ import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtils {
+
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${jwtSecret}")
@@ -32,9 +33,9 @@ public class JwtUtils {
     public String generateJwtToken(Authentication authentication) {
 
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
-        System.out.println(userDetailsImpl.getId()+"---"+userDetailsImpl.getUsername()+"---");
-        Map<String,Object> additionalClaims = new HashMap<>();
-        additionalClaims.put("id",userDetailsImpl.getId());
+        System.out.println(userDetailsImpl.getId() + "---" + userDetailsImpl.getUsername() + "---");
+        Map<String, Object> additionalClaims = new HashMap<>();
+        additionalClaims.put("id", userDetailsImpl.getId());
         additionalClaims.put("username", userDetailsImpl.getUsername());
         additionalClaims.put("email", userDetailsImpl.getEmail());
         additionalClaims.put("empName", userDetailsImpl.getEmpName());
@@ -50,13 +51,13 @@ public class JwtUtils {
                 //.setSubject(userDetailsImpl.getUsername())
                 .setClaims(additionalClaims)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .setExpiration(new Date((new Date()).getTime() + this.jwtExpirationMs))
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.jwtSecret));
     }
 
     public String getUserNameFromJwtToken(String token) {
@@ -86,4 +87,5 @@ public class JwtUtils {
 
         return false;
     }
+
 }

@@ -14,7 +14,8 @@ public class MonthlyCourseStatus {
     private boolean activationStatus;
 
     public MonthlyCourseStatus(Month month, boolean activationStatus) {
-        this.month=month;
-        this.activationStatus=activationStatus;
+        this.month = month;
+        this.activationStatus = activationStatus;
     }
+
 }

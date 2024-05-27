@@ -50,20 +50,20 @@ public class EmailService {
         );
     }
 
-    public  String createApprovalEmailBody(String empName, String nominationList, String nominationType) {
+    public String createApprovalEmailBody(String empName, String nominationList, String nominationType) {
 
         String companyName = "bounteous x Accolite";
 
         return String.format(
                 """
                         Hi %s
-                        
+                                                
                         Glad to inform you that your request for the following nomination has been approved.
-                        
+                                                
                         %s Name: %s
-                        
+                                                
                         You can now proceed with the course as planned.
-                        
+                                                
                         Best Regards
                         Teknow
                         %s""",
@@ -74,20 +74,20 @@ public class EmailService {
         );
     }
 
-    public  String createRejectionEmailBody(String empName, String nominationList, String nominationType) {
+    public String createRejectionEmailBody(String empName, String nominationList, String nominationType) {
 
         String companyName = "bounteous x Accolite";
 
         return String.format(
                 """
                         Hi %s
-                        
+                                                
                         Regret!! Your request for the following nomination has been rejected.
-                        
+                                                
                         %s Name: %s
-                        
+                                                
                         Reach out to your manager or the HR department for further assistance.
-                        
+                                                
                         Regards
                         Teknow
                         %s""",
@@ -97,4 +97,5 @@ public class EmailService {
                 companyName
         );
     }
+
 }

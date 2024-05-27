@@ -10,8 +10,11 @@ import java.time.Month;
 public class CourseReportEmployeeDetails {
 
     private Integer employeesEnrolled;
+
     private Integer employeesCompleted;
+
     private String attendance;
+
     private Month month;
 
 }
