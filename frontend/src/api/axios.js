@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { getToken } from 'utils/verifyToken';
 
-axios.defaults.baseURL = 'http://localhost:8080';
-// axios.defaults.baseURL = 'https://training-certification-nomination-system.onrender.com';
+// axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = import.meta.env.VITE_APP_BACKEND_API;
 
 // if (getToken() !== 'No_Valid_Token_Found') {
 axios.defaults.withCredentials = true;
