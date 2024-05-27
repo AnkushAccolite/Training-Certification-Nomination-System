@@ -47,7 +47,6 @@
     "jspdf-autotable": "^3.8.2",
     "jwt-decode": "^4.0.0",
     "material-ui-popup-state": "^5.0.10",
-    "materialui-daterange-picker": "^1.1.92",
     "papaparse": "^5.4.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
