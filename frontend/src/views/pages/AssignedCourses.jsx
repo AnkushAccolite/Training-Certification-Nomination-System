@@ -24,7 +24,7 @@ import MuiAlert from '@mui/material/Alert';
 import getNominationCourses from 'utils/getNominationCourses';
 import getAllCourses from 'utils/getAllCourses';
 import axios from '../../api/axios';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+// import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 const AssignedCourses = () => {

@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CertificationService {
@@ -23,7 +24,13 @@ public class CertificationService {
     private EmployeeRepository employeeRepository;
 
     @Autowired
+    private EmployeeService employeeService;
+
+    @Autowired
     private CertificationFeedbackRepository certificationFeedbackRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     LocalDate currentDate = LocalDate.now();
     Month currentMonth = currentDate.getMonth();
@@ -45,6 +52,18 @@ public class CertificationService {
         ArrayList<String> pendingCertifications = employee.getPendingCertifications();
         pendingCertifications.addAll(certificationId);
         employee.setPendingCertifications(pendingCertifications);
+
+        String certificationList = pendingCertifications.stream()
+                .map(cert -> Objects.requireNonNull(this.certificationRepository.findById(cert).orElse(null))
+                        .getName())
+                .collect(Collectors.joining("\n\t"));
+        Employee manager = this.employeeService.getEmployee(employee.getManagerId());
+        String body = this.emailService.createPendingRequestEmailBody(manager.getEmpName(), empId,
+                employee.getEmpName(), certificationList, "Certifications");
+
+        this.emailService.sendEmail("debayan.das@accolitedigital.com",//manager.getEmail(),
+                "Approval request for nomination", body);
+
         this.employeeRepository.save(employee);
     }
 
@@ -73,6 +92,12 @@ public class CertificationService {
         pendingCerfications.remove(certificationId);
 
         employee.setPendingCertifications(pendingCerfications);
+
+        String certificationName = Objects.requireNonNull(this.certificationRepository.findById(certificationId).orElse(null)).getName();
+        String acceptedBody = this.emailService.createApprovalEmailBody(employee.getEmpName(),
+                certificationName, "Certification");
+        this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail(),
+                "Nomination request approved", acceptedBody);
 
         this.employeeRepository.save(employee);
         return ResponseEntity.ok().build();
@@ -118,6 +143,13 @@ public class CertificationService {
         ArrayList<String> temp = employee.getPendingCertifications();
         temp.remove(certificationId);
         employee.setPendingCertifications(temp);
+
+        String certificationName = Objects.requireNonNull(this.certificationRepository.findById(certificationId).orElse(null)).getName();
+        String rejectedBody = this.emailService.createRejectionEmailBody(employee.getEmpName(),
+                certificationName, "Certification");
+        this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail(),
+                "Nomination request rejected", rejectedBody);
+
         this.employeeRepository.save(employee);
     }
 
@@ -138,7 +170,7 @@ public class CertificationService {
                                 .orElse(null);
                         if (certification != null) {
                             certNames.add(certification.getName());
-                            categories.add(certification.getCategory());
+                            categories.add(certification.getDomain());
                             completionDates.add(cert.getCompletionDate());
                         }
                     });
@@ -146,7 +178,7 @@ public class CertificationService {
                 report.setEmpId(employee.getEmpId());
                 report.setEmpName(employee.getEmpName());
                 report.setCertName(certNames);
-                report.setCategory(categories);
+                report.setDomain(categories);
                 report.setCompletionDate(completionDates);
 
                 certificationReport.add(report);

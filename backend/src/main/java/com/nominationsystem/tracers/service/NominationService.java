@@ -28,6 +28,9 @@ public class NominationService {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private EmailService emailService;
+
     public Nomination getNomination(String nominationId) {
         return nominationRepository.findById(nominationId)
                 .orElseThrow(() -> new IllegalArgumentException("Course not found"));
@@ -92,6 +95,16 @@ public class NominationService {
         nomination.setNominatedCourses(nominatedCourses);
         employeeService.setCoursesNominatedByEmployee(nomination.getEmpId(), nominatedCourses,month);
 
+        String courseList = nominatedCourses.stream()
+                .map(course -> this.courseService.getCourseById(course.getCourseId()).getCourseName())
+                .collect(Collectors.joining("\n\t"));
+        Employee manager = this.employeeService.getEmployee(nomination.getManagerId());
+        String body = this.emailService.createPendingRequestEmailBody(manager.getEmpName(), employee.getEmpId(),
+                employee.getEmpName(), courseList, "Courses");
+
+        this.emailService.sendEmail("debayan.das@accolitedigital.com",//manager.getEmail(),
+                "Approval request for nomination", body);
+
         return nominationRepository.save(nomination);
     }
 
@@ -112,8 +125,10 @@ public class NominationService {
         nominationRepository.deleteById(nominationId);
     }
 
-    public void takeActionOnPendingRequest(String nominationId, String courseId, String action,Month month) {
+    public void takeActionOnPendingRequest(String nominationId, String courseId, String action, Month month) {
         Nomination nomination = this.getNomination(nominationId);
+        Employee employee = this.employeeService.getEmployee(nomination.getEmpId());
+        String courseName = this.courseService.getCourseById(courseId).getCourseName();
 
         boolean updated = nomination.getNominatedCourses().stream()
                 .filter(course -> course.getCourseId().equals(courseId) && course.getApprovalStatus() == ApprovalStatus.PENDING)
@@ -121,9 +136,17 @@ public class NominationService {
                     switch (action.toLowerCase()) {
                         case "approve":
                             course.setApprovalStatus(ApprovalStatus.APPROVED);
+                            String acceptedBody = this.emailService.createApprovalEmailBody(employee.getEmpName(),
+                                    courseName, "Course");
+                            this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail(),
+                                    "Nomination request approved", acceptedBody);
                             break;
                         case "reject":
                             course.setApprovalStatus(ApprovalStatus.REJECTED);
+                            String rejectedBody = this.emailService.createRejectionEmailBody(employee.getEmpName(),
+                                    courseName, "Course");
+                            this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail()
+                                    "Nomination request rejected", rejectedBody);
                             break;
                         default:
                             throw new IllegalArgumentException("Invalid action: " + action);

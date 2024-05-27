@@ -44,7 +44,7 @@ const CourseReport = () => {
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
 
-  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); 
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null);
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
@@ -56,10 +56,7 @@ const CourseReport = () => {
     return Math.round((completed / enrolled) * 100);
   };
 
-  const months = [
-    'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
-    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
-  ];
+  const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
@@ -72,7 +69,7 @@ const CourseReport = () => {
           ?.map((item) => ({
             courseId: item?.courseId,
             name: item?.courseName,
-            category: item?.category,
+            category: item?.domain,
             monthlyDetails: item?.monthlyDetails?.map((employee) => ({
               employeesEnrolled: employee?.employeesEnrolled,
               employeesCompleted: employee?.employeesCompleted,
@@ -92,22 +89,30 @@ const CourseReport = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [selectedMonth, selectedQuarter, selectedCategory, searchQueryID, searchQueryName,courses]);
+  }, [selectedMonth, selectedQuarter, selectedCategory, searchQueryID, searchQueryName, courses]);
 
   const generateChartData = () => {
     const colors = [
-      '#00C49F', '#D29CC5', '#777777', '#842593',
-      'rgba(153, 102, 255, 0.6)', 'rgba(255, 159, 64, 0.6)',
-      'rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)',
-      'rgba(255, 206, 86, 0.6)', 'rgba(75, 192, 192, 0.6)'
+      '#00C49F',
+      '#D29CC5',
+      '#777777',
+      '#842593',
+      'rgba(153, 102, 255, 0.6)',
+      'rgba(255, 159, 64, 0.6)',
+      'rgba(255, 99, 132, 0.6)',
+      'rgba(54, 162, 235, 0.6)',
+      'rgba(255, 206, 86, 0.6)',
+      'rgba(75, 192, 192, 0.6)'
     ];
 
     const data = {
       labels: [],
-      datasets: [{
-        data: [],
-        backgroundColor: []
-      }]
+      datasets: [
+        {
+          data: [],
+          backgroundColor: []
+        }
+      ]
     };
 
     filteredCourses.forEach((course, index) => {
@@ -124,31 +129,36 @@ const CourseReport = () => {
     return data;
   };
 
- 
   const handleGenerateReport = (format) => {
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text('Course Report', 10, 10);
 
     const tableData = filteredCourses
-      .map((course) => course.monthlyDetails.map((data) => [
-        course.name,
-        course.category,
-        data.employeesEnrolled,
-        data.employeesCompleted,
-        `${data.attendance}%`,
-        getMonthName(data.completionMonth)
-      ])).flat();
+      .map((course) =>
+        course.monthlyDetails.map((data) => [
+          course.name,
+          course.category,
+          data.employeesEnrolled,
+          data.employeesCompleted,
+          `${data.attendance}%`,
+          getMonthName(data.completionMonth)
+        ])
+      )
+      .flat();
 
     const tableData1 = filteredCourses
-      .map((course) => course.monthlyDetails.map((data) => ({
-        Name: course.name,
-        Category: course.category,
-        'Employees Enrolled': data.employeesEnrolled,
-        'Employees Completed': data.employeesCompleted,
-        Attendance: `${data.attendance}%`,
-        'Completion Month': getMonthName(data.completionMonth)
-      }))).flat();
+      .map((course) =>
+        course.monthlyDetails.map((data) => ({
+          Name: course.name,
+          Category: course.category,
+          'Employees Enrolled': data.employeesEnrolled,
+          'Employees Completed': data.employeesCompleted,
+          Attendance: `${data.attendance}%`,
+          'Completion Month': getMonthName(data.completionMonth)
+        }))
+      )
+      .flat();
 
     switch (format) {
       case 'pdf':
@@ -185,12 +195,21 @@ const CourseReport = () => {
 
   const getMonthName = (month) => {
     const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
     ];
     return monthNames[month - 1];
   };
-
 
   const handleSearch = () => {
     const filteredCourses = courses.filter((course) => {
@@ -318,13 +337,8 @@ const CourseReport = () => {
             onChange={(event) => setSearchQueryName(event.target.value)}
             style={{ marginRight: '10px' }}
           />
-         
-          <Button
-            variant="contained"
-            endIcon={<DownloadIcon />}
-            onClick={handleDownloadClick}
-            style={{ marginRight: '10px' }}
-          >
+
+          <Button variant="contained" endIcon={<DownloadIcon />} onClick={handleDownloadClick} style={{ marginRight: '10px' }}>
             Download
           </Button>
           <Popover
@@ -384,72 +398,83 @@ const CourseReport = () => {
               <Table aria-label="course report table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Name</TableCell>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Employees Enrolled</TableCell>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Employees Completed</TableCell>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Attendance</TableCell>
-                    <TableCell align="center"style={{ fontSize: '16px', fontWeight: 'bold' }}>Completion Month</TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Name
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Category
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Employees Enrolled
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Employees Completed
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Attendance
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Completion Month
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-  {filteredCourses?.map((course, courseIndex) => {
-    const matchingDetails = course.monthlyDetails.filter((data) => {
-      const completionMonth = getMonthName(data.completionMonth);
-      return (
-        (!selectedMonth || data.completionMonth.toString() === selectedMonth) &&
-        (!selectedCategory || course.category.toLowerCase() === selectedCategory.toLowerCase()) &&
-        (!searchQueryName || course.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
-        (!searchQueryID || course.courseId.toLowerCase().includes(searchQueryID.toLowerCase())) &&
-        (!selectedQuarter ||
-          (selectedQuarter === 'Q1' && data.completionMonth >= 1 && data.completionMonth <= 3) ||
-          (selectedQuarter === 'Q2' && data.completionMonth >= 4 && data.completionMonth <= 6) ||
-          (selectedQuarter === 'Q3' && data.completionMonth >= 7 && data.completionMonth <= 9) ||
-          (selectedQuarter === 'Q4' && data.completionMonth >= 10 && data.completionMonth <= 12) ||
-          (selectedQuarter === 'H1' && data.completionMonth >= 1 && data.completionMonth <= 6) ||
-          (selectedQuarter === 'H2' && data.completionMonth >= 7 && data.completionMonth <= 12))
-      );
-    });
+                  {filteredCourses?.map((course, courseIndex) => {
+                    const matchingDetails = course.monthlyDetails.filter((data) => {
+                      const completionMonth = getMonthName(data.completionMonth);
+                      return (
+                        (!selectedMonth || data.completionMonth.toString() === selectedMonth) &&
+                        (!selectedCategory || course.category.toLowerCase() === selectedCategory.toLowerCase()) &&
+                        (!searchQueryName || course.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
+                        (!searchQueryID || course.courseId.toLowerCase().includes(searchQueryID.toLowerCase())) &&
+                        (!selectedQuarter ||
+                          (selectedQuarter === 'Q1' && data.completionMonth >= 1 && data.completionMonth <= 3) ||
+                          (selectedQuarter === 'Q2' && data.completionMonth >= 4 && data.completionMonth <= 6) ||
+                          (selectedQuarter === 'Q3' && data.completionMonth >= 7 && data.completionMonth <= 9) ||
+                          (selectedQuarter === 'Q4' && data.completionMonth >= 10 && data.completionMonth <= 12) ||
+                          (selectedQuarter === 'H1' && data.completionMonth >= 1 && data.completionMonth <= 6) ||
+                          (selectedQuarter === 'H2' && data.completionMonth >= 7 && data.completionMonth <= 12))
+                      );
+                    });
 
-    if (matchingDetails.length > 0) {
-      const rows = matchingDetails.map((data, detailIndex) => {
-        const completionMonth = getMonthName(data.completionMonth);
-        const rowColorStyle = courseIndex % 2 === 0 ? { backgroundColor: '#f5f5f5' } : { backgroundColor: 'white' }; 
+                    if (matchingDetails.length > 0) {
+                      const rows = matchingDetails.map((data, detailIndex) => {
+                        const completionMonth = getMonthName(data.completionMonth);
+                        const rowColorStyle = courseIndex % 2 === 0 ? { backgroundColor: '#f5f5f5' } : { backgroundColor: 'white' };
 
-        if (detailIndex === 0) {
-          return (
-            <TableRow key={`${course.courseId}_${detailIndex}`} style={rowColorStyle}>
-              <TableCell align="center" rowSpan={matchingDetails.length}>
-                {course.name}
-              </TableCell>
-              <TableCell align="center" rowSpan={matchingDetails.length}>
-                {course.category}
-              </TableCell>
-              <TableCell align="center">{data.employeesEnrolled}</TableCell>
-              <TableCell align="center">{data.employeesCompleted}</TableCell>
-              <TableCell align="center">{`${data.attendance}%`}</TableCell>
-              <TableCell align="center">{completionMonth}</TableCell>
-            </TableRow>
-          );
-        } else {
-          return (
-            <TableRow key={`${course.courseId}_${detailIndex}`} style={rowColorStyle}>
-              <TableCell align="center">{data.employeesEnrolled}</TableCell>
-              <TableCell align="center">{data.employeesCompleted}</TableCell>
-              <TableCell align="center">{`${data.attendance}%`}</TableCell>
-              <TableCell align="center">{completionMonth}</TableCell>
-            </TableRow>
-          );
-        }
-      });
+                        if (detailIndex === 0) {
+                          return (
+                            <TableRow key={`${course.courseId}_${detailIndex}`} style={rowColorStyle}>
+                              <TableCell align="center" rowSpan={matchingDetails.length}>
+                                {course.name}
+                              </TableCell>
+                              <TableCell align="center" rowSpan={matchingDetails.length}>
+                                {course.category}
+                              </TableCell>
+                              <TableCell align="center">{data.employeesEnrolled}</TableCell>
+                              <TableCell align="center">{data.employeesCompleted}</TableCell>
+                              <TableCell align="center">{`${data.attendance}%`}</TableCell>
+                              <TableCell align="center">{completionMonth}</TableCell>
+                            </TableRow>
+                          );
+                        } else {
+                          return (
+                            <TableRow key={`${course.courseId}_${detailIndex}`} style={rowColorStyle}>
+                              <TableCell align="center">{data.employeesEnrolled}</TableCell>
+                              <TableCell align="center">{data.employeesCompleted}</TableCell>
+                              <TableCell align="center">{`${data.attendance}%`}</TableCell>
+                              <TableCell align="center">{completionMonth}</TableCell>
+                            </TableRow>
+                          );
+                        }
+                      });
 
-      return rows;
-    } else {
-      return null;
-    }
-  })}
-</TableBody>
-
+                      return rows;
+                    } else {
+                      return null;
+                    }
+                  })}
+                </TableBody>
               </Table>
             </TableContainer>
           </div>

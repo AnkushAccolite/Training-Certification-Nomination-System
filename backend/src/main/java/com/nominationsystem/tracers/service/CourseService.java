@@ -128,7 +128,7 @@ public class CourseService {
             CourseReportTemplate report = new CourseReportTemplate();
             report.setCourseId(course.getCourseId());
             report.setCourseName(course.getCourseName());
-            report.setCategory(course.getDomain());
+            report.setDomain(course.getDomain());
             report.setMonthlyDetails(this.getMonthlyDetailsOfSingleCourse(course.getCourseId()));
             courseReport.add(report);
         });

@@ -11,7 +11,7 @@ public class CourseReportTemplate {
 
     private String courseId;
     private String courseName;
-    private String category;
+    private String domain;
     private List<CourseReportEmployeeDetails> monthlyDetails;
 
 }

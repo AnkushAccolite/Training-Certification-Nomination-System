@@ -166,7 +166,7 @@ public class EmployeeService {
             Course courseData = courseService.getCourseById(course.getCourseId());
 
             courseDetails.setCourseName(courseData.getCourseName());
-            courseDetails.setCategory(courseData.getDomain());
+            courseDetails.setDomain(courseData.getDomain());
             courseDetails.setMonth(course.getMonth());
             courseDetailsList.add(courseDetails);
         });

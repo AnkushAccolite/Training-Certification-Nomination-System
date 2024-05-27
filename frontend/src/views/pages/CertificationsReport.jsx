@@ -57,7 +57,7 @@ const CertificationsReport = () => {
           empid: item?.empId,
           name: item?.empName,
           certificationName: item?.certName,
-          category: item?.category,
+          category: item?.domain,
           year: item?.completionDate?.map((date) => date.split('-')[2])
         }));
 
