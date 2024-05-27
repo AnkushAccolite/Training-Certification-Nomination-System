@@ -246,5 +246,4 @@ const AuthLogin = ({ ...others }) => {
   );
 };
 
-
 export default AuthLogin;

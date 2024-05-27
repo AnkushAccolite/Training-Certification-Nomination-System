@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getToken } from 'utils/verifyToken';
 
 axios.defaults.baseURL = 'http://localhost:8080';
+// axios.defaults.baseURL = 'https://training-certification-nomination-system.onrender.com';
 
 // if (getToken() !== 'No_Valid_Token_Found') {
 axios.defaults.withCredentials = true;

@@ -93,10 +93,19 @@ const items = {
       roles: ['ADMIN', 'USER', 'MANAGER'],
       children: [
         {
-          id: 'certification-list',
-          title: 'Available Courses for certification',
+          id: 'certifications',
+          title: 'Available Certifications',
           type: 'item',
           url: '/certifications',
+          icon: icons.IconFileCertificate,
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          breadcrumbs: false
+        },
+        {
+          id: 'certification-approved',
+          title: 'Certifications Approved',
+          type: 'item',
+          url: '/certifications-approved',
           icon: icons.IconFileCertificate,
           roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false
@@ -110,15 +119,7 @@ const items = {
           icon: icons.IconFileCertificate,
           breadcrumbs: false
         },
-        {
-          id: 'certification-approved',
-          title: 'Certifications Approved',
-          type: 'item',
-          url: '/certifications-approved',
-          icon: icons.IconFileCertificate,
-          roles: ['ADMIN', 'USER', 'MANAGER'],
-          breadcrumbs: false
-        },
+       
         {
           id: 'certification-faq',
           title: 'Certification FAQs',

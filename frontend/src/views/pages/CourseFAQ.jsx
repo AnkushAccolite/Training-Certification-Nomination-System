@@ -54,19 +54,20 @@ function CourseFAQ() {
 
   return (
     <div style={{ padding: '8px' }}>
-      <h2 style={{textAlign:'center', paddingBottom:'20px'}}>Course FAQ's</h2>
+      <h2 style={{ textAlign: 'center', paddingBottom: '8px' }}>Course FAQ's</h2>
       {faqs.map((faq, index) => (
         <Accordion
           key={index}
           expanded={expanded === index}
           onChange={handleChange(index)}
           sx={{
-            marginBottom: '15px',
+            marginBottom: '8px',
             boxShadow: '0px 4px 8px #cfcdcc',
             borderRadius: '5px',
             '&:before': {
               display: 'none'
-            }
+            },
+            backgroundColor: index % 2 === 0 ? '#f2f2f2' : '#ffffff'
           }}
         >
           <AccordionSummary
@@ -80,10 +81,16 @@ function CourseFAQ() {
               }
             }}
           >
-            <Typography variant="h6" sx={{ fontSize: '1.00rem' }} >{faq.question}</Typography>
+            <Typography variant="h6" sx={{ fontSize: '1.00rem' }}>{faq.question}</Typography>
           </AccordionSummary>
-          <AccordionDetails sx={{ backgroundColor: '#fffffc', padding: '20px', borderRadius: '0 0 10px 10px' }} style={{ backgroundColor:  '#f2f2f2',color:'black' }}>
-            <Typography sx={{ fontSize: '0.98rem', fontStyle: 'initial' }} >
+          <AccordionDetails
+            sx={{
+              backgroundColor: index % 2 === 0 ? '#e0e0e0' : '#f2f2f2',
+              padding: '20px',
+              borderRadius: '0 0 10px 10px'
+            }}
+          >
+            <Typography sx={{ fontSize: '0.98rem', fontStyle: 'initial' }}>
               {faq.answer.split('\n').map((line, idx) => (
                 <span key={idx}>
                   {line}

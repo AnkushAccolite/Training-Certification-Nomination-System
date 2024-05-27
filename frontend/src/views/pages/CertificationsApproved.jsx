@@ -23,6 +23,7 @@ import UploadWidget from 'ui-component/UploadWidget';
 import axios from '../../api/axios';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import toast from 'react-hot-toast';
 
 function CertificationsApproved() {
   const navigate = useNavigate();
@@ -37,23 +38,24 @@ function CertificationsApproved() {
   const getStatus = (status) => {
     if (status === 'inProgress') return 'Ongoing';
     if (status === 'completed') return 'Passed';
-    return 'Not Cleared';
+    return 'Failed';
+  };
+
+  const fetchData = async () => {
+    const { data } = await axios.get(`/certifications/employee/${auth?.user?.empId}`);
+    const res = await axios.get('/certifications');
+    const allCertifications = res.data;
+
+    const approvedCertifications = data?.certifications?.map((item) => ({
+      certificationId: item?.certificationId,
+      name: allCertifications?.find((cert) => cert?.certificationId === item?.certificationId)?.name,
+      status: getStatus(item?.status),
+      attempts: item?.attempt
+    }));
+    setCertifications(approvedCertifications);
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const { data } = await axios.get(`/certifications/employee/${auth?.user?.empId}`);
-      const res = await axios.get('/certifications');
-      const allCertifications = res.data;
-
-      const approvedCertifications = data?.certifications?.map((item) => ({
-        certificationId: item?.certificationId,
-        name: allCertifications?.find((cert) => cert?.certificationId === item?.certificationId)?.name,
-        status: getStatus(item?.status),
-        attempts: item?.attempt
-      }));
-      setCertifications(approvedCertifications);
-    };
     fetchData();
   }, []);
 
@@ -76,9 +78,20 @@ function CertificationsApproved() {
     setModalOpen(true);
   };
 
-  const handleCloseModal = (completed) => {
-    setModalOpen(false);
-    setCertificateModalOpen(true);
+  const handleCloseModal = async (completed) => {
+    if (completed) {
+      setModalOpen(false);
+      setCertificateModalOpen(true);
+    } else {
+      try {
+        const res = await axios.get(`/certifications/failed?empId=${auth.user.empId}&certificationId=${selectedCertification}`);
+        setModalOpen(false);
+        fetchData();
+      } catch (error) {
+        console.log(error);
+        toast.error('Something went wrong');
+      }
+    }
   };
 
   const handleCertificateUpload = () => {
@@ -96,7 +109,7 @@ function CertificationsApproved() {
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
-    navigate(0);
+    fetchData();
   };
 
   const handleFeedbackSubmit = async () => {
@@ -146,7 +159,7 @@ function CertificationsApproved() {
         return '#3498db';
       case 'Passed':
         return '#2ecc71';
-      case 'Not Cleared':
+      case 'Failed':
         return '#e74c3c';
       default:
         return '#000';
