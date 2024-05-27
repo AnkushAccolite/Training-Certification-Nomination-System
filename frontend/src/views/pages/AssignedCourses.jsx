@@ -17,7 +17,7 @@ import {
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { ArrowDropDownIcon } from '@mui/x-date-pickers';
+// import { ArrowDropDownIcon } from '@mui/x-date-pickers';
 
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -440,16 +440,11 @@ const AssignedCourses = () => {
         </div>
       </Modal>
 
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-      >
+      <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>
         <MuiAlert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
           Thank you for submitting your feedback!
         </MuiAlert>
       </Snackbar>
-
     </div>
   );
 };
