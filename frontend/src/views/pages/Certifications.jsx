@@ -194,9 +194,9 @@ function Certifications() {
     } else if (selectedDomain === 'All') {
       return course?.status === selectedStatus;
     } else if (selectedStatus === 'All') {
-      return course?.category === selectedDomain;
+      return course?.domain === selectedDomain;
     } else {
-      return course?.category === selectedDomain && course?.status === selectedStatus;
+      return course?.domain === selectedDomain && course?.status === selectedStatus;
     }
   };
 
@@ -210,7 +210,7 @@ function Certifications() {
             value={selectedDomain}
             onChange={handleDomainChange}
             renderValue={(selected) => {
-              return 'Category';
+              return 'Domain';
             }}
             inputProps={{ 'aria-label': 'Without label' }}
           >
@@ -330,7 +330,7 @@ function Certifications() {
                     />
                   </TableCell>
                   <TableCell style={{ textAlign: 'center' }}>{row?.name}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row?.category}</TableCell>
+                  <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
                   <TableCell
                     style={{
                       color:

@@ -17,7 +17,9 @@ public class Certification {
 
     private Integer duration;
 
-    private String category;
+    private String domain;
+
+    private String description;
 
     private Boolean isDeleted = false;
 

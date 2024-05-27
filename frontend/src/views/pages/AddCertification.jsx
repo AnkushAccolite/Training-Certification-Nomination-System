@@ -29,14 +29,13 @@ const AddCertification = ({ onCourseAdd }) => {
     try {
       e.preventDefault();
       const newCourse = {
-        certificationName: formData.certificationname,
+        name: formData.certificationname,
         duration: formData.duration,
         domain: formData.domain,
-        description: formData.description,
-        isApprovalReq: true
+        description: formData.description
       };
 
-      const res = await axios.post('/course', newCourse);
+      const res = await axios.post('/certifications', newCourse);
       setFormData({
         certificationname: '',
         duration: '',

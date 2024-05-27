@@ -42,7 +42,7 @@ const EmployeeReport = () => {
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
   const [downloadAnchorEl, setDownloadAnchorEl] = useState(null);
-  
+
   const chartRef = useRef(null);
   const categories = ['Domain', 'Power', 'Technical', 'Process'];
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -51,13 +51,22 @@ const EmployeeReport = () => {
   const auth = useSelector((state) => state?.auth);
 
   const [months] = useState([
-    'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
-    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+    'JANUARY',
+    'FEBRUARY',
+    'MARCH',
+    'APRIL',
+    'MAY',
+    'JUNE',
+    'JULY',
+    'AUGUST',
+    'SEPTEMBER',
+    'OCTOBER',
+    'NOVEMBER',
+    'DECEMBER'
   ]);
 
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
-  
 
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
@@ -70,7 +79,7 @@ const EmployeeReport = () => {
           ?.map((item) => ({
             empID: item?.empId,
             name: item?.empName,
-            category: item?.completedCourses?.map((course) => course?.category),
+            category: item?.completedCourses?.map((course) => course?.domain),
             coursesEnrolled: item?.completedCourses?.map((course) => course?.courseName),
             completionMonth: item?.completedCourses?.map((course) => months.indexOf(course?.month) + 1)
           }))
@@ -83,7 +92,7 @@ const EmployeeReport = () => {
       }
     };
     fetchData();
-  }, [auth, navigate,months]);
+  }, [auth, navigate, months]);
 
   useEffect(() => {
     filterEmployees();
@@ -91,19 +100,15 @@ const EmployeeReport = () => {
 
   const filterEmployees = () => {
     let filteredData = employees;
-  
+
     if (selectedMonth) {
-      filteredData = filteredData.filter((employee) =>
-        employee.completionMonth.some((month) => month === parseInt(selectedMonth))
-      );
+      filteredData = filteredData.filter((employee) => employee.completionMonth.some((month) => month === parseInt(selectedMonth)));
     }
-  
+
     if (selectedCategory) {
-      filteredData = filteredData.filter((employee) =>
-        employee.category.some((category) => category === selectedCategory)
-      );
+      filteredData = filteredData.filter((employee) => employee.category.some((category) => category === selectedCategory));
     }
-  
+
     if (selectedQuarter) {
       filteredData = filteredData.filter((employee) =>
         employee.completionMonth.some((month) => {
@@ -115,7 +120,7 @@ const EmployeeReport = () => {
             H1: 1,
             H2: 7
           }[selectedQuarter];
-  
+
           const quarterEnd = {
             Q1: 3,
             Q2: 6,
@@ -124,31 +129,23 @@ const EmployeeReport = () => {
             H1: 6,
             H2: 12
           }[selectedQuarter];
-  
+
           return month >= quarterStart && month <= quarterEnd;
         })
       );
     }
-  
+
     if (searchQueryID) {
-      filteredData = filteredData.filter((employee) =>
-        employee.empID.toLowerCase().includes(searchQueryID.toLowerCase())
-      );
+      filteredData = filteredData.filter((employee) => employee.empID.toLowerCase().includes(searchQueryID.toLowerCase()));
     }
-  
+
     if (searchQueryName) {
-      filteredData = filteredData.filter((employee) =>
-        employee.name.toLowerCase().includes(searchQueryName.toLowerCase())
-      );
+      filteredData = filteredData.filter((employee) => employee.name.toLowerCase().includes(searchQueryName.toLowerCase()));
     }
-  
+
     setFilteredEmployees(filteredData);
   };
 
-  
-
-
-  
   const generatePieChartData = () => {
     const completionCounts = {
       January: 0,
@@ -180,9 +177,18 @@ const EmployeeReport = () => {
           label: 'Completion Months',
           data: Object.values(completionCounts),
           backgroundColor: [
-            '#FF6384', '#36A2EB', '#FFCE56', '#D29CC5', '#FF5733',
-            '#66FF33', '#337DFF', '#AB33FF', '#FF33E3', '#33FFA8',
-            '#FFBD33', '#33FFD8'
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#D29CC5',
+            '#FF5733',
+            '#66FF33',
+            '#337DFF',
+            '#AB33FF',
+            '#FF33E3',
+            '#33FFA8',
+            '#FFBD33',
+            '#33FFD8'
           ]
         }
       ]
@@ -254,13 +260,18 @@ const EmployeeReport = () => {
     }
   };
 
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div style={{ textAlign: 'center' }}>
         <h2>Employee Report</h2>
         <div className="employee-report-filters">
-          <TextField select label="Filter" value={selectedFilter}   onChange={(event) => setSelectedFilter(event.target.value)} style={{ marginRight: '10px' }}>
+          <TextField
+            select
+            label="Filter"
+            value={selectedFilter}
+            onChange={(event) => setSelectedFilter(event.target.value)}
+            style={{ marginRight: '10px' }}
+          >
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
             <MenuItem value="HalfYearly">Half Yearly</MenuItem>
@@ -307,26 +318,26 @@ const EmployeeReport = () => {
               <MenuItem value="H2">Second Half (Jul - Dec)</MenuItem>
             </TextField>
           )}
-           <Autocomplete
-        options={categories}
-        value={selectedCategory}
-        onChange={(event, newValue) => setSelectedCategory(newValue)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Category"
-            style={{ marginRight: '10px' }}
-            fullWidth
-            variant="outlined"
-            InputProps={{
-              ...params.InputProps,
-              style: { paddingRight: '10px' }
-            }}
+          <Autocomplete
+            options={categories}
+            value={selectedCategory}
+            onChange={(event, newValue) => setSelectedCategory(newValue)}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Category"
+                style={{ marginRight: '10px' }}
+                fullWidth
+                variant="outlined"
+                InputProps={{
+                  ...params.InputProps,
+                  style: { paddingRight: '10px' }
+                }}
+              />
+            )}
+            clearOnEscape={false}
+            clearIcon={null}
           />
-        )}
-        clearOnEscape={false}
-        clearIcon={null}
-      />
           <TextField
             label="Search by ID"
             value={searchQueryID}
@@ -362,13 +373,31 @@ const EmployeeReport = () => {
             }}
           >
             <List>
-              <ListItem button onClick={() => { handleGenerateReport('pdf'); setDownloadAnchorEl(null); }}>
+              <ListItem
+                button
+                onClick={() => {
+                  handleGenerateReport('pdf');
+                  setDownloadAnchorEl(null);
+                }}
+              >
                 <ListItemText primary=" PDF" />
               </ListItem>
-              <ListItem button onClick={() => { handleGenerateReport('xlsx'); setDownloadAnchorEl(null); }}>
+              <ListItem
+                button
+                onClick={() => {
+                  handleGenerateReport('xlsx');
+                  setDownloadAnchorEl(null);
+                }}
+              >
                 <ListItemText primary=" XLSX" />
               </ListItem>
-              <ListItem button onClick={() => { handleGenerateReport('csv'); setDownloadAnchorEl(null); }}>
+              <ListItem
+                button
+                onClick={() => {
+                  handleGenerateReport('csv');
+                  setDownloadAnchorEl(null);
+                }}
+              >
                 <ListItemText primary=" CSV" />
               </ListItem>
             </List>
@@ -405,10 +434,10 @@ const EmployeeReport = () => {
               <Table aria-label="employee report table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }} >
+                    <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
                       Employee ID
                     </TableCell>
-                    <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }} >
+                    <TableCell align="center" style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
                       Name
                       {/* <ArrowDropDownIcon style={{ fontSize: '130%' }} /> */}
                     </TableCell>
