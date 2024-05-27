@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,9 +29,6 @@ public class CertificationService {
 
     @Autowired
     private EmailService emailService;
-
-    private LocalDate currentDate = LocalDate.now();
-    private Month currentMonth = currentDate.getMonth();
 
     public void deleteCertification(String certificationId) {
         Optional<Certification> certification = this.certificationRepository.findById(certificationId);

@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,9 +26,6 @@ public class EmployeeService {
     @Autowired
     @Lazy
     private CertificationService certificationService;
-
-    private LocalDate currentDate = LocalDate.now();
-    private Month currentMonth = currentDate.getMonth();
 
     public List<Employee> getAllEmployees() {
         return new ArrayList<>(this.employeeRepository.findAll());
