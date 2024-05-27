@@ -108,12 +108,12 @@ public class CertificationControllerTest {
 
     @Test
     public void testCompleteCourse() {
-        doNothing().when(certificationService).certificationCompleted(anyString(), anyString(), any(CertificationFeedback.class));
+        doNothing().when(certificationService).certificationCompleted(anyString(), anyString(),anyString(), any(CertificationFeedback.class));
 
         CertificationFeedback feedback = new CertificationFeedback();
-        certificationController.completeCourse("emp1", "cert1", feedback);
+        certificationController.completeCourse("emp1", "cert1","https://test.com", feedback);
 
-        verify(certificationService, times(1)).certificationCompleted("emp1", "cert1", feedback);
+        verify(certificationService, times(1)).certificationCompleted("emp1", "cert1","https://test.com", feedback);
     }
 
     @Test
