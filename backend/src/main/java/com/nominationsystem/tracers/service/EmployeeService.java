@@ -1,16 +1,17 @@
 package com.nominationsystem.tracers.service;
 
 import com.nominationsystem.tracers.models.*;
+import com.nominationsystem.tracers.repository.CertificationRepository;
 import com.nominationsystem.tracers.repository.CourseFeedbackRepository;
 import com.nominationsystem.tracers.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -24,6 +25,9 @@ public class EmployeeService {
     @Autowired
     private CourseFeedbackRepository courseFeedbackRepository;
 
+    @Autowired
+    private CertificationRepository certificationRepository;
+
     LocalDate currentDate = LocalDate.now();
     Month currentMonth = currentDate.getMonth();
 
@@ -31,8 +35,7 @@ public class EmployeeService {
         return new ArrayList<>(this.employeeRepository.findAll());
     }
 
-    public ResponseEntity<?> getEmpByEmail(@RequestBody Map<String, String> requestBody) {
-        String email = requestBody.get("email");
+    public ResponseEntity<?> getEmpByEmail(String email) {
         if (email == null) {
             return ResponseEntity.badRequest().body("Email is required in the request body.");
         }
@@ -52,24 +55,24 @@ public class EmployeeService {
         }
     }
 
-    public ResponseEntity<?> addCourses(String email, String courseIds) {
-        List<String> courseIdList = Arrays.asList(courseIds.split(","));
-
-        Optional<Employee> employee = employeeRepository.findByEmail(email);
-        if (employee.isPresent()) {
-            employee.ifPresent(emp -> {
-                if (emp.getCourseIds() != null) {
-                    emp.getCourseIds().addAll(courseIdList);
-                } else {
-                    emp.setCourseIds(courseIdList);
-                }
-            });
-            employeeRepository.save(employee.get());
-            return ResponseEntity.ok(employee.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    public ResponseEntity<?> addCourses(String email, String courseIds) {
+//        List<String> courseIdList = Arrays.asList(courseIds.split(","));
+//
+//        Optional<Employee> employee = employeeRepository.findByEmail(email);
+//        if (employee.isPresent()) {
+//            employee.ifPresent(emp -> {
+//                if (emp.getCourseIds() != null) {
+//                    emp.getCourseIds().addAll(courseIdList);
+//                } else {
+//                    emp.setCourseIds(courseIdList);
+//                }
+//            });
+//            employeeRepository.save(employee.get());
+//            return ResponseEntity.ok(employee.get());
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
     public Employee getEmployee(String empId) {
         return this.employeeRepository.findByEmpId(empId);
@@ -127,23 +130,6 @@ public class EmployeeService {
         this.employeeRepository.save(employee);
     }
 
-    public ResponseEntity<?> courseCompleted(String empId, String courseId, CourseFeedback courseFeedback) {
-        Employee employee = this.getEmployee(empId);
-
-        EmployeeCourseStatus employeeCourseStatus = new EmployeeCourseStatus(courseId, currentMonth);
-        if (employee.getCompletedCourses() != null) {
-            employee.getCompletedCourses().add(employeeCourseStatus);
-        } else {
-            ArrayList<EmployeeCourseStatus> temp = new ArrayList<>();
-            temp.add(employeeCourseStatus);
-            employee.setCompletedCourses(temp);
-        }
-        employeeRepository.save(employee);
-        this.courseFeedbackRepository.save(courseFeedback);
-
-        return ResponseEntity.ok().build();
-    }
-
     // Rename the method correctly
     public Boolean isApprovedCoursePresent(String courseId, String empId) {
         return this.employeeRepository.findByEmpId(empId)
@@ -180,10 +166,36 @@ public class EmployeeService {
             Course courseData = courseService.getCourseById(course.getCourseId());
 
             courseDetails.setCourseName(courseData.getCourseName());
-            courseDetails.setCategory(courseData.getDomain());
+            courseDetails.setDomain(courseData.getDomain());
             courseDetails.setMonth(course.getMonth());
             courseDetailsList.add(courseDetails);
         });
         return courseDetailsList;
+    }
+
+    public List<CertificationRequestsTemplate> getCertificationRequests(String managerId) {
+        List<Employee> employees = this.employeeRepository.findByManagerId(managerId);
+        List<Certification> certifications = this.certificationRepository.findAll();
+        List<CertificationRequestsTemplate> empCertDetailsList = new ArrayList<>();
+
+        Map<String, Certification> certIdToDetailsMap = certifications.stream()
+                .collect(Collectors.toMap(
+                        Certification::getCertificationId,
+                        cert -> cert));
+
+        employees.forEach(employee -> {
+            List<Certification> pendingCertificationDetails = employee.getPendingCertifications().stream()
+                    .map(certIdToDetailsMap::get)
+                    .toList();
+
+            if (!pendingCertificationDetails.isEmpty()) {
+                CertificationRequestsTemplate empCertDetails = new CertificationRequestsTemplate();
+                empCertDetails.setEmpId(employee.getEmpId());
+                empCertDetails.setEmpName(employee.getEmpName());
+                empCertDetails.setPendingCertDetails(pendingCertificationDetails);
+                empCertDetailsList.add(empCertDetails);
+            }
+        });
+        return empCertDetailsList;
     }
 }

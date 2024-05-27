@@ -57,7 +57,7 @@ public class CourseController {
 
     @PostMapping("/completed")
     public void completeCourse(@RequestParam String empId, @RequestParam String courseId,
-            @RequestBody CourseFeedback courseFeedback) {
+                               @RequestBody CourseFeedback courseFeedback) {
         this.courseService.completeCourse(empId, courseId, courseFeedback);
     }
 

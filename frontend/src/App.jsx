@@ -15,12 +15,12 @@ import NavigationScroll from 'layout/NavigationScroll';
 import store from './store/store';
 // import { useEffect } from 'react';
 // import { getToken } from 'utils/verifyToken';
-
+import { Toaster } from 'react-hot-toast';
 // ==============================|| APP ||============================== //
 
 const App = () => {
   const customization = useSelector((state) => state.customization);
-  const auth = useSelector((state) => state.auth);
+  // const auth = useSelector((state) => state.auth);
   // const navigate = useNavigate();
 
   return (
@@ -30,6 +30,7 @@ const App = () => {
           <CssBaseline />
           <NavigationScroll>
             <RouterProvider router={router} />
+            <Toaster />
           </NavigationScroll>
         </ThemeProvider>
       </Provider>

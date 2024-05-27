@@ -44,31 +44,19 @@ const CourseReport = () => {
   const [searchQueryID, setSearchQueryID] = useState('');
   const [searchQueryName, setSearchQueryName] = useState('');
 
-  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null); // State for anchor element of popover
+  const [downloadAnchorEl, setDownloadAnchorEl] = useState(null);
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
 
   const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
 
   const calculateAttendance = (completed, enrolled) => {
     return Math.round((completed / enrolled) * 100);
   };
 
-  const [months, setMonths] = useState([
-    'JANUARY',
-    'FEBRUARY',
-    'MARCH',
-    'APRIL',
-    'MAY',
-    'JUNE',
-    'JULY',
-    'AUGUST',
-    'SEPTEMBER',
-    'OCTOBER',
-    'NOVEMBER',
-    'DECEMBER'
-  ]);
+  const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
@@ -81,7 +69,7 @@ const CourseReport = () => {
           ?.map((item) => ({
             courseId: item?.courseId,
             name: item?.courseName,
-            category: item?.category,
+            category: item?.domain,
             monthlyDetails: item?.monthlyDetails?.map((employee) => ({
               employeesEnrolled: employee?.employeesEnrolled,
               employeesCompleted: employee?.employeesCompleted,
@@ -101,7 +89,7 @@ const CourseReport = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [selectedMonth, selectedQuarter, selectedCategory, searchQueryID, searchQueryName]);
+  }, [selectedMonth, selectedQuarter, selectedCategory, searchQueryID, searchQueryName, courses]);
 
   const generateChartData = () => {
     const colors = [
@@ -127,7 +115,7 @@ const CourseReport = () => {
       ]
     };
 
-    courses.forEach((course, index) => {
+    filteredCourses.forEach((course, index) => {
       const totalAttendance = course.monthlyDetails.reduce(
         (acc, cur) => acc + calculateAttendance(cur.employeesCompleted, cur.employeesEnrolled),
         0
@@ -140,53 +128,45 @@ const CourseReport = () => {
 
     return data;
   };
+
   const handleGenerateReport = (format) => {
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text('Course Report', 10, 10);
 
-    const tableData = courses
-      .map((course) => {
-        return course.monthlyDetails.map((data) => [
-          course.courseId,
+    const tableData = filteredCourses
+      .map((course) =>
+        course.monthlyDetails.map((data) => [
           course.name,
           course.category,
           data.employeesEnrolled,
           data.employeesCompleted,
-          // `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
           `${data.attendance}%`,
           getMonthName(data.completionMonth)
-        ]);
-      })
+        ])
+      )
       .flat();
 
-    const tableData1 = courses
-      .map((course) => {
-        return course.monthlyDetails.map((data) => ({
-          'Course ID': course.courseId,
+    const tableData1 = filteredCourses
+      .map((course) =>
+        course.monthlyDetails.map((data) => ({
           Name: course.name,
           Category: course.category,
           'Employees Enrolled': data.employeesEnrolled,
           'Employees Completed': data.employeesCompleted,
-          // 'Attendance': `${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`,
           Attendance: `${data.attendance}%`,
           'Completion Month': getMonthName(data.completionMonth)
-        }));
-      })
+        }))
+      )
       .flat();
-
-    const chartCanvas = document.querySelector('canvas');
-    const chartImage = chartCanvas.toDataURL('image/jpeg');
 
     switch (format) {
       case 'pdf':
         doc.autoTable({
-          head: [['Course ID', 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month']],
+          head: [['Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month']],
           body: tableData,
           startY: 20
         });
-
-        doc.addImage(chartImage, 'JPEG', 60, doc.autoTable.previous.finalY + 10, 80, 80);
         doc.save('course_report.pdf');
         break;
       case 'excel':
@@ -197,7 +177,7 @@ const CourseReport = () => {
         break;
       case 'csv':
         const csv = Papa.unparse({
-          fields: ['Course ID', 'Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month'],
+          fields: ['Name', 'Category', 'Employees Enrolled', 'Employees Completed', 'Attendance', 'Completion Month'],
           data: tableData
         });
         const csvContent = `data:text/csv;charset=utf-8,${csv}`;
@@ -207,6 +187,8 @@ const CourseReport = () => {
         link.setAttribute('download', 'course_report.csv');
         document.body.appendChild(link);
         link.click();
+        break;
+      default:
         break;
     }
   };
@@ -261,7 +243,7 @@ const CourseReport = () => {
       );
     });
 
-    setCourses(filteredCourses);
+    setFilteredCourses(filteredCourses);
   };
 
   const handleFilterChange = (event) => {
@@ -279,15 +261,13 @@ const CourseReport = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div style={{ textAlign: 'center' }}>
-        <Typography variant="h2" gutterBottom style={{ marginBottom: '30px' }}>
-          Course Report
-        </Typography>
+        <h2>Course Report</h2>
         <div className="employee-report-filters">
           <TextField select label="Filter" value={selectedFilter} onChange={handleFilterChange} style={{ marginRight: '10px' }}>
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
             <MenuItem value="HalfYearly">Half Yearly</MenuItem>
-            <MenuItem value="Yearly">Yearly</MenuItem>
+            {/* <MenuItem value="Yearly">Yearly</MenuItem> */}
           </TextField>
           {selectedFilter === 'Monthly' && (
             <TextField
@@ -354,18 +334,11 @@ const CourseReport = () => {
           <TextField
             label="Search by Name"
             value={searchQueryName}
-            onChange={(e) => setSearchQueryName(e.target.value)}
+            onChange={(event) => setSearchQueryName(event.target.value)}
             style={{ marginRight: '10px' }}
           />
-          <Button variant="contained" startIcon={<SearchIcon />} onClick={handleSearch} style={{ marginRight: '10px' }}>
-            Search
-          </Button>
-          <Button
-            variant="contained"
-            endIcon={<DownloadIcon />}
-            onClick={(event) => setDownloadAnchorEl(event.currentTarget)}
-            style={{ marginRight: '10px' }}
-          >
+
+          <Button variant="contained" endIcon={<DownloadIcon />} onClick={handleDownloadClick} style={{ marginRight: '10px' }}>
             Download
           </Button>
           <Popover
@@ -385,7 +358,7 @@ const CourseReport = () => {
               <ListItem button onClick={() => handleGenerateReport('pdf')}>
                 <ListItemText primary="PDF" />
               </ListItem>
-              <ListItem button onClick={() => handleGenerateReport('xlsx')}>
+              <ListItem button onClick={() => handleGenerateReport('excel')}>
                 <ListItemText primary="Excel" />
               </ListItem>
               <ListItem button onClick={() => handleGenerateReport('csv')}>
@@ -425,18 +398,29 @@ const CourseReport = () => {
               <Table aria-label="course report table">
                 <TableHead>
                   <TableRow>
-                    {/* <TableCell align="center">Course ID</TableCell> */}
-                    <TableCell align="center">Name</TableCell>
-                    <TableCell align="center">Category</TableCell>
-                    <TableCell align="center">Employees Enrolled</TableCell>
-                    <TableCell align="center">Employees Completed</TableCell>
-                    <TableCell align="center">Attendance</TableCell>
-                    <TableCell align="center">Completion Month</TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Name
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Category
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Employees Enrolled
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Employees Completed
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Attendance
+                    </TableCell>
+                    <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                      Completion Month
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {courses.map((course) => {
-                    const matchingCourses = course.monthlyDetails.filter((data) => {
+                  {filteredCourses?.map((course, courseIndex) => {
+                    const matchingDetails = course.monthlyDetails.filter((data) => {
                       const completionMonth = getMonthName(data.completionMonth);
                       return (
                         (!selectedMonth || data.completionMonth.toString() === selectedMonth) &&
@@ -453,32 +437,31 @@ const CourseReport = () => {
                       );
                     });
 
-                    if (matchingCourses.length > 0) {
-                      const rows = matchingCourses.map((data, index) => {
+                    if (matchingDetails.length > 0) {
+                      const rows = matchingDetails.map((data, detailIndex) => {
                         const completionMonth = getMonthName(data.completionMonth);
-                        if (index === 0) {
+                        const rowColorStyle = courseIndex % 2 === 0 ? { backgroundColor: '#f5f5f5' } : { backgroundColor: 'white' };
+
+                        if (detailIndex === 0) {
                           return (
-                            <TableRow key={`${course.courseId}_${index}`}>
-                              {/* <TableCell align="center" rowSpan={matchingCourses.length}>{course.courseId}</TableCell> */}
-                              <TableCell align="center" rowSpan={matchingCourses.length}>
+                            <TableRow key={`${course.courseId}_${detailIndex}`} style={rowColorStyle}>
+                              <TableCell align="center" rowSpan={matchingDetails.length}>
                                 {course.name}
                               </TableCell>
-                              <TableCell align="center" rowSpan={matchingCourses.length}>
+                              <TableCell align="center" rowSpan={matchingDetails.length}>
                                 {course.category}
                               </TableCell>
                               <TableCell align="center">{data.employeesEnrolled}</TableCell>
                               <TableCell align="center">{data.employeesCompleted}</TableCell>
-                              {/* <TableCell align="center">{`${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`}</TableCell> */}
                               <TableCell align="center">{`${data.attendance}%`}</TableCell>
                               <TableCell align="center">{completionMonth}</TableCell>
                             </TableRow>
                           );
                         } else {
                           return (
-                            <TableRow key={`${course.courseId}_${index}`}>
+                            <TableRow key={`${course.courseId}_${detailIndex}`} style={rowColorStyle}>
                               <TableCell align="center">{data.employeesEnrolled}</TableCell>
                               <TableCell align="center">{data.employeesCompleted}</TableCell>
-                              {/* <TableCell align="center">{`${calculateAttendance(data.employeesCompleted, data.employeesEnrolled)}%`}</TableCell> */}
                               <TableCell align="center">{`${data.attendance}%`}</TableCell>
                               <TableCell align="center">{completionMonth}</TableCell>
                             </TableRow>

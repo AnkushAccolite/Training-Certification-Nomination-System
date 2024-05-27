@@ -14,30 +14,40 @@ import {
   Select,
   MenuItem,
   TableContainer,
-  Paper,
-  Tooltip
+  Paper
 } from '@mui/material';
-import { KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
-import useCourses from 'hooks/useCourses';
 import currentMonth from 'utils/currentMonth';
 import './MonthlyCourses.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import toast from 'react-hot-toast';
 
 const MonthlyCourses = () => {
   const auth = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const { courses, loading, error } = useCourses();
+
+  const [courses, setCourses] = useState([]);
+
+  const fetchCourses = async () => {
+    try {
+      const { data } = await axios.get('/course');
+      setCourses(data);
+    } catch (error) {
+      setError(error.message);
+      toast.error('Error fetching data');
+    }
+  };
 
   useEffect(() => {
     if (!(auth?.isAuthenticated && auth?.user?.role === 'ADMIN')) navigate('/login');
+    fetchCourses();
   }, []);
 
   const currentMonthUppercase = currentMonth();
 
-  const [sortingOrder, setSortingOrder] = useState('ascending');
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [domainFilter, setDomainFilter] = useState('All');
@@ -48,9 +58,11 @@ const MonthlyCourses = () => {
   const removeCourse = async (id) => {
     try {
       const res = await axios.post(`/course/change-status?month=${monthFilter}`, [id]);
-      navigate(0);
+      toast.success('Course removed successfully');
+      fetchCourses();
     } catch (error) {
       console.log(error);
+      toast.error('Something went wrong');
     }
   };
 
@@ -85,13 +97,10 @@ const MonthlyCourses = () => {
       const bValue = b[sortConfig.key];
 
       if (sortConfig.key === 'courseName' || sortConfig.key === 'domain') {
-        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+        return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'duration') {
         return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
       }
-      // } else if (sortConfig.key === 'domain') {
-      //   return (aValue - bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-      // }
     }
     return 0;
   });
@@ -109,7 +118,7 @@ const MonthlyCourses = () => {
 
   return (
     <div>
-     <h2 style={{textAlign:'center'}}> Monthly Courses</h2>
+      <h2 style={{ textAlign: 'center' }}> Monthly Courses</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select value={monthFilter} onChange={handleMonthFilterChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
@@ -140,44 +149,107 @@ const MonthlyCourses = () => {
         </FormControl>
       </div>
 
-      <TableContainer component={Paper} style={{ marginTop: '20px' }}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell onClick={() => handleSort('courseName')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                Course Name
-                <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-              </TableCell>
-              <TableCell onClick={() => handleSort('duration')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                Duration
-                <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-              </TableCell>
-              <TableCell onClick={() => handleSort('domain')} style={{ textAlign: 'center', cursor: 'pointer' }}>
-                Domain
-                <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-              </TableCell>
-              <TableCell style={{ textAlign: 'center' }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredCourses.map((course) => (
-              <TableRow key={course?.courseId}>
-                <TableCell style={{ textAlign: 'center' }}>{course?.courseName}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>{course?.domain}</TableCell>
-                <TableCell style={{ textAlign: 'center' }}>
-                  <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>
-                    Remove
-                  </Button>
-                  <Button variant="contained" style={{ marginLeft: '10px' }} onClick={() => handleViewDetails(course)}>
-                    View Details
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <div style={{ flex: '1', overflow: 'hidden' }}>
+        <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+          {filteredCourses.length === 0 ? (
+            <div
+              style={{
+                width: '100%',
+                height: '70%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              No Courses Available for This month
+            </div>
+          ) : (
+            <TableContainer
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                paddingRight: '8px',
+                marginBottom: '-16px'
+              }}
+              component={Paper}
+              sx={{
+                maxHeight: '100%',
+                overflowY: 'auto',
+                '&::-webkit-scrollbar': {
+                  width: '6px',
+                  borderRadius: '3px'
+                },
+                '&::-webkit-scrollbar-track': {
+                  backgroundColor: '#FFFFFF'
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: '#eee6ff',
+                  borderRadius: '3px'
+                }
+              }}
+            >
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('courseName')}>
+                      <div
+                        style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        Course Name
+                        {sortConfig.key === 'courseName' ? (
+                          sortConfig.direction === 'asc' ? (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          ) : (
+                            <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('duration')}>
+                      <div
+                        style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        Duration (hrs)
+                        {sortConfig.key === 'duration' ? (
+                          sortConfig.direction === 'asc' ? (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          ) : (
+                            <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                          )
+                        ) : (
+                          <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredCourses.map((course, index) => (
+                    <TableRow key={course?.courseId} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
+                      <TableCell style={{ textAlign: 'center' }}>{course?.courseName}</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>{course?.domain}</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>
+                          Remove
+                        </Button>
+                        <Button variant="contained" style={{ marginLeft: '10px' }} onClick={() => handleViewDetails(course)}>
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </div>
+      </div>
 
       <Dialog open={showDetails} onClose={handleCloseDetails}>
         <DialogTitle>Course Details</DialogTitle>

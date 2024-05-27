@@ -1,5 +1,23 @@
-import { IconArrowRight, IconBook, IconBook2 ,IconCertificate,IconFileCertificate,IconFileDescription,IconClipboardText,IconMessages} from '@tabler/icons-react';
-const icons = { IconArrowRight, IconBook, IconBook2 ,IconCertificate,IconFileCertificate,IconFileDescription,IconClipboardText,IconMessages };
+import {
+  IconArrowRight,
+  IconBook,
+  IconBook2,
+  IconCertificate,
+  IconFileCertificate,
+  IconFileDescription,
+  IconClipboardText,
+  IconMessages
+} from '@tabler/icons-react';
+const icons = {
+  IconArrowRight,
+  IconBook,
+  IconBook2,
+  IconCertificate,
+  IconFileCertificate,
+  IconFileDescription,
+  IconClipboardText,
+  IconMessages
+};
 const items = {
   id: 'items',
   type: 'group',
@@ -55,6 +73,15 @@ const items = {
           roles: ['ADMIN', 'USER', 'MANAGER'],
           icon: icons.IconBook,
           breadcrumbs: false
+        },
+        {
+          id: 'course-faq',
+          title: 'Courses FAQ',
+          type: 'item',
+          url: '/course-faq',
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          icon: icons.IconBook,
+          breadcrumbs: false
         }
       ]
     },
@@ -66,10 +93,19 @@ const items = {
       roles: ['ADMIN', 'USER', 'MANAGER'],
       children: [
         {
-          id: 'certification-list',
-          title: 'Available Courses for certification',
+          id: 'certifications',
+          title: 'Available Certifications',
           type: 'item',
           url: '/certifications',
+          icon: icons.IconFileCertificate,
+          roles: ['ADMIN', 'USER', 'MANAGER'],
+          breadcrumbs: false
+        },
+        {
+          id: 'certification-approved',
+          title: 'Certifications Approved',
+          type: 'item',
+          url: '/certifications-approved',
           icon: icons.IconFileCertificate,
           roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false
@@ -83,15 +119,16 @@ const items = {
           icon: icons.IconFileCertificate,
           breadcrumbs: false
         },
+       
         {
-          id: 'certification-assigned',
-          title: 'Certifications Enrolled',
+          id: 'certification-faq',
+          title: 'Certification FAQs',
           type: 'item',
-          url: '/certifications-assigned',
+          url: '/certifications-faq',
           icon: icons.IconFileCertificate,
           roles: ['ADMIN', 'USER', 'MANAGER'],
           breadcrumbs: false
-        },
+        }
       ]
     },
     {

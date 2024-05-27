@@ -31,12 +31,13 @@ import AnimateButton from 'ui-component/extended/AnimateButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import Google from 'assets/images/icons/social-google.svg';
+import OneLogin from 'assets/images/icons/OneLogin.png';
 import axios from 'axios';
 
 import { login, logout } from '../../../../store/actions';
 import { useNavigate } from 'react-router-dom';
 import parseUser from 'utils/parseUser';
+import toast from 'react-hot-toast';
 
 // ============================|| FIREBASE - LOGIN ||============================ //
 
@@ -71,24 +72,17 @@ const AuthLogin = ({ ...others }) => {
       localStorage.setItem('token', token);
 
       const user = parseUser(token);
-      // const user={"email":decoded.email,"role":decoded.role[0]}
-
-      // console.log("tokennn->",res.data.token);
-      // console.log("decoded->",user);
       dispatch(login(user, token));
 
       navigate('/courses');
-
-      console.log('Auth --> ', auth);
     } catch (err) {
       console.log(err);
+      toast.error('Invalid Credentials Try again!!!');
     }
-
-    console.log(values);
   };
 
   return (
-    <>
+    <Box sx={{ overflow: 'hidden' }}>
       <Grid container direction="column" justifyContent="center" spacing={2}>
         <Grid item xs={12}>
           <AnimateButton>
@@ -105,9 +99,9 @@ const AuthLogin = ({ ...others }) => {
               }}
             >
               <Box sx={{ mr: { xs: 1, sm: 2, width: 20 }, pt: '1.5%' }}>
-                <img src={Google} alt="google" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
+                <img src={OneLogin} alt="OneLogin" width={16} height={16} style={{ marginRight: matchDownSM ? 8 : 16 }} />
               </Box>
-              Sign in with Google
+              Sign in with Onelogin
             </Button>
           </AnimateButton>
         </Grid>
@@ -248,18 +242,8 @@ const AuthLogin = ({ ...others }) => {
           </form>
         )}
       </Formik>
-    </>
+    </Box>
   );
 };
 
-// const mapStateToProps = (state) => ({
-//   isAuthenticated: state.auth.isAuthenticated
-// });
-
-// const mapDispatchToProps = {
-//   login,
-//   logout
-// };
-
-// export default connect(mapStateToProps, mapDispatchToProps)(AuthLogin);
 export default AuthLogin;

@@ -11,13 +11,18 @@ import org.springframework.data.annotation.Id;
 public class Certification {
 
     @Id
-    private String certiId;
+    private String certificationId;
 
     private String name;
 
     private Integer duration;
 
-    private Double price;
+    private String domain;
 
-    private String category;
+    private String description;
+
+    private Boolean isDeleted = false;
+
+    public void setId(String cert1) {
+    }
 }

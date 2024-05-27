@@ -24,4 +24,11 @@ public class CourseFeedback {
     private int rating;
 
     private String comment;
+
+    public void setFeedback(String s) {
+    }
+
+    public void setId(String feedback1) {
+
+    }
 }
