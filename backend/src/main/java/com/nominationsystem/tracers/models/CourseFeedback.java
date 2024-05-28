@@ -1,7 +1,5 @@
 package com.nominationsystem.tracers.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -11,8 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Setter
 @Document(collection = "courseFeedback")
 public class CourseFeedback {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String feedbackId;
 
     private String empId;
@@ -29,6 +27,6 @@ public class CourseFeedback {
     }
 
     public void setId(String feedback1) {
-
     }
+
 }

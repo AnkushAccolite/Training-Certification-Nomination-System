@@ -9,15 +9,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Collections;
-
 public class GlobalExceptionHandlerTest {
 
     @Test
     public void testHandleValidationException() {
         // Given
         GlobalExceptionHandler handler = new GlobalExceptionHandler();
-        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(null, createBindingResult("Field error message"));
+        MethodArgumentNotValidException ex = new MethodArgumentNotValidException(null,
+                createBindingResult("Field error message"));
 
         // When
         ResponseEntity<String> responseEntity = handler.handleValidationException(ex);

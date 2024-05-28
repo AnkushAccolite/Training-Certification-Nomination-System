@@ -10,7 +10,9 @@ import java.time.Month;
 public class EmployeeReportCourseDetails {
 
     private String courseName;
+
     private String domain;
+
     private Month month;
 
 }

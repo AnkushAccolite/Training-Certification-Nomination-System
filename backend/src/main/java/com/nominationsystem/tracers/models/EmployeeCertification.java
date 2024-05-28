@@ -12,6 +12,9 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeCertification {
+
     private ArrayList<String> pendingCertifications;
+
     private ArrayList<CertificationStatus> certifications;
+
 }

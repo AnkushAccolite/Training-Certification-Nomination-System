@@ -10,7 +10,9 @@ import java.util.List;
 public class CertificationRequestsTemplate {
 
     String empId;
+
     String empName;
+
     List<Certification> pendingCertDetails;
 
 }

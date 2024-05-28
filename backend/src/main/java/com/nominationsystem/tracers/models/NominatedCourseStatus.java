@@ -22,4 +22,5 @@ public class NominatedCourseStatus {
     public void setApprovalStatus(ApprovalStatus approvalStatus) {
         this.approvalStatus = approvalStatus.name();
     }
+
 }

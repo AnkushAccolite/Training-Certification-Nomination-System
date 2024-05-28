@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @Validated
-@CrossOrigin(origins = "*")
 @RequestMapping("/course")
 public class CourseController {
 
@@ -39,7 +38,7 @@ public class CourseController {
 
     @PutMapping("/{id}")
     public String updateCourse(@PathVariable("id") String courseId,
-            @RequestBody Course course) {
+                               @RequestBody Course course) {
         this.courseService.updateCourse(courseId, course);
         return "Course edited";
     }
@@ -51,7 +50,7 @@ public class CourseController {
 
     @PostMapping("/change-status")
     public void changeMonthlyCourseStatus(@RequestParam String month,
-            @RequestBody List<String> courseIds) {
+                                          @RequestBody List<String> courseIds) {
         this.courseService.changeMonthlyCourseStatus(courseIds, month);
     }
 

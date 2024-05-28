@@ -1,7 +1,5 @@
 package com.nominationsystem.tracers.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +17,6 @@ import java.util.List;
 public class Course {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String courseId;
 
     private String courseName;
@@ -36,7 +33,6 @@ public class Course {
 
     private Boolean delete = false;
 
-    // private List<MonthlyCourseStatus> monthlyStatus = new ArrayList<>();
     private List<MonthlyCourseStatus> monthlyStatus = List.of(
             new MonthlyCourseStatus(Month.JANUARY, false),
             new MonthlyCourseStatus(Month.FEBRUARY, false),
@@ -58,4 +54,5 @@ public class Course {
 
     public void setName(String javaCourse) {
     }
+
 }

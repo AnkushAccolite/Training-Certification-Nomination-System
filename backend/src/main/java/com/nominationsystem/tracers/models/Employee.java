@@ -15,6 +15,7 @@ import java.util.*;
 @Setter
 @Document(collection = "employees")
 public class Employee {
+
     @Id
     private String id;
 
@@ -49,43 +50,17 @@ public class Employee {
 
     private String managerId;
 
-    public String getUsername() {
-        return username;
-    }
-
     public void setUsername(String username) {
         this.username = username;
         this.email = username;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public void removePendingCourseById(String courseId) {
-        Iterator<EmployeeCourseStatus> iterator = this.getPendingCourses().iterator();
-        while (iterator.hasNext()) {
-            EmployeeCourseStatus courseStatus = iterator.next();
-            if (courseStatus.getCourseId().equals(courseId)) {
-                iterator.remove();
-
-            }
-        }
-
+        this.getPendingCourses().removeIf(courseStatus -> courseStatus.getCourseId().equals(courseId));
     }
 
     public void removeAssignedCourseById(String courseId) {
-        Iterator<EmployeeCourseStatus> iterator = this.getApprovedCourses().iterator();
-        while (iterator.hasNext()) {
-            EmployeeCourseStatus courseStatus = iterator.next();
-            if (courseStatus.getCourseId().equals(courseId)) {
-                iterator.remove();
-            }
-        }
+        this.getApprovedCourses().removeIf(courseStatus -> courseStatus.getCourseId().equals(courseId));
     }
 
     public boolean isCertificationPresent(String certificationId) {
@@ -94,6 +69,6 @@ public class Employee {
     }
 
     public void setAssignedCourses(ArrayList<Object> objects) {
-
     }
+
 }

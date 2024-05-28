@@ -17,13 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-
 import jakarta.validation.Valid;
 
-
-
 @RestController
-@CrossOrigin(origins="*")
 @RequestMapping("/auth")
 public class AuthController {
 
@@ -37,7 +33,7 @@ public class AuthController {
     private EmployeeRepository employeeRepository;
 
     @Autowired
-    JwtUtils jwtUtils;
+    private JwtUtils jwtUtils;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -45,16 +41,13 @@ public class AuthController {
         String jwt = null;
         try {
 
-            employeeRepository.findByUsername(loginRequest.getUsername());
-            Authentication authentication = authenticationManager.authenticate(
+            this.employeeRepository.findByUsername(loginRequest.getUsername());
+            Authentication authentication = this.authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            jwt = jwtUtils.generateJwtToken(authentication);
+            jwt = this.jwtUtils.generateJwtToken(authentication);
 
-
-
-        }catch (Exception e2) {
-
+        } catch (Exception e2) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e2);
         }
         return ResponseEntity.ok(new JwtResponse(jwt));
@@ -63,13 +56,13 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
-        if (employeeRepository.existsByUsername(signUpRequest.getUsername())) {
+        if (this.employeeRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
-        if (employeeRepository.existsByEmail(signUpRequest.getEmail())) {
+        if (this.employeeRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
@@ -77,9 +70,9 @@ public class AuthController {
 
         Employee user = new Employee();
         user.setUsername(signUpRequest.getUsername());// email is also set by this
-        user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setPassword(this.encoder.encode(signUpRequest.getPassword()));
         user.setRole(signUpRequest.getRole());
-        employeeRepository.save(user);
+        this.employeeRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }

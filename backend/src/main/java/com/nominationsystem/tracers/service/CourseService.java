@@ -8,7 +8,7 @@ import com.nominationsystem.tracers.repository.CourseFeedbackRepository;
 import com.nominationsystem.tracers.models.CourseReportEmployeeDetails;
 import com.nominationsystem.tracers.models.CourseReportTemplate;
 import com.nominationsystem.tracers.repository.CourseRepository;
-import com.nominationsystem.tracers.repository.EmployeeRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -23,11 +23,9 @@ import java.util.stream.Collectors;
 @Service
 public class CourseService {
 
+    @Getter
     @Autowired
     private CourseRepository courseRepository;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
 
     @Autowired
     private CourseFeedbackRepository courseFeedbackRepository;
@@ -40,15 +38,15 @@ public class CourseService {
     Month currentMonth = currentDate.getMonth();
 
     public Course getCourse(String courseName) {
-        return courseRepository.findByCourseName(courseName);
+        return this.courseRepository.findByCourseName(courseName);
     }
 
     public Course getCourseById(String courseId) {
-        return courseRepository.findByCourseId(courseId);
+        return this.courseRepository.findByCourseId(courseId);
     }
 
     public List<Course> getAllCourses() {
-        List<Course> temp = courseRepository.findAll();
+        List<Course> temp = this.courseRepository.findAll();
 
         List<Course> filteredList = temp.stream()
                 .filter(obj -> !obj.getDelete())
@@ -82,13 +80,13 @@ public class CourseService {
             existingCourse.setIsApprovalReq(updatedCourse.getIsApprovalReq());
         }
 
-        courseRepository.save(existingCourse);
+        this.courseRepository.save(existingCourse);
     }
 
     public void deleteCourse(String courseId) {
         Course existingCourse = getCourseById(courseId);
         existingCourse.setDelete(true);
-        courseRepository.save(existingCourse);
+        this.courseRepository.save(existingCourse);
     }
 
     public void changeMonthlyCourseStatus(List<String> courseIds, String month) {
@@ -96,26 +94,26 @@ public class CourseService {
         Month monthEnum = Month.valueOf(month.toUpperCase());
 
         courseIds.forEach(courseId -> {
-            Course course = courseRepository.findByCourseId(courseId);
+            Course course = this.courseRepository.findByCourseId(courseId);
             if (course != null) {
                 course.getMonthlyStatus().stream()
                         .filter(status -> status.getMonth() == monthEnum)
                         .findFirst()
                         .ifPresent(status -> {
                             status.setActivationStatus(!status.isActivationStatus());
-                            courseRepository.save(course);
+                            this.courseRepository.save(course);
                         });
             }
         });
     }
 
     public void completeCourse(String empId, String courseId, CourseFeedback courseFeedback) {
-        Employee employee = this.employeeRepository.findByEmpId(empId);
+        Employee employee = this.employeeService.getEmployeeRepository().findByEmpId(empId);
 
         if (employee != null) {
             employee.getCompletedCourses().add(new EmployeeCourseStatus(courseId, currentMonth));
             employee.removeAssignedCourseById(courseId);
-            this.employeeRepository.save(employee);
+            this.employeeService.getEmployeeRepository().save(employee);
         }
         this.courseFeedbackRepository.save(courseFeedback);
     }
@@ -174,4 +172,5 @@ public class CourseService {
         }
         return courseMonthlyDetailsList;
     }
+
 }

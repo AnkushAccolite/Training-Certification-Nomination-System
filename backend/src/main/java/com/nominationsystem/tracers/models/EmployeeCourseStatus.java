@@ -12,7 +12,9 @@ import java.time.Month;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeCourseStatus {
+
     private String courseId;
+
     private Month month;
 
 }

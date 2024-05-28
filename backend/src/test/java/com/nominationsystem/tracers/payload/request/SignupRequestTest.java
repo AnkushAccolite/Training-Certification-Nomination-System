@@ -1,6 +1,5 @@
 package com.nominationsystem.tracers.payload.request;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.validation.ConstraintViolation;
@@ -22,19 +21,19 @@ public class SignupRequestTest {
         validator = factory.getValidator();
     }
 
-//    @Test
-//    public void testGettersAndSetters() {
-//        SignupRequest signupRequest = new SignupRequest();
-//        signupRequest.setUsername("testUser");
-//        signupRequest.setEmail("test@example.com");
-//        signupRequest.setPassword("testPass123");
-//        signupRequest.setRole("USER");
-//
-//        assertEquals("testUser", signupRequest.getUsername());
-//        assertEquals("test@example.com", signupRequest.getEmail());
-//        assertEquals("testPass123", signupRequest.getPassword());
-//        assertEquals("USER", signupRequest.getRole());
-//    }
+    // @Test
+    // public void testGettersAndSetters() {
+    // SignupRequest signupRequest = new SignupRequest();
+    // signupRequest.setUsername("testUser");
+    // signupRequest.setEmail("test@example.com");
+    // signupRequest.setPassword("testPass123");
+    // signupRequest.setRole("USER");
+    //
+    // assertEquals("testUser", signupRequest.getUsername());
+    // assertEquals("test@example.com", signupRequest.getEmail());
+    // assertEquals("testPass123", signupRequest.getPassword());
+    // assertEquals("USER", signupRequest.getRole());
+    // }
 
     @Test
     public void testUsernameNotBlank() {
@@ -102,15 +101,16 @@ public class SignupRequestTest {
         assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("password")));
     }
 
-//    @Test
-//    public void testValidSignupRequest() {
-//        SignupRequest signupRequest = new SignupRequest();
-//        signupRequest.setUsername("testUser");
-//        signupRequest.setEmail("test@example.com");
-//        signupRequest.setPassword("testPass123");
-//        signupRequest.setRole("USER");
-//
-//        Set<ConstraintViolation<SignupRequest>> violations = validator.validate(signupRequest);
-//        assertEquals(0, violations.size());
-//    }
+    // @Test
+    // public void testValidSignupRequest() {
+    // SignupRequest signupRequest = new SignupRequest();
+    // signupRequest.setUsername("testUser");
+    // signupRequest.setEmail("test@example.com");
+    // signupRequest.setPassword("testPass123");
+    // signupRequest.setRole("USER");
+    //
+    // Set<ConstraintViolation<SignupRequest>> violations =
+    // validator.validate(signupRequest);
+    // assertEquals(0, violations.size());
+    // }
 }

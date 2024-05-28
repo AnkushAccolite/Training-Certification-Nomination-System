@@ -23,4 +23,5 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
     List<Employee> findAllByOrderByEmpIdAsc();
 
     List<Employee> findByManagerId(String managerId);
+
 }

@@ -5,7 +5,6 @@ import java.util.Collections;
 
 import java.util.Objects;
 
-
 import com.nominationsystem.tracers.models.Employee;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,11 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class UserDetailsImpl implements UserDetails{
+public class UserDetailsImpl implements UserDetails {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     private String id;
@@ -38,21 +34,18 @@ public class UserDetailsImpl implements UserDetails{
     @DBRef
     private String role;
 
-
-
-
-
-    public UserDetailsImpl(String id, String username, String email, String password, String role,String empId,String managerId,String empName) {
+    public UserDetailsImpl(String id, String username, String email, String password, String role, String empId, String managerId, String empName) {
         super();
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.role = role;
-        this.empId=empId;
-        this.managerId=managerId;
-        this.empName=empName;
+        this.empId = empId;
+        this.managerId = managerId;
+        this.empName = empName;
     }
+
     public static UserDetailsImpl build(Employee users) {
 
         return new UserDetailsImpl(
@@ -65,8 +58,6 @@ public class UserDetailsImpl implements UserDetails{
                 users.getManagerId(),
                 users.getEmpName());
     }
-
-
 
     @Override
     public String toString() {
@@ -101,9 +92,11 @@ public class UserDetailsImpl implements UserDetails{
     public String getEmpId() {
         return empId;
     }
+
     public String getManagerId() {
         return managerId;
     }
+
     public String getEmpName() {
         return empName;
     }
@@ -138,6 +131,4 @@ public class UserDetailsImpl implements UserDetails{
         return Objects.equals(id, user.id);
     }
 
-
 }
-
