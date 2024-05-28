@@ -20,7 +20,7 @@ public class EmailService {
         this.mailSender.send(message);
     }
 
-    public String createPendingRequestEmailBody(String managerId, String empId, String empName, String nominationList, String nominationType) {
+    public String createPendingRequestEmailBody(String managerName, String empId, String empName, String nominationList, String nominationType) {
 
         String companyName = "bounteous x Accolite";
 
@@ -41,7 +41,7 @@ public class EmailService {
                         Regards
                         Teknow
                         %s""",
-                managerId,
+                managerName,
                 empId,
                 empName,
                 nominationType,
