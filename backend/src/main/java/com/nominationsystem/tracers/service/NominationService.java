@@ -97,8 +97,7 @@ public class NominationService {
         String body = this.emailService.createPendingRequestEmailBody(manager.getEmpName(), employee.getEmpId(),
                 employee.getEmpName(), courseList, "Courses");
 
-        this.emailService.sendEmail("debayan.das@accolitedigital.com",//manager.getEmail(),
-                "Approval request for nomination", body);
+        this.emailService.sendEmail(manager.getEmail(), "Approval request for nomination", body);
 
         return this.nominationRepository.save(nomination);
     }
@@ -133,15 +132,13 @@ public class NominationService {
                             course.setApprovalStatus(ApprovalStatus.APPROVED);
                             String acceptedBody = this.emailService.createApprovalEmailBody(employee.getEmpName(),
                                     courseName, "Course");
-                            this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail(),
-                                    "Nomination request approved", acceptedBody);
+                            this.emailService.sendEmail(employee.getEmail(), "Nomination request approved", acceptedBody);
                             break;
                         case "reject":
                             course.setApprovalStatus(ApprovalStatus.REJECTED);
                             String rejectedBody = this.emailService.createRejectionEmailBody(employee.getEmpName(),
                                     courseName, "Course");
-                            this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail()
-                                    "Nomination request rejected", rejectedBody);
+                            this.emailService.sendEmail(employee.getEmail(),"Nomination request rejected", rejectedBody);
                             break;
                         default:
                             throw new IllegalArgumentException("Invalid action: " + action);

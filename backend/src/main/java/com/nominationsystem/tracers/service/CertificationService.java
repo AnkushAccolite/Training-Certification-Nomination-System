@@ -56,8 +56,7 @@ public class CertificationService {
         String body = this.emailService.createPendingRequestEmailBody(manager.getEmpName(), empId,
                 employee.getEmpName(), certificationList, "Certifications");
 
-        this.emailService.sendEmail("debayan.das@accolitedigital.com",//manager.getEmail(),
-                "Approval request for nomination", body);
+        this.emailService.sendEmail(manager.getEmail(), "Approval request for nomination", body);
 
         this.employeeService.getEmployeeRepository().save(employee);
     }
@@ -93,8 +92,7 @@ public class CertificationService {
                 .orElse(null)).getName();
         String acceptedBody = this.emailService.createApprovalEmailBody(employee.getEmpName(),
                 certificationName, "Certification");
-        this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail(),
-                "Nomination request approved", acceptedBody);
+        this.emailService.sendEmail(employee.getEmail(), "Nomination request approved", acceptedBody);
 
         this.employeeService.getEmployeeRepository().save(employee);
         return ResponseEntity.ok().build();
@@ -145,8 +143,7 @@ public class CertificationService {
                 .orElse(null)).getName();
         String rejectedBody = this.emailService.createRejectionEmailBody(employee.getEmpName(),
                 certificationName, "Certification");
-        this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail(),
-                "Nomination request rejected", rejectedBody);
+        this.emailService.sendEmail(employee.getEmail(), "Nomination request rejected", rejectedBody);
 
         this.employeeService.getEmployeeRepository().save(employee);
     }
