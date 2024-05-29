@@ -32,7 +32,7 @@ const RequestCard = ({ employeeName, nominations = [], onAccept, onReject }) => 
             <TableHead>
               <TableRow>
                 <TableCell>Course Name</TableCell>
-                <TableCell>Domain</TableCell>
+                <TableCell>Category</TableCell>
                 <TableCell>Duration</TableCell>
                 <TableCell>Status</TableCell>
               </TableRow>

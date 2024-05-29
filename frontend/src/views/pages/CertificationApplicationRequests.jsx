@@ -21,7 +21,7 @@ const CertificationApplicationRequests = () => {
         certifications: request?.pendingCertDetails?.map((cert) => ({
           certificationId: cert?.certificationId,
           certificationName: cert?.name,
-          category: cert?.category
+          category: cert?.domain
         }))
       }));
 
