@@ -18,6 +18,7 @@ import LogoSection from '../LogoSection';
 // import Chip from 'ui-component/extended/Chip';
 
 import { drawerWidth } from 'store/constant';
+import MenuCard from './MenuCard';
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 
@@ -26,7 +27,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
   const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
 
   const drawer = (
-    <>
+    <div style={{height:"100vh"}}>
       <Box sx={{ display: { xs: 'block', md: 'none' } }}>
         <Box sx={{ display: 'flex', p: 2, mx: 'auto' }}>
           <LogoSection />
@@ -42,7 +43,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
           }}
         >
           <MenuList />
-          {/* <MenuCard /> */}
+          <MenuCard />
           {/* <Stack direction="row" justifyContent="center" sx={{ mb: 2 }}>
             <Chip label={import.meta.env.VITE_APP_VERSION} disabled chipcolor="secondary" size="small" sx={{ cursor: 'pointer' }} />
           </Stack> */}
@@ -57,7 +58,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
           </Stack> */}
         </Box>
       </MobileView>
-    </>
+    </div>
   );
 
   const container = window !== undefined ? () => window.document.body : undefined;

@@ -3,15 +3,18 @@ import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import AuthWrapper1 from '../AuthWrapper1';
 import AuthCardWrapper from '../AuthCardWrapper';
 import AuthLogin from '../authentication/auth-forms/AuthLogin';
 import AuthFooter from 'ui-component/cards/AuthFooter';
+import logo from 'assets/images/logo.png';
 
 // ================================|| AUTH3 - LOGIN ||================================ //
 
 const Login = () => {
-  const downMD = useMediaQuery((theme) => theme.breakpoints.down('md'));
+  const theme = useTheme(); // Add this line to access the theme
+  const downMD = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <AuthWrapper1>
@@ -28,8 +31,10 @@ const Login = () => {
                       <Grid item>
                         <Stack alignItems="center" justifyContent="center" spacing={1}>
                           <Typography color="InfoText" gutterBottom variant={downMD ? 'h3' : 'h2'}>
+                          <img src={logo} alt="Teknow" style={{ width: 24, height: 24, marginLeft: theme.spacing(1) }} />
                             TEKNOW
-                          </Typography>
+                            </Typography>
+                          
                           <Typography color="secondary.main" gutterBottom variant={downMD ? 'h3' : 'h2'}>
                             Hi, Welcome Back
                           </Typography>
