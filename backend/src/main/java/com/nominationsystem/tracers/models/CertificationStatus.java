@@ -13,10 +13,17 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CertificationStatus {
+
     private String certificationId;
+
     private String startDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+
     private String completionDate;
+
     private String status;
+
     private Integer attempt = 1;
+
     private String uploadedCertificate;
+
 }

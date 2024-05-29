@@ -74,7 +74,7 @@ const AuthLogin = ({ ...others }) => {
       const user = parseUser(token);
       dispatch(login(user, token));
 
-      navigate('/courses');
+      navigate('/');
     } catch (err) {
       console.log(err);
       toast.error('Invalid Credentials Try again!!!');

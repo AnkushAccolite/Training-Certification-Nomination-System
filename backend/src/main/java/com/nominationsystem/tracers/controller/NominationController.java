@@ -11,7 +11,6 @@ import java.time.Month;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins="*")
 @RequestMapping("/nomination")
 public class NominationController {
 
@@ -20,42 +19,44 @@ public class NominationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Nomination> getNomination(@PathVariable("id") String nominationId) {
-        Nomination nomination = nominationService.getNomination(nominationId);
+        Nomination nomination = this.nominationService.getNomination(nominationId);
         return ResponseEntity.ok(nomination);
     }
 
     @GetMapping("/cancel")
-    public ResponseEntity<?> removeCourseFromAllNominations(@RequestParam String empId,@RequestParam String courseId) {
-        this.nominationService.removeCourseFromAllNominations(empId,courseId);
+    public ResponseEntity<?> removeCourseFromAllNominations(@RequestParam String empId, @RequestParam String courseId) {
+        this.nominationService.removeCourseFromAllNominations(empId, courseId);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/all")
     public ResponseEntity<List<Nomination>> getAllNominations() {
-        List<Nomination> nominations = nominationService.getAllNominations();
+        List<Nomination> nominations = this.nominationService.getAllNominations();
         return ResponseEntity.ok(nominations);
     }
 
     @GetMapping
-    public ResponseEntity<List<Nomination>> getAllRequests(@RequestParam String managerId){
-        List<Nomination> requests = nominationService.getAllRequests(managerId);
+    public ResponseEntity<List<Nomination>> getAllRequests(@RequestParam String managerId) {
+        List<Nomination> requests = this.nominationService.getAllRequests(managerId);
         return ResponseEntity.ok(requests);
     }
 
     @PostMapping
-    public ResponseEntity<Nomination> createNomination(@RequestBody Nomination nomination,@RequestParam Month month) {
-        Nomination createdNomination = nominationService.createNomination(nomination,month);
+    public ResponseEntity<Nomination> createNomination(@RequestBody Nomination nomination, @RequestParam Month month) {
+        Nomination createdNomination = this.nominationService.createNomination(nomination, month);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdNomination);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Nomination> updateNomination(@PathVariable("id") String nominationId, @RequestBody Nomination nomination) {
-        Nomination updatedNomination = nominationService.updateNomination(nominationId, nomination);
+    public ResponseEntity<Nomination> updateNomination(@PathVariable("id") String nominationId,
+                                                       @RequestBody Nomination nomination) {
+        Nomination updatedNomination = this.nominationService.updateNomination(nominationId, nomination);
         return ResponseEntity.ok(updatedNomination);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNomination(@PathVariable("id") String nominationId) {
-        nominationService.deleteNomination(nominationId);
+        this.nominationService.deleteNomination(nominationId);
         return ResponseEntity.noContent().build();
     }
 
@@ -64,7 +65,7 @@ public class NominationController {
                                       @RequestParam String nominationId,
                                       @RequestParam String courseId,
                                       @RequestParam Month month) {
-        nominationService.takeActionOnPendingRequest(nominationId, courseId, action,month);
+        this.nominationService.takeActionOnPendingRequest(nominationId, courseId, action, month);
     }
 
 }

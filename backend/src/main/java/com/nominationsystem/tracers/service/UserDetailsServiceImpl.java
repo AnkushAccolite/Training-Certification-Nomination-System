@@ -1,7 +1,6 @@
 package com.nominationsystem.tracers.service;
 
 import com.nominationsystem.tracers.models.Employee;
-import com.nominationsystem.tracers.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,16 +8,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
-    EmployeeRepository employeeRepository;
+    private EmployeeService employeeService;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Employee user = employeeRepository.findByUsername(username)
+        Employee user = this.employeeService.getEmployeeRepository().findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
         return UserDetailsImpl.build(user);

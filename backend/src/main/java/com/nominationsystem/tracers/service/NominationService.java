@@ -1,26 +1,21 @@
 package com.nominationsystem.tracers.service;
 
 import com.nominationsystem.tracers.models.*;
-import com.nominationsystem.tracers.repository.EmployeeRepository;
 import com.nominationsystem.tracers.repository.NominationRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Month;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class NominationService {
 
+    @Getter
     @Autowired
     private NominationRepository nominationRepository;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
 
     @Autowired
     private EmployeeService employeeService;
@@ -32,56 +27,56 @@ public class NominationService {
     private EmailService emailService;
 
     public Nomination getNomination(String nominationId) {
-        return nominationRepository.findById(nominationId)
+        return this.nominationRepository.findById(nominationId)
                 .orElseThrow(() -> new IllegalArgumentException("Course not found"));
     }
 
     public List<Nomination> getAllNominations() {
-        return nominationRepository.findAll();
+        return this.nominationRepository.findAll();
     }
 
-    public List<Nomination> getAllRequests(String managerId){
-        List<Nomination> allNominations=nominationRepository.findAll();
+    public List<Nomination> getAllRequests(String managerId) {
+        List<Nomination> allNominations = this.nominationRepository.findAll();
 
         return allNominations.stream()
                 .filter(nomination -> managerId.equals(nomination.getManagerId()))
                 .collect(Collectors.toList());
     }
 
-    public void removeCourseFromAllNominations(String empId,String courseId) {
-        List<Nomination> nominations = nominationRepository.findAll();
+    public void removeCourseFromAllNominations(String empId, String courseId) {
+        List<Nomination> nominations = this.nominationRepository.findAll();
         for (Nomination nomination : nominations) {
-            if(nomination.getEmpId().equals(empId)){
+            if (nomination.getEmpId().equals(empId)) {
                 List<NominatedCourseStatus> nominatedCourses = nomination.getNominatedCourses();
                 nominatedCourses.removeIf(course -> course.getCourseId().equals(courseId));
                 if (nominatedCourses.isEmpty()) {
-                    nominationRepository.deleteById(nomination.getNominationId());
+                    this.nominationRepository.deleteById(nomination.getNominationId());
                 } else {
-                    nominationRepository.save(nomination);
+                    this.nominationRepository.save(nomination);
                 }
             }
 
         }
-        Employee employee = employeeRepository.findByEmpId(empId);
+        Employee employee = this.employeeService.getEmployeeRepository().findByEmpId(empId);
         if (employee != null) {
             employee.removePendingCourseById(courseId);
+            this.employeeService.getEmployeeRepository().save(employee);
         }
-        employeeRepository.save(employee);
     }
 
     public Nomination createNomination(Nomination nomination, Month month) {
-        Employee employee = employeeService.getEmployee(nomination.getEmpId());
+        Employee employee = this.employeeService.getEmployee(nomination.getEmpId());
         nomination.setManagerId(employee.getManagerId());
         nomination.setMonth(month);
 
         List<NominatedCourseStatus> nominatedCourses = nomination.getNominatedCourses().stream()
-                .filter(nominatedCourse -> !employeeService.isPendingCoursePresent(nominatedCourse.getCourseId(),employee.getEmpId()) &&
-                        !employeeService.isApprovedCoursePresent(nominatedCourse.getCourseId(),employee.getEmpId()))
+                .filter(nominatedCourse -> !this.employeeService.isPendingCoursePresent(nominatedCourse.getCourseId(), employee.getEmpId())
+                        && !this.employeeService.isApprovedCoursePresent(nominatedCourse.getCourseId(), employee.getEmpId()))
                 .map(nominatedCourse -> {
                     NominatedCourseStatus newNominatedCourse = new NominatedCourseStatus();
                     newNominatedCourse.setCourseId(nominatedCourse.getCourseId());
 
-                    boolean isApprovalRequired = courseService.getCourseById(nominatedCourse.getCourseId()).getIsApprovalReq();
+                    boolean isApprovalRequired = this.courseService.getCourseById(nominatedCourse.getCourseId()).getIsApprovalReq();
                     newNominatedCourse.setApprovalStatus(isApprovalRequired ? ApprovalStatus.PENDING : ApprovalStatus.APPROVED);
 
                     return newNominatedCourse;
@@ -93,7 +88,7 @@ public class NominationService {
         }
 
         nomination.setNominatedCourses(nominatedCourses);
-        employeeService.setCoursesNominatedByEmployee(nomination.getEmpId(), nominatedCourses,month);
+        this.employeeService.setCoursesNominatedByEmployee(nomination.getEmpId(), nominatedCourses, month);
 
         String courseList = nominatedCourses.stream()
                 .map(course -> this.courseService.getCourseById(course.getCourseId()).getCourseName())
@@ -102,27 +97,26 @@ public class NominationService {
         String body = this.emailService.createPendingRequestEmailBody(manager.getEmpName(), employee.getEmpId(),
                 employee.getEmpName(), courseList, "Courses");
 
-        this.emailService.sendEmail("debayan.das@accolitedigital.com",//manager.getEmail(),
-                "Approval request for nomination", body);
+        this.emailService.sendEmail(manager.getEmail(), "Approval request for nomination", body);
 
-        return nominationRepository.save(nomination);
+        return this.nominationRepository.save(nomination);
     }
 
     public Nomination updateNomination(String nominationId, Nomination updatedNomination) {
         Nomination existingNomination = getNomination(nominationId);
 
-        if(updatedNomination.getCertifId() != null) {
+        if (updatedNomination.getCertifId() != null) {
             existingNomination.setCertifId(updatedNomination.getCertifId());
         }
-        if(updatedNomination.getCourseSuggestions() != null) {
+        if (updatedNomination.getCourseSuggestions() != null) {
             existingNomination.setCourseSuggestions(updatedNomination.getCourseSuggestions());
         }
 
-        return nominationRepository.save(existingNomination);
+        return this.nominationRepository.save(existingNomination);
     }
 
     public void deleteNomination(String nominationId) {
-        nominationRepository.deleteById(nominationId);
+        this.nominationRepository.deleteById(nominationId);
     }
 
     public void takeActionOnPendingRequest(String nominationId, String courseId, String action, Month month) {
@@ -138,26 +132,25 @@ public class NominationService {
                             course.setApprovalStatus(ApprovalStatus.APPROVED);
                             String acceptedBody = this.emailService.createApprovalEmailBody(employee.getEmpName(),
                                     courseName, "Course");
-                            this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail(),
-                                    "Nomination request approved", acceptedBody);
+                            this.emailService.sendEmail(employee.getEmail(), "Nomination request approved", acceptedBody);
                             break;
                         case "reject":
                             course.setApprovalStatus(ApprovalStatus.REJECTED);
                             String rejectedBody = this.emailService.createRejectionEmailBody(employee.getEmpName(),
                                     courseName, "Course");
-                            this.emailService.sendEmail("debayan.das@accolitedigital.com",//employee.getEmail()
-                                    "Nomination request rejected", rejectedBody);
+                            this.emailService.sendEmail(employee.getEmail(),"Nomination request rejected", rejectedBody);
                             break;
                         default:
                             throw new IllegalArgumentException("Invalid action: " + action);
                     }
-                    employeeService.updateCoursesNominatedByEmployee(nomination.getEmpId(), courseId, action,nomination.getMonth());
+                    this.employeeService.updateCoursesNominatedByEmployee(nomination.getEmpId(), courseId, action,
+                            nomination.getMonth());
                 })
                 .findAny()
                 .isPresent();
 
         if (updated) {
-            nominationRepository.save(nomination);
+            this.nominationRepository.save(nomination);
         }
     }
 

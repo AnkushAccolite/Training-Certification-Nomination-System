@@ -24,7 +24,7 @@ public class UsersServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -93,4 +93,3 @@ public class UsersServiceImplTest {
         verify(employeeRepository, times(1)).existsByEmail(email);
     }
 }
-

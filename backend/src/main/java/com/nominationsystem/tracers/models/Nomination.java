@@ -1,7 +1,5 @@
 package com.nominationsystem.tracers.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,7 +17,6 @@ import java.util.List;
 public class Nomination {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String nominationId;
 
     private String empName;
@@ -46,4 +43,5 @@ public class Nomination {
 
     public void setEmployeeId(String emp1) {
     }
+
 }

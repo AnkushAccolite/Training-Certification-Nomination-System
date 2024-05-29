@@ -4,9 +4,7 @@ import java.util.List;
 
 import com.nominationsystem.tracers.models.Employee;
 
-
 public interface UsersService {
-
 
     public Employee getUserByUsername(String username);
 
@@ -19,6 +17,5 @@ public interface UsersService {
     public boolean isUsernameExists(String username);
 
     public boolean isEmailExists(String email);
-
 
 }

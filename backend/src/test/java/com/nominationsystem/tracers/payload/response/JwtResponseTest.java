@@ -34,13 +34,13 @@ public class JwtResponseTest {
     @Test
     public void testConstructorWithAllFields() {
         List<String> roles = Arrays.asList("ROLE_USER", "ROLE_ADMIN");
-        JwtResponse jwtResponse = new JwtResponse("token123", "Bearer", "1", "user", "user@example.com", roles, "emp123", "mgr456", "John Doe");
+        JwtResponse jwtResponse = new JwtResponse("token123", "Bearer", "1", "user@example.com", "user", roles, "John Doe", "emp123", "mgr456");
 
         assertEquals("token123", jwtResponse.getToken());
         assertEquals("Bearer", jwtResponse.getType());
         assertEquals("1", jwtResponse.getId());
-        assertEquals("user", jwtResponse.getUsername());
         assertEquals("user@example.com", jwtResponse.getEmail());
+        assertEquals("user", jwtResponse.getUsername());
         assertEquals(roles, jwtResponse.getRoles());
         assertEquals("emp123", jwtResponse.getEmpId());
         assertEquals("mgr456", jwtResponse.getManagerId());

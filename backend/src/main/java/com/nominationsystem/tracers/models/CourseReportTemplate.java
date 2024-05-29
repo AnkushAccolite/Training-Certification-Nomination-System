@@ -10,8 +10,11 @@ import java.util.List;
 public class CourseReportTemplate {
 
     private String courseId;
+
     private String courseName;
+
     private String domain;
+
     private List<CourseReportEmployeeDetails> monthlyDetails;
 
 }

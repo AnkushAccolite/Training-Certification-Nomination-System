@@ -1,14 +1,13 @@
 package com.nominationsystem.tracers.service;
 
 import com.nominationsystem.tracers.models.*;
-import com.nominationsystem.tracers.repository.CertificationRepository;
-import com.nominationsystem.tracers.repository.CourseFeedbackRepository;
 import com.nominationsystem.tracers.repository.EmployeeRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,20 +15,17 @@ import java.util.stream.Collectors;
 @Service
 public class EmployeeService {
 
+    @Getter
     @Autowired
     private EmployeeRepository employeeRepository;
 
     @Autowired
+    @Lazy
     private CourseService courseService;
 
     @Autowired
-    private CourseFeedbackRepository courseFeedbackRepository;
-
-    @Autowired
-    private CertificationRepository certificationRepository;
-
-    LocalDate currentDate = LocalDate.now();
-    Month currentMonth = currentDate.getMonth();
+    @Lazy
+    private CertificationService certificationService;
 
     public List<Employee> getAllEmployees() {
         return new ArrayList<>(this.employeeRepository.findAll());
@@ -45,34 +41,15 @@ public class EmployeeService {
     }
 
     public ResponseEntity<?> setRole(String email, String role) {
-        Optional<Employee> employee = employeeRepository.findByEmail(email);
+        Optional<Employee> employee = this.employeeRepository.findByEmail(email);
         if (employee.isPresent()) {
             employee.get().setRole(role);
-            employeeRepository.save(employee.get());
+            this.employeeRepository.save(employee.get());
             return ResponseEntity.ok(employee.get());
         } else {
             return ResponseEntity.notFound().build();
         }
     }
-
-//    public ResponseEntity<?> addCourses(String email, String courseIds) {
-//        List<String> courseIdList = Arrays.asList(courseIds.split(","));
-//
-//        Optional<Employee> employee = employeeRepository.findByEmail(email);
-//        if (employee.isPresent()) {
-//            employee.ifPresent(emp -> {
-//                if (emp.getCourseIds() != null) {
-//                    emp.getCourseIds().addAll(courseIdList);
-//                } else {
-//                    emp.setCourseIds(courseIdList);
-//                }
-//            });
-//            employeeRepository.save(employee.get());
-//            return ResponseEntity.ok(employee.get());
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
 
     public Employee getEmployee(String empId) {
         return this.employeeRepository.findByEmpId(empId);
@@ -130,7 +107,6 @@ public class EmployeeService {
         this.employeeRepository.save(employee);
     }
 
-    // Rename the method correctly
     public Boolean isApprovedCoursePresent(String courseId, String empId) {
         return this.employeeRepository.findByEmpId(empId)
                 .getApprovedCourses().stream()
@@ -163,7 +139,7 @@ public class EmployeeService {
 
         courseList.forEach(course -> {
             EmployeeReportCourseDetails courseDetails = new EmployeeReportCourseDetails();
-            Course courseData = courseService.getCourseById(course.getCourseId());
+            Course courseData = this.courseService.getCourseById(course.getCourseId());
 
             courseDetails.setCourseName(courseData.getCourseName());
             courseDetails.setDomain(courseData.getDomain());
@@ -175,7 +151,7 @@ public class EmployeeService {
 
     public List<CertificationRequestsTemplate> getCertificationRequests(String managerId) {
         List<Employee> employees = this.employeeRepository.findByManagerId(managerId);
-        List<Certification> certifications = this.certificationRepository.findAll();
+        List<Certification> certifications = this.certificationService.getCertificationRepository().findAll();
         List<CertificationRequestsTemplate> empCertDetailsList = new ArrayList<>();
 
         Map<String, Certification> certIdToDetailsMap = certifications.stream()
@@ -198,4 +174,5 @@ public class EmployeeService {
         });
         return empCertDetailsList;
     }
+
 }
