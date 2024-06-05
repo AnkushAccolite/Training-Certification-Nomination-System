@@ -416,7 +416,7 @@ function Certifications() {
         <Dialog open={showPDF} onClose={handleClosePDF} maxWidth="lg" fullWidth>
           <DialogTitle>Certificate Reimbursement Policy</DialogTitle>
           <DialogContent>
-            <embed src="../../../public/Certification Reimbursement Policy.pdf" type="application/pdf" width="100%" height="500px" />
+            <embed src="/Certification Reimbursement Policy.pdf" type="application/pdf" width="100%" height="500px" />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClosePDF}>Close</Button>
