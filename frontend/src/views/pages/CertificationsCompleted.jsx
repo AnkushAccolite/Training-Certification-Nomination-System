@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl } from '@mui/material';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
@@ -9,6 +10,8 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import getEmployee from '../../utils/getEmployee';
 import getAllCertifications from '../../utils/getAllCertifications';
+
+dayjs.extend(customParseFormat);
 
 const CertificationsCompleted = () => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -58,7 +61,7 @@ const CertificationsCompleted = () => {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
       if (sortConfig.key === 'DateOfCompletion') {
-        return (dayjs(aValue).isAfter(dayjs(bValue)) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
+        return (dayjs(aValue, 'DD-MM-YYYY').isAfter(dayjs(bValue, 'DD-MM-YYYY')) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
       } else if (sortConfig.key === 'CertificationName') {
         return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       }
@@ -70,7 +73,7 @@ const CertificationsCompleted = () => {
 
   const getPieChartData = () => {
     const data = rows.reduce((acc, row) => {
-      const month = dayjs(row.DateOfCompletion).format('MMM YYYY');
+      const month = dayjs(row.DateOfCompletion, 'DD-MM-YYYY').format('MMM YYYY');
       const existingMonth = acc.find((item) => item.name === month);
       if (existingMonth) {
         existingMonth.value += 1;
@@ -101,7 +104,7 @@ const CertificationsCompleted = () => {
     <div>
       <div className="courses-completed-container">
         <div className="left-panel">
-        <h2 style={{ paddingBottom: '20px', textAlign: 'center' }}>Certifications Completed</h2>
+          <h2 style={{ paddingBottom: '20px', textAlign: 'center' }}>Certifications Completed</h2>
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 200px)', overflowY: 'auto' }}>
               <TableContainer
@@ -132,11 +135,10 @@ const CertificationsCompleted = () => {
                 <Table aria-label="completed certifications table">
                   <TableHead>
                     <TableRow>
-                      <TableCell
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleSort('name')}
-                      >
-                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('name')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
                           Certification Name
                           {sortConfig.key === 'name' ? (
                             sortConfig.direction === 'asc' ? (
@@ -149,11 +151,10 @@ const CertificationsCompleted = () => {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleSort('Duration')}
-                      >
-                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('Duration')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
                           Duration (hrs)
                           {sortConfig.key === 'Duration' ? (
                             sortConfig.direction === 'asc' ? (
@@ -166,11 +167,10 @@ const CertificationsCompleted = () => {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell
-                        style={{ cursor: 'pointer' }}
-                        onClick={() => handleSort('DateOfCompletion')}
-                      >
-                        <div style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('DateOfCompletion')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
                           Completion Date
                           {sortConfig.key === 'DateOfCompletion' ? (
                             sortConfig.direction === 'asc' ? (
@@ -186,14 +186,13 @@ const CertificationsCompleted = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {sortedRows
-                      .map((row, index) => (
-                        <TableRow style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
-                          <TableCell style={{ textAlign: 'center' }}>{row.CertificationName}</TableCell>
-                          <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
-                          <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
-                        </TableRow>
-                      ))}
+                    {sortedRows.map((row, index) => (
+                      <TableRow style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
+                        <TableCell style={{ textAlign: 'center' }}>{row.CertificationName}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{row.Duration}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{row.DateOfCompletion}</TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>

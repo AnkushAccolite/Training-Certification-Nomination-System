@@ -53,6 +53,7 @@ function Certifications() {
   const [courses, setCourses] = useState([]);
 
   const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
 
   const empId = useSelector((state) => state?.auth?.user?.empId);
 
@@ -248,28 +249,33 @@ function Certifications() {
         >
           Nominate
         </Button>
-        <Button
-          style={{
-            marginRight: '-5px',
-            color: '#3498db',
-            border: 'none',
-            backgroundColor: 'transparent'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.border = '1px solid #3498db';
-            e.currentTarget.style.backgroundColor = '#eaf5fe';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.border = 'none';
-            e.currentTarget.style.backgroundColor = 'transparent';
-          }}
-          className="addCertification"
-          variant="outlined"
-          startIcon={<QueueIcon />}
-          onClick={handleClick}
-        >
-          Add Certification
-        </Button>
+
+        {auth?.isAuthenticated && auth?.user?.role === 'ADMIN' ? (
+          <Button
+            style={{
+              marginRight: '-5px',
+              color: '#3498db',
+              border: 'none',
+              backgroundColor: 'transparent'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.border = '1px solid #3498db';
+              e.currentTarget.style.backgroundColor = '#eaf5fe';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.border = 'none';
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+            className="addCertification"
+            variant="outlined"
+            startIcon={<QueueIcon />}
+            onClick={handleClick}
+          >
+            Add Certification
+          </Button>
+        ) : (
+          <></>
+        )}
 
         <Button
           style={{
@@ -365,7 +371,7 @@ function Certifications() {
           </Table>
         </TableContainer>
         <Dialog open={showDetails} onClose={handleCloseDetails}>
-          <DialogTitle style={{ fontSize: '17px', textAlign: 'center' }}>Course Details</DialogTitle>
+          <DialogTitle style={{ fontSize: '17px', textAlign: 'center' }}>Certificate Details</DialogTitle>
           <DialogContent>
             {selectedCourse && (
               <div>

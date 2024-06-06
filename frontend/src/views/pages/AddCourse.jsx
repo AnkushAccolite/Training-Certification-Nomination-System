@@ -97,10 +97,10 @@ const AddCourse = ({ onCourseAdd }) => {
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
           <InputLabel htmlFor="domain">Domain</InputLabel>
           <Select id="domain" name="domain" value={formData.domain} onChange={handleChange} label="Domain" required>
-            <MenuItem value="technical">Technical</MenuItem>
-            <MenuItem value="domain">Domain</MenuItem>
-            <MenuItem value="power">Power</MenuItem>
-            <MenuItem value="process">Process</MenuItem>
+            <MenuItem value="Technical">Technical</MenuItem>
+            <MenuItem value="Domain">Domain</MenuItem>
+            <MenuItem value="Power">Power</MenuItem>
+            <MenuItem value="Process">Process</MenuItem>
           </Select>
         </FormControl>
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>

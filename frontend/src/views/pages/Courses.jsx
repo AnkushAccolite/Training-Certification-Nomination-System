@@ -125,7 +125,7 @@ function Courses() {
 
   const nominateCourses = async () => {
     if (selectedCourseIds.length === 0) {
-      alert('Please select at least one course to nominate');
+      toast.error('Please select at least one course to nominate');
       return;
     }
     try {
@@ -138,6 +138,7 @@ function Courses() {
       };
       console.log('payload', payload);
       const res = await axios.post(`/nomination?month=${selectedMonth}`, payload);
+      setSelectedCourseIds([]);
       toast.success('Succesfully Nominated');
       getNominations();
     } catch (error) {
