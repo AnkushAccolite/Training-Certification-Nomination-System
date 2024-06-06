@@ -21,7 +21,6 @@ import {
 import Autocomplete from '@mui/material/Autocomplete';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -29,9 +28,7 @@ import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import items from 'menu-items/items';
 import axios from '../../api/axios';
-import { TwelveMp } from '@mui/icons-material';
 
 import './EmployeeReport.css';
 import { useEffect } from 'react';
@@ -254,10 +251,6 @@ const CourseReport = () => {
     setDownloadAnchorEl(event.currentTarget);
   };
 
-  const handleDownloadClose = () => {
-    setDownloadAnchorEl(null);
-  };
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div style={{ textAlign: 'center' }}>
@@ -267,7 +260,6 @@ const CourseReport = () => {
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>
             <MenuItem value="HalfYearly">Half Yearly</MenuItem>
-            {/* <MenuItem value="Yearly">Yearly</MenuItem> */}
           </TextField>
           {selectedFilter === 'Monthly' && (
             <TextField
@@ -482,11 +474,22 @@ const CourseReport = () => {
             <Typography variant="h4" gutterBottom style={{ marginLeft: '-70px' }}>
               Course Attendance Chart
             </Typography>
-            <div style={{ width: '100%', height: '250px', marginTop: '10px' }}>
+            <div style={{ width: '100%', height: '250px', marginTop: '15px', marginBottom: '30px' }}>
               <Pie
                 data={generateChartData()}
                 options={{
                   plugins: {
+                    legend: {
+                      display: true,
+                      position: 'bottom',
+                      labels: {
+                        padding: 20,
+                        filter: function (legendItem, chartData) {
+                          const index = chartData.labels.indexOf(legendItem.text);
+                          return chartData.datasets[0].data[index] > 0;
+                        }
+                      }
+                    },
                     datalabels: {
                       display: true,
                       formatter: (value, ctx) => {
@@ -494,12 +497,13 @@ const CourseReport = () => {
                       },
                       color: '#fff',
                       font: {
-                        weight: 'bold'
-                      }
-                    }
-                  }
+                        weight: 'bold',
+                      },
+                    },
+                  },
                 }}
               />
+
             </div>
           </div>
         </div>

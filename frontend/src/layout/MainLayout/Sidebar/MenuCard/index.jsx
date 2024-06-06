@@ -23,13 +23,24 @@ const MenuCard = () => {
       }}
       className='menuCard'
     >
-      <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          textAlign:'center',
+          alignItems:'center',
+          justifyContent: 'center',
+          paddingLeft: '5px',
+          paddingRight: '5px',
+        }}
+      >
         <img
           src={download2}
           alt="Menu Card Image"
           style={{
-            maxWidth: '100%',
-            height: 'auto',
+            marginTop:'-22px',
+            maxWidth: '80%',
+            maxHeight: '80%', 
             borderRadius: theme.shape.borderRadius,
           }}
         />

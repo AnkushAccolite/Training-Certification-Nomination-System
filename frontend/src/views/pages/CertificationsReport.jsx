@@ -140,42 +140,14 @@ const CertificationsReport = () => {
     }
 
     if (searchQueryName) {
-      filteredData = filteredData.filter((certification) => certification.name.toLowerCase().includes(searchQueryName.toLowerCase()));
+      filteredData = filteredData.filter((certification) => {
+        return certification.certificationName.some(certName =>
+          certName.toLowerCase().includes(searchQueryName.toLowerCase())
+        );
+      });
     }
 
     setFilteredCertifications(filteredData);
-  };
-
-  const handleSearch = () => {
-    const filteredEmployees = employees?.filter((employee) => {
-      const matchingCourses = employee.coursesEnrolled.reduce((acc, course, index) => {
-        const completionMonth = employee.completionMonth[index];
-        if (
-          (!selectedYear || certification.year === selectedYear) &&
-          (!selectedMonth || completionMonth === parseInt(selectedMonth)) &&
-          (!selectedCategory || employee.category[index] === selectedCategory)
-        ) {
-          acc.push({
-            course,
-            category: employee.category[index],
-            completionMonth: new Date(0, completionMonth - 1).toLocaleString('default', { month: 'long' })
-          });
-        }
-        return acc;
-      }, []);
-
-      return (
-        (!searchQueryName || employee.name.toLowerCase().includes(searchQueryName.toLowerCase())) &&
-        (!searchQueryID || employee.empID.toLowerCase().includes(searchQueryID.toLowerCase())) &&
-        matchingCourses.length > 0
-      );
-    });
-
-    setEmployees(filteredEmployees);
-  };
-
-  const handleFilterChange = (event) => {
-    setSelectedYear(event.target.value);
   };
 
   const certificationCounts = certifications
@@ -264,7 +236,7 @@ const CertificationsReport = () => {
             style={{ marginRight: '10px' }}
           />
           <TextField
-            label="Search by Name"
+            label="Search  Certification"
             value={searchQueryName}
             onChange={(e) => setSearchQueryName(e.target.value)}
             style={{ marginRight: '10px' }}
@@ -344,7 +316,7 @@ const CertificationsReport = () => {
                   <TableHead>
                     <TableRow>
                       <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
-                        EmpID
+                        Employee ID
                       </TableCell>
                       <TableCell align="center" style={{ fontSize: '16px', fontWeight: 'bold' }}>
                         Name
@@ -366,7 +338,9 @@ const CertificationsReport = () => {
                         const certYear = certification.year[index];
                         if (
                           (!selectedYear || certYear === selectedYear) &&
-                          (!selectedCategory || certification.category[index] === selectedCategory)
+                          (!selectedCategory || certification.category[index] === selectedCategory) &&
+                          (!searchQueryName || cert.toLowerCase().includes(searchQueryName.toLowerCase())) 
+
                         ) {
                           acc.push({
                             cert,
