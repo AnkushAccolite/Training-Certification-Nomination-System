@@ -87,7 +87,7 @@ function Certifications() {
       setCourses(temp);
     } catch (error) {
       console.log(error);
-      toast.error('Error fetching courses');
+      toast.error('Error fetching certifications');
     }
   };
   useEffect(() => {
@@ -303,73 +303,91 @@ function Certifications() {
       </div>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell></TableCell>
-                <TableCell
-                  onClick={() => handleSort('name')}
-                  style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-                >
-                  Certification Name
-                  <ArrowDropDownIcon style={{ fontSize: '80%' }} />
-                </TableCell>
-                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
-                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
-                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
-              {sortedCourses.filter(filterCourses).map((row, index) => (
-                <TableRow
-                  key={row?.certificationId}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCourseIds.includes(row?.certificationId)}
-                      onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
-                      disabled={row?.status !== 'Not Opted'}
-                    />
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row?.name}</TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
-                  <TableCell
-                    style={{
-                      color:
-                        row?.status === 'Pending for Approval'
-                          ? 'red'
-                          : row?.status === 'Approved'
-                            ? 'green'
-                            : row?.status === 'Completed'
-                              ? 'blue'
-                              : 'inherit',
-                      textAlign: 'center'
-                    }}
-                  >
-                    {row?.status}
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'center' }}>
-                    <Button variant="contained" onClick={() => handleViewDetails(row)}>
-                      View Details
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      onClick={() => cancelNomination(row?.certificationId)}
-                      disabled={row?.status !== 'Pending for Approval'}
-                      style={{ marginLeft: '8px' }}
-                    >
-                      Cancel
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <div style={{ flex: '1', overflow: 'hidden' }}>
+          <div style={{ height: 'calc(100vh - 280px)', overflowY: 'auto' }}>
+            {sortedCourses.length === 0 ? (
+              <div
+                style={{
+                  width: '100%',
+                  height: '70%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                No Certifications Available
+              </div>
+            ) : (
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell></TableCell>
+                      <TableCell
+                        onClick={() => handleSort('name')}
+                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
+                      >
+                        Certification Name
+                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+                      </TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
+                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
+                    {sortedCourses.filter(filterCourses).map((row, index) => (
+                      <TableRow
+                        key={row?.certificationId}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedCourseIds.includes(row?.certificationId)}
+                            onChange={(e) => handleCheckboxChange(e, row?.certificationId)}
+                            disabled={row?.status !== 'Not Opted'}
+                          />
+                        </TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{row?.name}</TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
+                        <TableCell
+                          style={{
+                            color:
+                              row?.status === 'Pending for Approval'
+                                ? 'red'
+                                : row?.status === 'Approved'
+                                  ? 'green'
+                                  : row?.status === 'Completed'
+                                    ? 'blue'
+                                    : 'inherit',
+                            textAlign: 'center'
+                          }}
+                        >
+                          {row?.status}
+                        </TableCell>
+                        <TableCell style={{ textAlign: 'center' }}>
+                          <Button variant="contained" onClick={() => handleViewDetails(row)}>
+                            View Details
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            onClick={() => cancelNomination(row?.certificationId)}
+                            disabled={row?.status !== 'Pending for Approval'}
+                            style={{ marginLeft: '8px' }}
+                          >
+                            Cancel
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </div>
+        </div>
         <Dialog open={showDetails} onClose={handleCloseDetails}>
           <DialogTitle style={{ fontSize: '17px', textAlign: 'center' }}>Certificate Details</DialogTitle>
           <DialogContent>
