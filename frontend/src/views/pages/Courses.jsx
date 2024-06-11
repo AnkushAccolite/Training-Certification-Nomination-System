@@ -39,7 +39,7 @@ const MenuProps = {
 };
 
 const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
-const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Assigned', 'Completed'];
+const statuses = ['All', 'Not Opted', 'Pending for Approval', 'Approved', 'Completed'];
 
 function Courses() {
   const currentMonthUppercase = currentMonth();
@@ -98,7 +98,7 @@ function Courses() {
 
   const getStatus = (id) => {
     if (completedCourses?.includes(id)) return 'Completed';
-    if (approvedCourses?.includes(id)) return 'Assigned';
+    if (approvedCourses?.includes(id)) return 'Approved';
     if (pendingCourses?.includes(id)) return 'Pending for Approval';
     return 'Not Opted';
   };
@@ -174,7 +174,7 @@ function Courses() {
     switch (status) {
       case 'Pending for Approval':
         return 'red';
-      case 'Assigned':
+      case 'Approved':
         return 'green';
       case 'Completed':
         return 'blue';
