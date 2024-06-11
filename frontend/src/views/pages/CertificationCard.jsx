@@ -42,13 +42,13 @@ const CertificationCard = ({ employeeName, certifications = [], onAccept, onReje
 
   return (
     <div className="request-card">
-      <h3 onClick={handleToggleCollapse} style={{ display: 'flex', alignItems: 'center' }}>
-        {employeeName} {collapsed ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
+      <h3 onClick={handleToggleCollapse} style={{ display: 'flex', alignItems: 'center', paddingLeft:'6px', paddingTop:'3px' }}>
+        {employeeName} {collapsed ? <ArrowDropDownIcon sx={{ fontSize: '1.5em', verticalAlign: 'middle' }}/> : <ArrowDropUpIcon />}
       </h3>
       {!collapsed && (
         <TableContainer component={Paper}>
           <Table>
-            <TableHead>
+            <TableHead style={{backgroundColor:'#f2f2f2'}}>
               <TableRow>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Certification Name</TableCell>
                 <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
