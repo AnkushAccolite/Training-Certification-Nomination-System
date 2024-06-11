@@ -55,6 +55,7 @@ function Courses() {
   const [pendingCourses, setPendingCourses] = useState([]);
   const [completedCourses, setCompletedCourses] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [monthFilter, setMonthFilter] = useState(currentMonthUppercase);
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
@@ -122,6 +123,10 @@ function Courses() {
       }
     });
   };
+  const handleMonthFilterChange = (event) => {
+    setMonthFilter(event.target.value);
+    setSelectedMonth(event.target.value);
+  };
 
   const nominateCourses = async () => {
     if (selectedCourseIds.length === 0) {
@@ -158,9 +163,9 @@ function Courses() {
     }
   };
 
-  const handleMonthChange = (event) => {
-    setSelectedMonth(event.target.value);
-  };
+  // const handleMonthChange = (event) => {
+  //   setSelectedMonth(event.target.value);
+  // };
 
   const handleDomainChange = (event) => {
     setSelectedDomain(event.target.value);
@@ -227,12 +232,18 @@ function Courses() {
     return 0;
   });
 
+  const isPastMonth = (month) => {
+    const currentMonthIndex = new Date().getMonth();
+    const monthIndex = new Date(`${month} 1, 2023`).getMonth(); // 2023 is used just as a reference year
+    return monthIndex < currentMonthIndex;
+  };
+
   return (
     <div>
       <h2 style={{ textAlign: 'center' }}>Available Courses</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
-          <Select value={selectedMonth} onChange={handleMonthChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
+          <Select value={selectedMonth} onChange={handleMonthFilterChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
             {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
               (month) => (
                 <MenuItem key={month} value={month.toUpperCase()}>
@@ -278,7 +289,7 @@ function Courses() {
             ))}
           </Select>
         </FormControl>
-        <Button
+        {!isPastMonth(monthFilter) && (<Button
           className="nominateBtn"
           variant="outlined"
           startIcon={<LocalLibraryIcon />}
@@ -287,6 +298,7 @@ function Courses() {
         >
           Nominate
         </Button>
+      )}
       </div>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
@@ -321,7 +333,7 @@ function Courses() {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
-                      <TableCell></TableCell>
+                      {!isPastMonth(monthFilter) && (<TableCell></TableCell>)}
                       <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('courseName')}>
                         <div
                           style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
@@ -368,13 +380,13 @@ function Courses() {
                           backgroundColor: index % 2 === 0 ? '#F2F2F2' : 'white'
                         }}
                       >
-                        <TableCell padding="checkbox">
+                        {!isPastMonth(monthFilter)&&(<TableCell padding="checkbox">
                           <Checkbox
                             checked={selectedCourseIds.includes(row?.courseId)}
                             onChange={(e) => handleCheckboxChange(e, row?.courseId)}
                             disabled={getStatus(row?.courseId) !== 'Not Opted'}
                           />
-                        </TableCell>
+                        </TableCell>)}
 
                         <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
@@ -382,18 +394,18 @@ function Courses() {
                         <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)), textAlign: 'center' }}>
                           {getStatus(row?.courseId)}
                         </TableCell>
-                        <TableCell>
+                        <TableCell style={{textAlign:'center'}}>
                           <Button variant="contained" onClick={() => handleViewDetails(row)}>
                             View Details
                           </Button>
-                          <Button
+                          {!isPastMonth(monthFilter) &&(<Button
                             variant="outlined"
                             onClick={() => cancelNomination(row?.courseId)}
                             disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
                             style={{ marginLeft: '8px' }}
                           >
                             Cancel
-                          </Button>
+                          </Button>)}
                         </TableCell>
                       </TableRow>
                     ))}
