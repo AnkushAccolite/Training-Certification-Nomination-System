@@ -11,7 +11,7 @@ const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
 const Courses = Loadable(lazy(() => import('views/pages/Courses')));
 const AllCourses = Loadable(lazy(() => import('views/pages/AllCourses')));
 const AddCourse = Loadable(lazy(() => import('views/pages/AddCourse')));
-const AssignedCourses = Loadable(lazy(() => import('views/pages/AssignedCourses')));
+const ApprovedCourses = Loadable(lazy(() => import('views/pages/ApprovedCourses')));
 const CoursesCompleted = Loadable(lazy(() => import('views/pages/CoursesCompleted')));
 const CourseEnrollmentRequests = Loadable(lazy(() => import('views/pages/CourseEnrollmentRequests')));
 const MonthlyCourses = Loadable(lazy(() => import('views/pages/MonthlyCourses')));
@@ -62,8 +62,8 @@ const MainRoutes = {
           element: <AddCertification />
         },
         {
-          path: 'assigned-courses',
-          element: <AssignedCourses />
+          path: 'approved-courses',
+          element: <ApprovedCourses />
         },
         {
           path: 'courses-completed',

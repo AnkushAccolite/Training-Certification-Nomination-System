@@ -57,10 +57,10 @@ const items = {
           breadcrumbs: false
         },
         {
-          id: 'assigned-courses',
-          title: 'Assigned Courses',
+          id: 'approved-courses',
+          title: 'Approved Courses',
           type: 'item',
-          url: '/assigned-courses',
+          url: '/approved-courses',
           roles: ['ADMIN', 'USER', 'MANAGER'],
           icon: icons.IconBook,
           breadcrumbs: false
