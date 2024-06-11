@@ -68,7 +68,7 @@ const CertificationApplicationRequests = () => {
         </div>
       ) : (
         <>
-          <h2>Pending Certification Requests</h2>
+          <h2 style={{ paddingBottom: '20px', fontSize: '22px' ,textAlign:'center', marginBottom:'3px'}}>Pending Certification Requests</h2>
           {requests?.map((card) => (
             <CertificationCard
               key={card?.certificationId}

@@ -50,9 +50,9 @@ const CertificationCard = ({ employeeName, certifications = [], onAccept, onReje
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Certification Name</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Action</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Certification Name</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -61,16 +61,17 @@ const CertificationCard = ({ employeeName, certifications = [], onAccept, onReje
                   key={certification.certificationId}
                   className={certificationStatus[certification.certificationId] !== 'Pending' ? 'greyed-out' : ''}
                 >
-                  <TableCell>{certification.certificationName}</TableCell>
-                  <TableCell>{certification.category}</TableCell>
-                  <TableCell>
+                  <TableCell style={{ textAlign: 'center'}}>{certification.certificationName}</TableCell>
+                  <TableCell style={{ textAlign: 'center'}}>{certification.category}</TableCell>
+                  <TableCell style={{ textAlign: 'center'}}>
                     {certificationStatus[certification.certificationId] === 'Pending' && (
                       <>
                         <Button
                           className="accept-button"
                           onClick={() => handleAccept(certification.certificationId)}
                           variant="outlined"
-                          startIcon={<CheckCircleOutlineIcon />}
+                          startIcon={<CheckCircleOutlineIcon sx={{ fontSize: '1em', verticalAlign: 'middle' }} />}
+                          style={{paddingRight:'15px',paddingLeft:'15px'}}
                         >
                           Accept
                         </Button>
@@ -78,7 +79,8 @@ const CertificationCard = ({ employeeName, certifications = [], onAccept, onReje
                           className="reject-button"
                           onClick={() => handleReject(certification.certificationId)}
                           variant="outlined"
-                          startIcon={<HighlightOffIcon />}
+                          startIcon={<HighlightOffIcon sx={{ fontSize: '1em', verticalAlign: 'middle' }} />}
+                          style={{paddingRight:'15px',paddingLeft:'15px'}}
                         >
                           Reject
                         </Button>

@@ -67,7 +67,7 @@ const CourseEnrollmentRequests = () => {
     <div className="requests">
       {requests?.length !== 0 ? (
         <>
-          <h2>Pending Requests</h2>
+          <h2 style={{ paddingBottom: '20px', fontSize: '22px' ,textAlign:'center', marginBottom:'3px'}}>Pending Requests</h2>
           {requests?.map((card) => (
             <RequestCard
               key={card?.nominationId}
