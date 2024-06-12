@@ -15,7 +15,7 @@ const AddCourse = ({ onCourseAdd }) => {
   const [formData, setFormData] = useState({
     coursename: '',
     duration: '',
-    domain: '',
+    category: '',
     description: ''
   });
 
@@ -33,7 +33,7 @@ const AddCourse = ({ onCourseAdd }) => {
       const newCourse = {
         courseName: formData.coursename,
         duration: formData.duration,
-        domain: formData.domain,
+        category: formData.domain,
         description: formData.description,
         isApprovalReq: true
       };
@@ -42,7 +42,7 @@ const AddCourse = ({ onCourseAdd }) => {
       setFormData({
         coursename: '',
         duration: '',
-        domain: '',
+        category: '',
         description: ''
       });
       toast.success('Course added Sucessfully');
@@ -95,7 +95,7 @@ const AddCourse = ({ onCourseAdd }) => {
           />
         </FormControl>
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
-          <InputLabel htmlFor="domain">Domain</InputLabel>
+          <InputLabel htmlFor="domain">Category</InputLabel>
           <Select id="domain" name="domain" value={formData.domain} onChange={handleChange} label="Domain" required>
             <MenuItem value="Technical">Technical</MenuItem>
             <MenuItem value="Domain">Domain</MenuItem>

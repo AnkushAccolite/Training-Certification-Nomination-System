@@ -55,8 +55,9 @@ public class CertificationService {
         Employee manager = this.employeeService.getEmployee(employee.getManagerId());
         String body = this.emailService.createPendingRequestEmailBody(manager.getEmpName(), empId,
                 employee.getEmpName(), certificationList, "Certifications");
+        String subject = "Approval request for certification nomination from " + employee.getEmpName();
 
-        this.emailService.sendEmail(manager.getEmail(), "Approval request for nomination", body);
+        this.emailService.sendEmailAsync(manager.getEmail(), subject, body);
 
         this.employeeService.getEmployeeRepository().save(employee);
     }
@@ -92,7 +93,9 @@ public class CertificationService {
                 .orElse(null)).getName();
         String acceptedBody = this.emailService.createApprovalEmailBody(employee.getEmpName(),
                 certificationName, "Certification");
-        this.emailService.sendEmail(employee.getEmail(), "Nomination request approved", acceptedBody);
+        String subject = "Nomination request approved for certification " + certificationName;
+
+        this.emailService.sendEmailAsync(employee.getEmail(), subject, acceptedBody);
 
         this.employeeService.getEmployeeRepository().save(employee);
         return ResponseEntity.ok().build();
@@ -143,7 +146,9 @@ public class CertificationService {
                 .orElse(null)).getName();
         String rejectedBody = this.emailService.createRejectionEmailBody(employee.getEmpName(),
                 certificationName, "Certification");
-        this.emailService.sendEmail(employee.getEmail(), "Nomination request rejected", rejectedBody);
+        String subject = "Nomination request rejected for certification " + certificationName;
+
+        this.emailService.sendEmailAsync(employee.getEmail(), subject, rejectedBody);
 
         this.employeeService.getEmployeeRepository().save(employee);
     }
