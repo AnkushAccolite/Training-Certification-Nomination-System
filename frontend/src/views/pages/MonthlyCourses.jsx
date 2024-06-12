@@ -54,15 +54,15 @@ const MonthlyCourses = () => {
   const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-  const removeCourse = async (id) => {
-    try {
-      await axios.post(`/course/change-status?month=${monthFilter}`, [id]);
-      toast.success('Course removed successfully');
-      fetchCourses();
-    } catch (error) {
-      toast.error('Something went wrong');
-    }
-  };
+  // const removeCourse = async (id) => {
+  //   try {
+  //     await axios.post(`/course/change-status?month=${monthFilter}`, [id]);
+  //     toast.success('Course removed successfully');
+  //     fetchCourses();
+  //   } catch (error) {
+  //     toast.error('Something went wrong');
+  //   }
+  // };
 
   const handleViewDetails = (course) => {
     setSelectedCourse(course);
@@ -114,11 +114,11 @@ const MonthlyCourses = () => {
     }
   });
 
-  const isPastMonth = (month) => {
-    const currentMonthIndex = new Date().getMonth();
-    const monthIndex = new Date(`${month} 1, 2023`).getMonth(); // 2023 is used just as a reference year
-    return monthIndex < currentMonthIndex;
-  };
+  // const isPastMonth = (month) => {
+  //   const currentMonthIndex = new Date().getMonth();
+  //   const monthIndex = new Date(`${month} 1, 2023`).getMonth(); // 2023 is used just as a reference year
+  //   return monthIndex < currentMonthIndex;
+  // };
 
   return (
     <div>
@@ -244,12 +244,6 @@ const MonthlyCourses = () => {
                       </TableCell>
 
                       <TableCell style={{ textAlign: 'center' }}>
-                        {!isPastMonth(monthFilter) && (
-                          <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>
-                            Remove
-                          </Button>
-                        )}
-
                         <Button variant="contained" style={{ marginLeft: '10px' }} onClick={() => handleViewDetails(course)}>
                           View Details
                         </Button>
