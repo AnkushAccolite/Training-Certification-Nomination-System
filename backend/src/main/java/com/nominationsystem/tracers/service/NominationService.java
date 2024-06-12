@@ -6,7 +6,9 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.Month;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,14 +72,18 @@ public class NominationService {
         nomination.setMonth(month);
 
         List<NominatedCourseStatus> nominatedCourses = nomination.getNominatedCourses().stream()
-                .filter(nominatedCourse -> !this.employeeService.isPendingCoursePresent(nominatedCourse.getCourseId(), employee.getEmpId())
-                        && !this.employeeService.isApprovedCoursePresent(nominatedCourse.getCourseId(), employee.getEmpId()))
+                .filter(nominatedCourse -> !this.employeeService.isPendingCoursePresent(nominatedCourse.getCourseId(),
+                        employee.getEmpId())
+                        && !this.employeeService.isApprovedCoursePresent(nominatedCourse.getCourseId(),
+                                employee.getEmpId()))
                 .map(nominatedCourse -> {
                     NominatedCourseStatus newNominatedCourse = new NominatedCourseStatus();
                     newNominatedCourse.setCourseId(nominatedCourse.getCourseId());
 
-                    boolean isApprovalRequired = this.courseService.getCourseById(nominatedCourse.getCourseId()).getIsApprovalReq();
-                    newNominatedCourse.setApprovalStatus(isApprovalRequired ? ApprovalStatus.PENDING : ApprovalStatus.APPROVED);
+                    boolean isApprovalRequired = this.courseService.getCourseById(nominatedCourse.getCourseId())
+                            .getIsApprovalReq();
+                    newNominatedCourse
+                            .setApprovalStatus(isApprovalRequired ? ApprovalStatus.PENDING : ApprovalStatus.APPROVED);
 
                     return newNominatedCourse;
                 })
@@ -96,8 +102,9 @@ public class NominationService {
         Employee manager = this.employeeService.getEmployee(nomination.getManagerId());
         String body = this.emailService.createPendingRequestEmailBody(manager.getEmpName(), employee.getEmpId(),
                 employee.getEmpName(), courseList, "Courses");
+        String subject = "Approval request for course nomination from " + employee.getEmpName();
 
-        this.emailService.sendEmail(manager.getEmail(), "Approval request for nomination", body);
+        this.emailService.sendEmailAsync(manager.getEmail(), subject, body);
 
         return this.nominationRepository.save(nomination);
     }
@@ -125,24 +132,30 @@ public class NominationService {
         String courseName = this.courseService.getCourseById(courseId).getCourseName();
 
         boolean updated = nomination.getNominatedCourses().stream()
-                .filter(course -> course.getCourseId().equals(courseId) && course.getApprovalStatus() == ApprovalStatus.PENDING)
+                .filter(course -> course.getCourseId().equals(courseId)
+                        && course.getApprovalStatus() == ApprovalStatus.PENDING)
                 .peek(course -> {
+                    String emailBody;
+                    String subject;
                     switch (action.toLowerCase()) {
                         case "approve":
                             course.setApprovalStatus(ApprovalStatus.APPROVED);
-                            String acceptedBody = this.emailService.createApprovalEmailBody(employee.getEmpName(),
-                                    courseName, "Course");
-                            this.emailService.sendEmail(employee.getEmail(), "Nomination request approved", acceptedBody);
+                            emailBody = this.emailService.createApprovalEmailBody(employee.getEmpName(), courseName,
+                                    "Course");
+                            subject = "Nomination request approved for course " + courseName;
                             break;
                         case "reject":
                             course.setApprovalStatus(ApprovalStatus.REJECTED);
-                            String rejectedBody = this.emailService.createRejectionEmailBody(employee.getEmpName(),
-                                    courseName, "Course");
-                            this.emailService.sendEmail(employee.getEmail(),"Nomination request rejected", rejectedBody);
+                            emailBody = this.emailService.createRejectionEmailBody(employee.getEmpName(), courseName,
+                                    "Course");
+                            subject = "Nomination request rejected for course " + courseName;
                             break;
                         default:
                             throw new IllegalArgumentException("Invalid action: " + action);
                     }
+
+                    this.emailService.sendEmailAsync(employee.getEmail(), subject, emailBody);
+
                     this.employeeService.updateCoursesNominatedByEmployee(nomination.getEmpId(), courseId, action,
                             nomination.getMonth());
                 })

@@ -3,6 +3,7 @@ package com.nominationsystem.tracers.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,6 +19,11 @@ public class EmailService {
         message.setSubject(subject);
 
         this.mailSender.send(message);
+    }
+
+    @Async
+    public void sendEmailAsync(String toEmail, String subject, String body) {
+        sendEmail(toEmail, subject, body);
     }
 
     public String createPendingRequestEmailBody(String managerName, String empId, String empName, String nominationList, String nominationType) {
