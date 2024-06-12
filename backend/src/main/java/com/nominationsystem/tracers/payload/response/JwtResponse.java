@@ -39,6 +39,9 @@ public class JwtResponse {
     @JsonIgnore
     private String managerId;
 
+    @JsonIgnore
+    private String band;
+
     public JwtResponse(String token) {
         this.token = token;
     }

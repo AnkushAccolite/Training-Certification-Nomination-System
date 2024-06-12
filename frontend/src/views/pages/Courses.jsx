@@ -59,6 +59,7 @@ function Courses() {
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state?.auth);
+  const band = auth?.user?.band;
 
   // const { courses, loading, error } = useCourses();
   const [courses, setCourses] = useState([]);
@@ -190,21 +191,21 @@ function Courses() {
 
   const filteredRows = courses.filter((course) => {
     if (selectedDomain === 'All' && selectedStatus === 'All') {
-      return course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus;
+      return course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands?.includes(auth?.user?.band);
     } else if (selectedDomain === 'All') {
       return (
-        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus &&
+        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands?.includes(auth?.user?.band) &&
         getStatus(course?.courseId) === selectedStatus
       );
     } else if (selectedStatus === 'All') {
       return (
         course?.domain === selectedDomain &&
-        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus
+        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands?.includes(auth?.user?.band)
       );
     } else {
       return (
         course?.domain === selectedDomain &&
-        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus &&
+        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands?.includes(auth?.user?.band) &&
         getStatus(course?.courseId) === selectedStatus
       );
     }

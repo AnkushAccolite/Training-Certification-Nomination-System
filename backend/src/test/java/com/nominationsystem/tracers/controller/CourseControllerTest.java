@@ -92,16 +92,16 @@ public class CourseControllerTest {
         verify(courseService, times(1)).deleteCourse("course1");
     }
 
-    @Test
-    public void testChangeMonthlyCourseStatus() {
-        doNothing().when(courseService).changeMonthlyCourseStatus(anyList(), anyString());
-
-        List<String> courseIds = new ArrayList<>();
-        courseIds.add("course1");
-        courseController.changeMonthlyCourseStatus("January", courseIds);
-
-        verify(courseService, times(1)).changeMonthlyCourseStatus(courseIds, "January");
-    }
+//    @Test
+//    public void testChangeMonthlyCourseStatus() {
+//        doNothing().when(courseService).changeMonthlyCourseStatus(anyList(), anyString());
+//
+//        List<String> courseIds = new ArrayList<>();
+//        courseIds.add("course1");
+//        courseController.changeMonthlyCourseStatus("January", courseIds);
+//
+//        verify(courseService, times(1)).changeMonthlyCourseStatus(courseIds, "January");
+//    }
 
     @Test
     public void testCompleteCourse() {

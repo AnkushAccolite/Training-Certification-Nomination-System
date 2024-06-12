@@ -66,7 +66,8 @@ const AuthLogin = ({ ...others }) => {
   const submit = async (values) => {
     try {
       const credentials = { username: values.email, password: values.password };
-      const res = await axios.post(`${import.meta.env.VITE_APP_BACKEND_API}/auth/signin`, credentials);
+      // const res = await axios.post(`${import.meta.env.VITE_APP_BACKEND_API}/auth/signin`, credentials);
+      const res = await axios.post(`http://localhost:8080/auth/signin`, credentials);
 
       const token = res.data.token;
       localStorage.setItem('token', token);

@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 
 import java.text.SimpleDateFormat;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,18 +35,18 @@ public class Course {
     private Boolean delete = false;
 
     private List<MonthlyCourseStatus> monthlyStatus = List.of(
-            new MonthlyCourseStatus(Month.JANUARY, false),
-            new MonthlyCourseStatus(Month.FEBRUARY, false),
-            new MonthlyCourseStatus(Month.MARCH, false),
-            new MonthlyCourseStatus(Month.APRIL, false),
-            new MonthlyCourseStatus(Month.MAY, false),
-            new MonthlyCourseStatus(Month.JUNE, false),
-            new MonthlyCourseStatus(Month.JULY, false),
-            new MonthlyCourseStatus(Month.AUGUST, false),
-            new MonthlyCourseStatus(Month.SEPTEMBER, false),
-            new MonthlyCourseStatus(Month.OCTOBER, false),
-            new MonthlyCourseStatus(Month.NOVEMBER, false),
-            new MonthlyCourseStatus(Month.DECEMBER, false));
+            new MonthlyCourseStatus(Month.JANUARY, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.FEBRUARY, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.MARCH, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.APRIL, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.MAY, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.JUNE, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.JULY, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.AUGUST, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.SEPTEMBER, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.OCTOBER, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.NOVEMBER, new ArrayList<>()),
+            new MonthlyCourseStatus(Month.DECEMBER, new ArrayList<>()));
 
     private String publishedDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 

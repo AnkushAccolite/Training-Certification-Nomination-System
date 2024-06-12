@@ -38,6 +38,8 @@ public class Employee {
 
     private String role;
 
+    private String band;
+
     private ArrayList<EmployeeCourseStatus> pendingCourses = new ArrayList<>();
 
     private ArrayList<EmployeeCourseStatus> approvedCourses = new ArrayList<>();

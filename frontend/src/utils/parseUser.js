@@ -7,7 +7,8 @@ const parseUser = (token) => {
     role: decoded.role[0],
     empName: decoded.empName,
     managerId: decoded.managerId,
-    empId: decoded.empId
+    empId: decoded.empId,
+    band: decoded.band
   };
 
   return user;

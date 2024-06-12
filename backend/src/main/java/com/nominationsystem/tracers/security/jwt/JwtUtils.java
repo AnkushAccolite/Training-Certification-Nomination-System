@@ -41,6 +41,7 @@ public class JwtUtils {
         additionalClaims.put("empName", userDetailsImpl.getEmpName());
         additionalClaims.put("empId", userDetailsImpl.getEmpId());
         additionalClaims.put("managerId", userDetailsImpl.getManagerId());
+        additionalClaims.put("band", userDetailsImpl.getBand());
 
         List<String> roleNames = userDetailsImpl.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
