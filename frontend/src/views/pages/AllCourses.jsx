@@ -33,7 +33,7 @@ const AllCourses = () => {
 
   const [courses, setCourses] = useState([]);
   const currentMonthUppercase = currentMonth();
-
+  const [monthFilter, setMonthFilter] = useState(currentMonthUppercase);
   const [selectedDomain, setSelectedDomain] = useState('All');
   const [selectedBand, setSelectedBand] = useState('Band');
   const [selectedStatus, setSelectedStatus] = useState('All');
@@ -78,6 +78,7 @@ const AllCourses = () => {
   };
 
   const handleMonthFilterChange = (event) => {
+    setMonthFilter(event.target.value);
     const { value } = event.target;
     setSelectedMonth(value === 'All' ? 'All' : value);
   };
@@ -251,6 +252,12 @@ const AllCourses = () => {
     buttonStyle.backgroundColor = '#3453cf';
   }
 
+  const isPastMonth = (month) => {
+    const currentMonthIndex = new Date().getMonth();
+    const monthIndex = new Date(`${month} 1, 2023`).getMonth(); // 2023 is used just as a reference year
+    return monthIndex < currentMonthIndex;
+  };
+
   return (
     <div>
       <h2 style={{ textAlign: 'center' }}>All Courses</h2>
@@ -315,12 +322,12 @@ const AllCourses = () => {
           </Select>
         </FormControl>
 
-        <Button className="addCourse" variant="outlined" onClick={handleClick} style={{ marginLeft: '100px' }}>
+        {!isPastMonth(monthFilter) && (<Button className="addCourse" variant="outlined" onClick={handleClick} style={{ marginLeft: '100px' }}>
           Add Course
-        </Button>
-        <Button variant="contained" disabled={!isActivateButtonEnabled} onClick={handleActivateButtonClick} style={buttonStyle}>
+        </Button>)}
+        {(!isPastMonth(monthFilter)) && (<Button variant="contained" disabled={!isActivateButtonEnabled} onClick={handleActivateButtonClick} style={buttonStyle}>
           {buttonText}
-        </Button>
+        </Button>)}
       </div>
 
       {/* Table */}
@@ -368,14 +375,14 @@ const AllCourses = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
-                      <TableCell padding="checkbox">
+                    {!isPastMonth(monthFilter) && (<TableCell padding="checkbox">
                         <Checkbox
                           indeterminate={selectedRows.length > 0 && selectedRows.length < filteredCourses.length}
                           checked={selectedRows.length === filteredCourses.length}
                           onChange={handleSelectAllClick}
                           inputProps={{ 'aria-label': 'select all courses' }}
                         />
-                      </TableCell>
+                      </TableCell>)}
                       <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('courseName')}>
                         <div
                           style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
@@ -411,7 +418,7 @@ const AllCourses = () => {
                       </TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
-                      <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+                      {!isPastMonth(monthFilter) && (<TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>)}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -424,13 +431,13 @@ const AllCourses = () => {
                         selected={isSelected(course?.courseId)}
                         style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
                       >
-                        <TableCell padding="checkbox">
+                        {!isPastMonth(monthFilter) && (<TableCell padding="checkbox">
                           <Checkbox
                             checked={isSelected(course?.courseId)}
                             onChange={(event) => handleRowCheckboxChange(event, course?.courseId)}
                             inputProps={{ 'aria-labelledby': `checkbox-${course?.courseId}` }}
                           />
-                        </TableCell>
+                        </TableCell>)}
                         <TableCell style={{ textAlign: 'center' }}>
                           {editingCourseId === course?.courseId ? (
                             <TextField
@@ -484,7 +491,7 @@ const AllCourses = () => {
                               : 'Inactive'}
                           </span>
                         </TableCell>
-                        <TableCell style={{ textAlign: 'center' }}>
+                        {!isPastMonth(monthFilter) && (<TableCell style={{ textAlign: 'center' }}>
                           {editingCourseId === course?.courseId ? (
                             <>
                               <Button variant="contained" onClick={saveEditedCourse} style={{ marginBottom: '10px' }}>
@@ -512,7 +519,7 @@ const AllCourses = () => {
                               </Button>
                             </>
                           )}
-                        </TableCell>
+                        </TableCell>)}
                       </TableRow>
                     ))}
                   </TableBody>
