@@ -23,27 +23,27 @@ const RequestCard = ({ employeeName, nominations = [], onAccept, onReject }) => 
 
   return (
     <div className="request-card">
-      <h3 onClick={handleToggleCollapse} style={{ display: 'flex', alignItems: 'center' }}>
-        {employeeName} {collapsed ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
+      <h3 onClick={handleToggleCollapse} style={{ display: 'flex', alignItems: 'center', paddingLeft:'6px', paddingTop:'3px'}}>
+        {employeeName} {collapsed ? <ArrowDropDownIcon sx={{ fontSize: '1.5em', verticalAlign: 'middle' }}/> : <ArrowDropUpIcon />}
       </h3>
       {!collapsed && (
         <TableContainer component={Paper}>
           <Table>
-            <TableHead>
+            <TableHead style={{backgroundColor:'#f2f2f2'}}>
               <TableRow>
-                <TableCell>Course Name</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Duration</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Course Name</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Duration</TableCell>
+                <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {nominations.map((course) => (
                 <TableRow key={course?.courseId} className={`course-row ${course?.approvalStatus !== 'PENDING' ? 'greyed-out' : ''}`}>
-                  <TableCell>{course?.courseName}</TableCell>
-                  <TableCell>{course?.domain}</TableCell>
-                  <TableCell>{course?.duration}</TableCell>
-                  <TableCell>
+                  <TableCell style={{ textAlign: 'center'}}>{course?.courseName}</TableCell>
+                  <TableCell style={{ textAlign: 'center'}}>{course?.domain}</TableCell>
+                  <TableCell style={{ textAlign: 'center'}}>{course?.duration}</TableCell>
+                  <TableCell style={{ textAlign: 'center'}}>
                     {course?.approvalStatus === 'PENDING' && (
                       <>
                         <Button
@@ -52,7 +52,8 @@ const RequestCard = ({ employeeName, nominations = [], onAccept, onReject }) => 
                             onAccept(course?.courseId);
                           }}
                           variant="outlined"
-                          startIcon={<CheckCircleOutlineIcon />}
+                          startIcon={<CheckCircleOutlineIcon sx={{ fontSize: '1em', verticalAlign: 'middle' }}/>}
+                          style={{paddingRight:'15px',paddingLeft:'15px'}}
                         >
                           Accept
                         </Button>
@@ -60,7 +61,8 @@ const RequestCard = ({ employeeName, nominations = [], onAccept, onReject }) => 
                           className={`reject-button ${isSelected(course?.courseId) ? 'highlighted' : ''}`}
                           onClick={() => onReject(course?.courseId)}
                           variant="outlined"
-                          startIcon={<HighlightOffIcon />}
+                          startIcon={<HighlightOffIcon sx={{ fontSize: '1em', verticalAlign: 'middle' }} />}
+                          style={{paddingRight:'15px',paddingLeft:'15px'}}
                         >
                           Reject
                         </Button>

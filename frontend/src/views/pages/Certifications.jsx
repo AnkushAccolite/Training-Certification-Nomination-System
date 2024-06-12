@@ -323,12 +323,28 @@ function Certifications() {
                   <TableHead>
                     <TableRow>
                       <TableCell></TableCell>
-                      <TableCell
+                      {/* <TableCell
                         onClick={() => handleSort('name')}
                         style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                       >
                         Certification Name
-                        <ArrowDropDownIcon style={{ fontSize: '80%' }} />
+                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                      </TableCell> */}
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('name')}>
+                        <div
+                          style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          Certification Name
+                          {sortConfig.key === 'name' ? (
+                            sortConfig.direction === 'asc' ? (
+                              <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                            ) : (
+                              <ArrowDropUpIcon style={{ fontSize: '130%' }} />
+                            )
+                          ) : (
+                            <ArrowDropDownIcon style={{ fontSize: '130%' }} />
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>

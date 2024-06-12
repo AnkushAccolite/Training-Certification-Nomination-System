@@ -27,7 +27,7 @@ import axios from '../../api/axios';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
-const AssignedCourses = () => {
+const ApprovedCourses = () => {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
 
@@ -177,7 +177,7 @@ const AssignedCourses = () => {
     <div className="container">
       <div className="content-section" style={{ display: 'flex' }}>
         <div className="courses-section" style={{ flex: '0 1 70%', marginRight: '20px', textAlign: 'center' }}>
-          <h2 style={{ paddingBottom: '20px', textAlign: 'center' }}>Assigned Courses</h2>
+          <h2 style={{ paddingBottom: '20px', textAlign: 'center' }}>Approved Courses</h2>
           <div style={{ flex: '1', overflow: 'hidden' }}>
             <div style={{ height: 'calc(100vh - 250px)', overflowY: 'auto' }}>
               {sortedCourses.length === 0 ? (
@@ -448,4 +448,4 @@ const AssignedCourses = () => {
     </div>
   );
 };
-export default AssignedCourses;
+export default ApprovedCourses;

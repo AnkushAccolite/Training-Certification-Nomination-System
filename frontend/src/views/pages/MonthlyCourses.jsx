@@ -36,7 +36,6 @@ const MonthlyCourses = () => {
       const { data } = await axios.get('/course');
       setCourses(data);
     } catch (error) {
-      setError(error.message);
       toast.error('Error fetching data');
     }
   };
@@ -46,7 +45,7 @@ const MonthlyCourses = () => {
     fetchCourses();
   }, []);
 
-  const currentMonthUppercase = currentMonth();
+  const currentMonthUppercase = currentMonth().toUpperCase();
 
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -57,11 +56,10 @@ const MonthlyCourses = () => {
 
   const removeCourse = async (id) => {
     try {
-      const res = await axios.post(`/course/change-status?month=${monthFilter}`, [id]);
+      await axios.post(`/course/change-status?month=${monthFilter}`, [id]);
       toast.success('Course removed successfully');
       fetchCourses();
     } catch (error) {
-      console.log(error);
       toast.error('Something went wrong');
     }
   };
@@ -115,6 +113,12 @@ const MonthlyCourses = () => {
       );
     }
   });
+
+  const isPastMonth = (month) => {
+    const currentMonthIndex = new Date().getMonth();
+    const monthIndex = new Date(`${month} 1, 2023`).getMonth(); // 2023 is used just as a reference year
+    return monthIndex < currentMonthIndex;
+  };
 
   return (
     <div>
@@ -240,9 +244,14 @@ const MonthlyCourses = () => {
                       </TableCell>
 
                       <TableCell style={{ textAlign: 'center' }}>
-                        <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>
-                          Remove
-                        </Button>
+                        
+
+                        {!isPastMonth(monthFilter) && (
+                          <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>
+                            Remove
+                          </Button>
+                        )}
+
                         <Button variant="contained" style={{ marginLeft: '10px' }} onClick={() => handleViewDetails(course)}>
                           View Details
                         </Button>
