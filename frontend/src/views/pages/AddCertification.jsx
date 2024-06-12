@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
 import toast from 'react-hot-toast';
+import { Category } from '@mui/icons-material';
 
 const AddCertification = ({ onCourseAdd }) => {
   const auth = useSelector((state) => state.auth);
@@ -15,7 +16,7 @@ const AddCertification = ({ onCourseAdd }) => {
   const [formData, setFormData] = useState({
     certificationname: '',
     duration: '',
-    domain: '',
+    category: '',
     description: ''
   });
   const handleChange = (e) => {
@@ -31,7 +32,7 @@ const AddCertification = ({ onCourseAdd }) => {
       const newCourse = {
         name: formData.certificationname,
         duration: formData.duration,
-        domain: formData.domain,
+        category: formData.domain,
         description: formData.description
       };
 
@@ -39,7 +40,7 @@ const AddCertification = ({ onCourseAdd }) => {
       setFormData({
         certificationname: '',
         duration: '',
-        domain: '',
+        category: '',
         description: ''
       });
       toast.success('Certification added successfully');
@@ -91,7 +92,7 @@ const AddCertification = ({ onCourseAdd }) => {
           />
         </FormControl>
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
-          <InputLabel htmlFor="domain">Domain</InputLabel>
+          <InputLabel htmlFor="domain">Category</InputLabel>
           <Select id="domain" name="domain" value={formData.domain} onChange={handleChange} label="Domain" required>
             <MenuItem value="Technical">Technical</MenuItem>
             <MenuItem value="Domain">Domain</MenuItem>
