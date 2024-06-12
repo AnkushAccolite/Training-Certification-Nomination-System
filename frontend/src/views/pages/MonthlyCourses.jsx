@@ -105,11 +105,11 @@ const MonthlyCourses = () => {
 
   const filteredCourses = sortedCourses.filter((course) => {
     if (domainFilter === 'All') {
-      return course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === monthFilter)?.bands?.length >= 0;
+      return course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === monthFilter)?.bands?.length > 0;
     } else {
       return (
         course?.domain === domainFilter &&
-        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === monthFilter)?.bands?.length >= 0
+        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === monthFilter)?.bands?.length > 0
       );
     }
   });
@@ -244,8 +244,6 @@ const MonthlyCourses = () => {
                       </TableCell>
 
                       <TableCell style={{ textAlign: 'center' }}>
-                        
-
                         {!isPastMonth(monthFilter) && (
                           <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>
                             Remove
