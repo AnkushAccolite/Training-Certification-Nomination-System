@@ -28,13 +28,15 @@ public class UserDetailsImpl implements UserDetails {
 
     private String empName;
 
+    private String band;
+
     @JsonIgnore
     private String password;
 
     @DBRef
     private String role;
 
-    public UserDetailsImpl(String id, String username, String email, String password, String role, String empId, String managerId, String empName) {
+    public UserDetailsImpl(String id, String username, String email, String password, String role, String empId, String managerId, String empName, String band) {
         super();
         this.id = id;
         this.username = username;
@@ -44,6 +46,7 @@ public class UserDetailsImpl implements UserDetails {
         this.empId = empId;
         this.managerId = managerId;
         this.empName = empName;
+        this.band=band;
     }
 
     public static UserDetailsImpl build(Employee users) {
@@ -56,7 +59,8 @@ public class UserDetailsImpl implements UserDetails {
                 users.getRole(),
                 users.getEmpId(),
                 users.getManagerId(),
-                users.getEmpName());
+                users.getEmpName(),
+                users.getBand());
     }
 
     @Override
@@ -84,6 +88,9 @@ public class UserDetailsImpl implements UserDetails {
         return password;
     }
 
+    public String getBand() {
+        return band;
+    }
 
     public String getEmail() {
         return email;

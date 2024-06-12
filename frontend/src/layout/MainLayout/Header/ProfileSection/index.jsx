@@ -146,6 +146,12 @@ const ProfileSection = () => {
                         <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
                           {auth?.user?.empName}
                         </Typography>
+                        <Typography
+                          variant="h6"
+                          style={{ background: 'blue', color: 'white', padding: '4px 15px', borderRadius: '15px', marginLeft: '4px' }}
+                        >
+                          {auth?.user?.band}
+                        </Typography>
                       </Stack>
                       <Typography variant="subtitle2">{auth?.user?.empId}</Typography>
                     </Stack>

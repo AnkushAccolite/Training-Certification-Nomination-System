@@ -1,21 +1,20 @@
 package com.nominationsystem.tracers.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Month;
+import java.util.ArrayList;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class MonthlyCourseStatus {
 
     private Month month;
-
-    private boolean activationStatus;
-
-    public MonthlyCourseStatus(Month month, boolean activationStatus) {
-        this.month = month;
-        this.activationStatus = activationStatus;
-    }
+    private ArrayList<String> bands;
 
 }

@@ -89,10 +89,33 @@ public class CourseService {
         this.courseRepository.save(existingCourse);
     }
 
-    public void changeMonthlyCourseStatus(List<String> courseIds, String month) {
+//    public void changeMonthlyCourseStatus(List<String> courseIds,String band, String month) {
+//
+//        Month monthEnum = Month.valueOf(month.toUpperCase());
+//        courseIds.forEach(courseId -> {
+//            Course course = this.courseRepository.findByCourseId(courseId);
+//            if (course != null) {
+//                course.getMonthlyStatus().stream()
+//                        .filter(status -> status.getMonth() == monthEnum)
+//                        .findFirst()
+//                        .ifPresent(status -> {
+//                            Boolean currentActivationStatus = status.isActivationStatus();
+//                            if (currentActivationStatus == null) {
+//                                status.setActivationStatus(true);
+//                            } else {
+//                                status.setActivationStatus(!currentActivationStatus);
+//                            }
+//
+//                            status.setBand(band);
+//                            this.courseRepository.save(course);
+//                        });
+//
+//            }
+//        });
+//    }
 
+    public void changeMonthlyCourseStatus(List<String> courseIds, String band, String month) {
         Month monthEnum = Month.valueOf(month.toUpperCase());
-
         courseIds.forEach(courseId -> {
             Course course = this.courseRepository.findByCourseId(courseId);
             if (course != null) {
@@ -100,12 +123,23 @@ public class CourseService {
                         .filter(status -> status.getMonth() == monthEnum)
                         .findFirst()
                         .ifPresent(status -> {
-                            status.setActivationStatus(!status.isActivationStatus());
+                            ArrayList<String> bands = status.getBands();
+                            Boolean currentActivationStatus = bands.contains(band);
+                            if (bands == null) {
+                                bands = new ArrayList<>();
+                                status.setBands(bands);
+                            }else if (!currentActivationStatus) {
+                                    bands.add(band);
+                            } else {
+                                bands.remove(band);
+                            }
+                            status.setBands(bands);
                             this.courseRepository.save(course);
                         });
             }
         });
     }
+
 
     public void completeCourse(String empId, String courseId, CourseFeedback courseFeedback) {
         Employee employee = this.employeeService.getEmployeeRepository().findByEmpId(empId);

@@ -32,6 +32,22 @@ const AllCourses = () => {
   const auth = useSelector((state) => state.auth);
 
   const [courses, setCourses] = useState([]);
+  const currentMonthUppercase = currentMonth();
+
+  const [selectedDomain, setSelectedDomain] = useState('All');
+  const [selectedBand, setSelectedBand] = useState('Band');
+  const [selectedStatus, setSelectedStatus] = useState('All');
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthUppercase);
+  const [editingCourseId, setEditingCourseId] = useState(null);
+  const [editFields, setEditFields] = useState({});
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [isActivateButtonEnabled, setIsActivateButtonEnabled] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+
+  const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
+  const statuses = ['All', 'Active', 'Inactive'];
 
   const fetchCourses = async () => {
     try {
@@ -51,22 +67,6 @@ const AllCourses = () => {
     navigate('/AllCourses/add-course');
   };
 
-  const currentMonthUppercase = currentMonth();
-
-  const [selectedDomain, setSelectedDomain] = useState('All');
-  const [selectedStatus, setSelectedStatus] = useState('All');
-  const [selectedMonth, setSelectedMonth] = useState(currentMonthUppercase);
-  const [editingCourseId, setEditingCourseId] = useState(null);
-  const [editFields, setEditFields] = useState({});
-  const [selectedCourse, setSelectedCourse] = useState(null);
-  const [showDetails, setShowDetails] = useState(false);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [isActivateButtonEnabled, setIsActivateButtonEnabled] = useState(false);
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-
-  const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
-  const statuses = ['All', 'Active', 'Inactive'];
-
   const handleDomainFilterChange = (event) => {
     const { value } = event.target;
     setSelectedDomain(value === 'All' ? 'All' : value);
@@ -74,13 +74,16 @@ const AllCourses = () => {
 
   const handleStatusFilterChange = (event) => {
     const { value } = event.target;
-    console.log('Selected Status:', value);
     setSelectedStatus(value);
   };
 
   const handleMonthFilterChange = (event) => {
     const { value } = event.target;
     setSelectedMonth(value === 'All' ? 'All' : value);
+  };
+  const handleBandFilterChange = (event) => {
+    const { value } = event.target;
+    setSelectedBand(value);
   };
 
   const deleteCourse = async (id) => {
@@ -155,7 +158,11 @@ const AllCourses = () => {
   const isSelected = (courseId) => selectedRows.indexOf(courseId) !== -1;
   const handleActivateButtonClick = async () => {
     try {
-      const res = await axios.post(`/course/change-status?month=${selectedMonth}`, selectedRows);
+      if (selectedBand === 'Band') {
+        toast.error('Please select a band');
+        return;
+      }
+      const res = await axios.post(`/course/change-status?month=${selectedMonth}&band=${selectedBand}`, selectedRows);
       toast.success('Successfully changed Status');
       fetchCourses();
     } catch (error) {
@@ -194,34 +201,33 @@ const AllCourses = () => {
     if (selectedDomain === 'All' && selectedStatus === 'All') {
       return true;
     } else if (selectedDomain === 'All') {
-      return (
-        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus ===
-        (selectedStatus === 'Active')
-      );
+      const bands = course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands;
+      if (bands == null && selectedStatus) return false;
+      if (bands == null && !selectedStatus) return true;
+      bands?.includes(selectedBand) === (selectedStatus === 'Active');
     } else if (selectedStatus === 'All') {
       return course?.domain === selectedDomain;
     } else {
       return (
         course?.domain === selectedDomain &&
-        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus ===
+        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands?.includes(selectedBand) ===
           (selectedStatus === 'Active')
       );
     }
   });
 
-  const allSelectedActive = selectedRows.every(
-    (courseId) =>
-      sortedCourses
-        .find((course) => course.courseId === courseId)
-        ?.monthlyStatus?.find((monthStatus) => monthStatus.month === selectedMonth)?.activationStatus === true
+  const allSelectedActive = selectedRows.every((courseId) =>
+    sortedCourses
+      .find((course) => course.courseId === courseId)
+      ?.monthlyStatus?.find((monthStatus) => monthStatus.month === selectedMonth)
+      ?.bands?.includes(selectedBand)
   );
 
-  const allSelectedInactive = selectedRows.every(
-    (courseId) =>
-      sortedCourses
-        .find((course) => course.courseId === courseId)
-        ?.monthlyStatus?.find((monthStatus) => monthStatus.month === selectedMonth)?.activationStatus === false
-  );
+  const allSelectedInactive = selectedRows.every((courseId) => {
+    const course = sortedCourses.find((course) => course.courseId === courseId);
+    const monthStatus = course.monthlyStatus.find((status) => status.month === selectedMonth);
+    return !monthStatus?.bands?.includes(selectedBand);
+  });
 
   let buttonText = 'Change Status';
   let buttonStyle = {
@@ -251,7 +257,17 @@ const AllCourses = () => {
 
       {/* Filters */}
       <div className="filters">
-        <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
+        <FormControl style={{ marginRight: '10px', marginTop: '10px' }}>
+          <Select value={selectedBand} onChange={handleBandFilterChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
+            {['Band', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7'].map((band) => (
+              <MenuItem key={band} value={band}>
+                {band}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <div className="separator"></div>
+        <FormControl style={{ marginLeft: '-15px', marginTop: '10px' }}>
           <Select value={selectedMonth} onChange={handleMonthFilterChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
             {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
               (month) => (
@@ -263,7 +279,7 @@ const AllCourses = () => {
           </Select>
         </FormControl>
         <div className="separator"></div>
-        <FormControl style={{ marginRight: '10px', marginTop: '10px' }}>
+        <FormControl style={{ marginTop: '10px' }}>
           <Select
             displayEmpty
             value={selectedDomain}
@@ -281,7 +297,7 @@ const AllCourses = () => {
           </Select>
         </FormControl>
         <div className="separator"></div>
-        <FormControl style={{ marginRight: '10px', marginTop: '10px' }}>
+        <FormControl style={{ marginTop: '10px' }}>
           <Select
             displayEmpty
             value={selectedStatus}
@@ -299,7 +315,7 @@ const AllCourses = () => {
           </Select>
         </FormControl>
 
-        <Button className="addCourse" variant="outlined" onClick={handleClick} style={{ marginLeft: '150px' }}>
+        <Button className="addCourse" variant="outlined" onClick={handleClick} style={{ marginLeft: '100px' }}>
           Add Course
         </Button>
         <Button variant="contained" disabled={!isActivateButtonEnabled} onClick={handleActivateButtonClick} style={buttonStyle}>
@@ -454,14 +470,16 @@ const AllCourses = () => {
                         <TableCell style={{ textAlign: 'center' }}>
                           <span
                             style={{
-                              color:
-                                course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus ===
-                                false
-                                  ? 'red'
-                                  : 'green'
+                              color: course?.monthlyStatus
+                                ?.find((monthStatus) => monthStatus?.month === selectedMonth)
+                                ?.bands?.includes(selectedBand)
+                                ? 'green'
+                                : 'red'
                             }}
                           >
-                            {course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.activationStatus
+                            {course?.monthlyStatus
+                              ?.find((monthStatus) => monthStatus?.month === selectedMonth)
+                              ?.bands?.includes(selectedBand)
                               ? 'Active'
                               : 'Inactive'}
                           </span>

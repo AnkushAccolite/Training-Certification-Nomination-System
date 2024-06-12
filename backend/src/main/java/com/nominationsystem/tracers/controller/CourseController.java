@@ -50,8 +50,9 @@ public class CourseController {
 
     @PostMapping("/change-status")
     public void changeMonthlyCourseStatus(@RequestParam String month,
+                                          @RequestParam String band,
                                           @RequestBody List<String> courseIds) {
-        this.courseService.changeMonthlyCourseStatus(courseIds, month);
+        this.courseService.changeMonthlyCourseStatus(courseIds, band, month);
     }
 
     @PostMapping("/completed")

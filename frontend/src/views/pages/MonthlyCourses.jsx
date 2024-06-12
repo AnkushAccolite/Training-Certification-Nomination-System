@@ -107,11 +107,11 @@ const MonthlyCourses = () => {
 
   const filteredCourses = sortedCourses.filter((course) => {
     if (domainFilter === 'All') {
-      return course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === monthFilter)?.activationStatus;
+      return course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === monthFilter)?.bands?.length >= 0;
     } else {
       return (
         course?.domain === domainFilter &&
-        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === monthFilter)?.activationStatus
+        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === monthFilter)?.bands?.length >= 0
       );
     }
   });
@@ -225,6 +225,7 @@ const MonthlyCourses = () => {
                       </div>
                     </TableCell>
                     <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
+                    <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Bands</TableCell>
                     <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -234,6 +235,10 @@ const MonthlyCourses = () => {
                       <TableCell style={{ textAlign: 'center' }}>{course?.courseName}</TableCell>
                       <TableCell style={{ textAlign: 'center' }}>{course?.duration}</TableCell>
                       <TableCell style={{ textAlign: 'center' }}>{course?.domain}</TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        {course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === monthFilter)?.bands?.join(', ')}
+                      </TableCell>
+
                       <TableCell style={{ textAlign: 'center' }}>
                         <Button variant="contained" onClick={() => removeCourse(course?.courseId)}>
                           Remove
