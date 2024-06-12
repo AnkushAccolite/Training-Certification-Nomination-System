@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -15,44 +15,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import SaveIcon from '@mui/icons-material/Save';
 import Tooltip from '@mui/material/Tooltip';
-import Alert from '@mui/material/Alert';
 import { toast } from 'react-hot-toast';
-
-
-const faqs = [
-  {
-    question: 'How can I reach out to the L&D Team?',
-    answer: 'To reach the L&D Team please drop an email to ld@accolitedigital.com.'
-  },
-  {
-    question: 'How can I access available trainings?',
-    answer: 'Every month a training calendar is prepared and shared with all India employees from mylearning@accolitedigital.com, request you to please check that mail and nominate yourself for the training.'
-  },
-  {
-    question: 'I have missed nominating myself for a previous training. How can I access it now?',
-    answer: 'Kindly drop an email to ld@accolitedigital.com along with the names of all the trainings that you want to nominate.'
-  },
-  {
-    question: 'Where can I check all the available trainings?',
-    answer: 'Connect with the L&D Team through ld@accolitedigital.com and they shall be getting back to you on all the available training.'
-  },
-  {
-    question: 'Who are the points of contact from the L&D team and how can I reach them?',
-    answer: 'The points of contact from the L&D team are Anil Talluri and Avirup Chaterjee, you can reach them via email or slack. Their email IDs are anil.talluri@accolitedigital.com and avirup.chaterjee@accolitedigital.com.'
-  },
-  {
-    question: 'What is the criteria to avail the trainings?',
-    answer: 'You need to get an email approval from your Reporting Manager before you avail the trainings.'
-  },
-  {
-    question: 'What is the medium for the trainings?',
-    answer: 'Most trainings unless specified are self-paced virtual trainings which you can access through Eduthrill. An invite will be shared to you from which you can access the trainings.'
-  },
-  {
-    question: 'Who should I reach out to in case of any issue in the Eduthrill portal?',
-    answer: 'For any issue with Eduthrill portal please drop an email to ld@accolitedigital.com along with the screenshot of the issue.'
-  }
-];
+import axios from '../../api/axios';
 
 const CustomExpandMoreIcon = styled(ExpandMoreIcon)(({ theme }) => ({
   color: 'skyblue'
@@ -68,15 +32,28 @@ function CourseFAQ() {
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [deleteIndex, setDeleteIndex] = React.useState(null);
   const [editIndex, setEditIndex] = React.useState(null);
+  const [faqs, setFaqs] = useState([]);
   const [emptyFAQError, setEmptyFAQError] = React.useState(false);
   const [emptyEditError, setEmptyEditError] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
 
+  const fetchData = async () => {
+    try {
+      const { data } = await axios.get('/faq/courses');
+      setFaqItems(
+        data?.map((faq) => ({
+          ...faq,
+          showEditDelete: auth.isAuthenticated && auth.user.role === 'ADMIN' && showEditFAQs
+        }))
+      );
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong!');
+    }
+  };
+
   useEffect(() => {
-    setFaqItems(faqs.map(faq => ({
-      ...faq,
-      showEditDelete: auth.isAuthenticated && auth.user.role === 'ADMIN' && showEditFAQs
-    })));
+    fetchData();
   }, [showEditFAQs, auth.isAuthenticated, auth.user.role]);
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -84,7 +61,7 @@ function CourseFAQ() {
   };
 
   const handleToggleEditFAQs = () => {
-    setShowEditFAQs(prevState => !prevState);
+    setShowEditFAQs((prevState) => !prevState);
     setShowAddFAQModal(false);
   };
 
@@ -97,25 +74,36 @@ function CourseFAQ() {
     setDeleteModalOpen(false);
   };
 
-  const handleDeleteFAQ = () => {
-    console.log('Deleting FAQ at index', deleteIndex);
-    const updatedFaqItems = faqItems.filter((faq, index) => index !== deleteIndex);
-    setFaqItems(updatedFaqItems);
+  const handleDeleteFAQ = async () => {
+    try {
+      const res = await axios.get(`/faq/courses/delete?faqId=${deleteIndex}`);
+      toast.success('Deleted Successfully');
+      fetchData();
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong!');
+    }
     handleDeleteModalClose();
   };
 
-  const handleAddFAQ = () => {
-    if (newFAQ.question.trim() === '' || newFAQ.answer.trim() === '') {
-      setEmptyFAQError(true);
-      toast.error("Question or Answer cannot be empty!");
-    } else {
-      setEmptyFAQError(false);
-      setShowAddFAQModal(false);
-      const updatedFaqItems = [...faqItems, { ...newFAQ, showEditDelete: true }];
-      setNewFAQ({ question: '', answer: '' });
-      setEditIndex(null);
-      setFaqItems(updatedFaqItems);
-      toast.success("FAQ Added Successfully!");
+  const handleAddFAQ = async () => {
+    try {
+      if (newFAQ.question.trim() === '' || newFAQ.answer.trim() === '') {
+        setEmptyFAQError(true);
+        toast.error('Question or Answer cannot be empty!');
+      } else {
+        setEmptyFAQError(false);
+        setShowAddFAQModal(false);
+        console.log('-->', newFAQ);
+
+        const res = await axios.post('/faq/courses', newFAQ);
+        toast.success('FAQ Added Successfully!');
+        setNewFAQ({ question: '', answer: '' });
+        await fetchData();
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error('Something went Wrong!');
     }
   };
 
@@ -123,17 +111,25 @@ function CourseFAQ() {
     setEditIndex(index);
   };
 
-  const handleSaveEdit = () => {
-    if (faqItems[editIndex].question.trim() === '' || faqItems[editIndex].answer.trim() === '') {
-      setEmptyEditError(true);
-      toast.error("Question or Answer cannot be empty!");
-    } else {
-      setEmptyEditError(false);
-      console.log('Saving edit for FAQ at index', editIndex);
-      setEditIndex(null);
+  const handleSaveEdit = async () => {
+    try {
+      if (faqItems[editIndex].question.trim() === '' || faqItems[editIndex].answer.trim() === '') {
+        setEmptyEditError(true);
+        toast.error('Question or Answer cannot be empty!');
+      } else {
+        setEmptyEditError(false);
+        const updatedFaq = faqItems[editIndex];
+        delete updatedFaq.showEditDelete;
+        const res = await axios.put(`/faq/courses/${updatedFaq.faqId}`, updatedFaq);
+        toast.success('Edit Successful');
+        setEditIndex(null);
+        fetchData();
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong!');
     }
   };
-  
 
   return (
     <div style={{ padding: '8px', display: 'flex', flexDirection: 'column' }}>
@@ -147,7 +143,7 @@ function CourseFAQ() {
               border: 'none',
               cursor: 'pointer',
               marginBottom: '10px',
-              marginRight: '8px',
+              marginRight: '8px'
             }}
             onClick={handleToggleEditFAQs}
           >
@@ -161,7 +157,7 @@ function CourseFAQ() {
               backgroundColor: '#4CBB17',
               border: 'none',
               cursor: 'pointer',
-              marginBottom: '10px',
+              marginBottom: '10px'
             }}
             onClick={() => setShowAddFAQModal(true)}
           >
@@ -199,7 +195,9 @@ function CourseFAQ() {
               }}
             >
               {editIndex !== index ? (
-                <Typography variant="h6" sx={{ fontSize: '1.00rem', flex: 1 }}>{faq.question}</Typography>
+                <Typography variant="h6" sx={{ fontSize: '1.00rem', flex: 1 }}>
+                  {faq.question}
+                </Typography>
               ) : (
                 <TextField
                   id={`faq-question-${index}`}
@@ -230,7 +228,7 @@ function CourseFAQ() {
                     </Tooltip>
                   )}
                   <Tooltip title="Delete">
-                    <IconButton onClick={() => handleDeleteModalOpen(index)}>
+                    <IconButton onClick={() => handleDeleteModalOpen(faq?.faqId)}>
                       <DeleteIcon style={{ color: '#E35335' }} />
                     </IconButton>
                   </Tooltip>
@@ -282,7 +280,7 @@ function CourseFAQ() {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             boxShadow: 24,
-            p: 4,
+            p: 4
           }}
         >
           <Typography variant="h4" component="h2" sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
@@ -318,7 +316,7 @@ function CourseFAQ() {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             boxShadow: 24,
-            p: 4,
+            p: 4
           }}
         >
           <Typography id="add-faq-modal-title" variant="h4" component="h2" sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
@@ -345,12 +343,7 @@ function CourseFAQ() {
             sx={{ mb: 2 }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ mr: 2 }}
-              onClick={handleAddFAQ}
-            >
+            <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={handleAddFAQ}>
               Add
             </Button>
             <Button variant="contained" onClick={() => setShowAddFAQModal(false)}>
