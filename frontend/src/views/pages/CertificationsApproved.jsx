@@ -266,7 +266,7 @@ function CertificationsApproved() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {certifications.map((certification, index) => (
+                    {sortedCertifications.map((certification, index) => (
                       <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                         <TableCell style={{ textAlign: 'center' }}>{certification?.name}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
@@ -425,11 +425,12 @@ function CertificationsApproved() {
           }}
         >
           <Typography variant="h4" gutterBottom style={{ fontSize: '24px', textAlign: 'center' }}>
-            Certification Feedback
+            Feedback
           </Typography>
-          <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-            <Typography variant="subtitle1" gutterBottom style={{ fontSize: '18px' }}>
-              Rate the certification
+          <div style={{ marginBottom: '18px', textAlign: 'center' }}>
+            <Typography variant="subtitle1" gutterBottom style={{ fontSize: '15px' }}>
+            <b>Congratulations on passing the exam!  </b>
+            Please rate the relevance of the courses provided for this certification.
             </Typography>
             <div style={{ display: 'inline-block' }}>
               <Rating
