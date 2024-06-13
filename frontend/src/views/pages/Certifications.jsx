@@ -323,13 +323,6 @@ function Certifications() {
                   <TableHead>
                     <TableRow>
                       <TableCell></TableCell>
-                      {/* <TableCell
-                        onClick={() => handleSort('name')}
-                        style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
-                      >
-                        Certification Name
-                        <ArrowDropDownIcon style={{ fontSize: '130%' }} />
-                      </TableCell> */}
                       <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('name')}>
                         <div
                           style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
@@ -352,7 +345,6 @@ function Certifications() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {/* {sortedCourses.filter(filterCourses).map((row, index) => ( */}
                     {sortedCourses.filter(filterCourses).map((row, index) => (
                       <TableRow
                         key={row?.certificationId}

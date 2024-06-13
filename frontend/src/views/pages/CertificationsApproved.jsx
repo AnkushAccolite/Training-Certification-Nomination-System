@@ -266,7 +266,7 @@ function CertificationsApproved() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {certifications.map((certification, index) => (
+                    {sortedCertifications.map((certification, index) => (
                       <TableRow key={index} style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}>
                         <TableCell style={{ textAlign: 'center' }}>{certification?.name}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
