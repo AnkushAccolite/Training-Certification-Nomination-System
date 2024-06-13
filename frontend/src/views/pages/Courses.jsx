@@ -290,16 +290,17 @@ function Courses() {
             ))}
           </Select>
         </FormControl>
-        {!isPastMonth(monthFilter) && (<Button
-          className="nominateBtn"
-          variant="outlined"
-          startIcon={<LocalLibraryIcon />}
-          onClick={nominateCourses}
-          style={{ marginLeft: 'auto', marginRight: '10px' }} // This will move the button to the right
-        >
-          Nominate
-        </Button>
-      )}
+        {!isPastMonth(monthFilter) && (
+          <Button
+            className="nominateBtn"
+            variant="outlined"
+            startIcon={<LocalLibraryIcon />}
+            onClick={nominateCourses}
+            style={{ marginLeft: 'auto', marginRight: '10px' }} // This will move the button to the right
+          >
+            Nominate
+          </Button>
+        )}
       </div>
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
@@ -334,7 +335,7 @@ function Courses() {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
-                      {!isPastMonth(monthFilter) && (<TableCell></TableCell>)}
+                      {!isPastMonth(monthFilter) && <TableCell></TableCell>}
                       <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('courseName')}>
                         <div
                           style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
@@ -381,32 +382,36 @@ function Courses() {
                           backgroundColor: index % 2 === 0 ? '#F2F2F2' : 'white'
                         }}
                       >
-                        {!isPastMonth(monthFilter)&&(<TableCell padding="checkbox">
-                          <Checkbox
-                            checked={selectedCourseIds.includes(row?.courseId)}
-                            onChange={(e) => handleCheckboxChange(e, row?.courseId)}
-                            disabled={getStatus(row?.courseId) !== 'Not Opted'}
-                          />
-                        </TableCell>)}
+                        {!isPastMonth(monthFilter) && (
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={selectedCourseIds.includes(row?.courseId)}
+                              onChange={(e) => handleCheckboxChange(e, row?.courseId)}
+                              disabled={getStatus(row?.courseId) !== 'Not Opted'}
+                            />
+                          </TableCell>
+                        )}
 
-                        <TableCell style={{ textAlign: 'center' }}>{row?.courseName}</TableCell>
+                        <TableCell style={{ textAlign: 'center', maxWidth: '20em' }}>{row?.courseName}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row?.domain}</TableCell>
                         <TableCell style={{ textAlign: 'center' }}>{row?.duration}</TableCell>
                         <TableCell style={{ color: getStatusColor(getStatus(row?.courseId)), textAlign: 'center' }}>
                           {getStatus(row?.courseId)}
                         </TableCell>
-                        <TableCell style={{textAlign:'center'}}>
+                        <TableCell style={{ textAlign: 'center' }}>
                           <Button variant="contained" onClick={() => handleViewDetails(row)}>
                             View Details
                           </Button>
-                          {!isPastMonth(monthFilter) &&(<Button
-                            variant="outlined"
-                            onClick={() => cancelNomination(row?.courseId)}
-                            disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
-                            style={{ marginLeft: '8px' }}
-                          >
-                            Cancel
-                          </Button>)}
+                          {!isPastMonth(monthFilter) && (
+                            <Button
+                              variant="outlined"
+                              onClick={() => cancelNomination(row?.courseId)}
+                              disabled={getStatus(row?.courseId) !== 'Pending for Approval'}
+                              style={{ marginLeft: '8px' }}
+                            >
+                              Cancel
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}

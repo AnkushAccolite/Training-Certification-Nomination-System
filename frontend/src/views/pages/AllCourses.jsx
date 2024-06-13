@@ -322,12 +322,16 @@ const AllCourses = () => {
           </Select>
         </FormControl>
 
-        {!isPastMonth(monthFilter) && (<Button className="addCourse" variant="outlined" onClick={handleClick} style={{ marginLeft: '100px' }}>
-          Add Course
-        </Button>)}
-        {(!isPastMonth(monthFilter)) && (<Button variant="contained" disabled={!isActivateButtonEnabled} onClick={handleActivateButtonClick} style={buttonStyle}>
-          {buttonText}
-        </Button>)}
+        {!isPastMonth(monthFilter) && (
+          <Button className="addCourse" variant="outlined" onClick={handleClick} style={{ marginLeft: '100px' }}>
+            Add Course
+          </Button>
+        )}
+        {!isPastMonth(monthFilter) && (
+          <Button variant="contained" disabled={!isActivateButtonEnabled} onClick={handleActivateButtonClick} style={buttonStyle}>
+            {buttonText}
+          </Button>
+        )}
       </div>
 
       {/* Table */}
@@ -375,14 +379,16 @@ const AllCourses = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
-                    {!isPastMonth(monthFilter) && (<TableCell padding="checkbox">
-                        <Checkbox
-                          indeterminate={selectedRows.length > 0 && selectedRows.length < filteredCourses.length}
-                          checked={selectedRows.length === filteredCourses.length}
-                          onChange={handleSelectAllClick}
-                          inputProps={{ 'aria-label': 'select all courses' }}
-                        />
-                      </TableCell>)}
+                      {!isPastMonth(monthFilter) && (
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            indeterminate={selectedRows.length > 0 && selectedRows.length < filteredCourses.length}
+                            checked={selectedRows.length === filteredCourses.length}
+                            onChange={handleSelectAllClick}
+                            inputProps={{ 'aria-label': 'select all courses' }}
+                          />
+                        </TableCell>
+                      )}
                       <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('courseName')}>
                         <div
                           style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
@@ -418,7 +424,9 @@ const AllCourses = () => {
                       </TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Category</TableCell>
                       <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Status</TableCell>
-                      {!isPastMonth(monthFilter) && (<TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>)}
+                      {!isPastMonth(monthFilter) && (
+                        <TableCell style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>Actions</TableCell>
+                      )}
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -431,13 +439,15 @@ const AllCourses = () => {
                         selected={isSelected(course?.courseId)}
                         style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
                       >
-                        {!isPastMonth(monthFilter) && (<TableCell padding="checkbox">
-                          <Checkbox
-                            checked={isSelected(course?.courseId)}
-                            onChange={(event) => handleRowCheckboxChange(event, course?.courseId)}
-                            inputProps={{ 'aria-labelledby': `checkbox-${course?.courseId}` }}
-                          />
-                        </TableCell>)}
+                        {!isPastMonth(monthFilter) && (
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={isSelected(course?.courseId)}
+                              onChange={(event) => handleRowCheckboxChange(event, course?.courseId)}
+                              inputProps={{ 'aria-labelledby': `checkbox-${course?.courseId}` }}
+                            />
+                          </TableCell>
+                        )}
                         <TableCell style={{ textAlign: 'center' }}>
                           {editingCourseId === course?.courseId ? (
                             <TextField
@@ -445,7 +455,7 @@ const AllCourses = () => {
                               onChange={(event) => handleEditFieldChange(event, 'courseName')}
                             />
                           ) : (
-                            <div>{course?.courseName}</div>
+                            <div style={{ maxWidth: '20em' }}>{course?.courseName}</div>
                           )}
                         </TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
@@ -491,35 +501,37 @@ const AllCourses = () => {
                               : 'Inactive'}
                           </span>
                         </TableCell>
-                        {!isPastMonth(monthFilter) && (<TableCell style={{ textAlign: 'center' }}>
-                          {editingCourseId === course?.courseId ? (
-                            <>
-                              <Button variant="contained" onClick={saveEditedCourse} style={{ marginBottom: '10px' }}>
-                                Save
-                              </Button>
-                              <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
-                                Cancel
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                variant="contained"
-                                onClick={() => handleEditCourse(course?.courseId)}
-                                style={{ marginBottom: '10px' }}
-                              >
-                                Edit
-                              </Button>
-                              <Button
-                                variant="contained"
-                                onClick={() => deleteCourse(course?.courseId)}
-                                style={{ marginLeft: '10px', marginBottom: '10px' }}
-                              >
-                                Delete
-                              </Button>
-                            </>
-                          )}
-                        </TableCell>)}
+                        {!isPastMonth(monthFilter) && (
+                          <TableCell style={{ textAlign: 'center' }}>
+                            {editingCourseId === course?.courseId ? (
+                              <>
+                                <Button variant="contained" onClick={saveEditedCourse} style={{ marginBottom: '10px' }}>
+                                  Save
+                                </Button>
+                                <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
+                                  Cancel
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  variant="contained"
+                                  onClick={() => handleEditCourse(course?.courseId)}
+                                  style={{ marginBottom: '10px' }}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  variant="contained"
+                                  onClick={() => deleteCourse(course?.courseId)}
+                                  style={{ marginLeft: '10px', marginBottom: '10px' }}
+                                >
+                                  Delete
+                                </Button>
+                              </>
+                            )}
+                          </TableCell>
+                        )}
                       </TableRow>
                     ))}
                   </TableBody>
