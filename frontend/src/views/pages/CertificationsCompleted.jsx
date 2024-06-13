@@ -60,11 +60,13 @@ const CertificationsCompleted = () => {
     if (sortConfig.key) {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
-      if (sortConfig.key === 'DateOfCompletion') {
-        return (dayjs(aValue, 'DD-MM-YYYY').isAfter(dayjs(bValue, 'DD-MM-YYYY')) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
-      } else if (sortConfig.key === 'CertificationName') {
-        return aValue.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
+
+      if (sortConfig.key === 'CertificationName') {
+        return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
       }
+      else if (sortConfig.key === 'DateOfCompletion') {
+        return (dayjs(aValue, 'DD-MM-YYYY').isAfter(dayjs(bValue, 'DD-MM-YYYY')) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
+      } 
       return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
     }
 
@@ -135,7 +137,7 @@ const CertificationsCompleted = () => {
                 <Table aria-label="completed certifications table">
                   <TableHead>
                     <TableRow>
-                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('name')}>
+                      <TableCell style={{ cursor: 'pointer' }} onClick={() => handleSort('CertificationName')}>
                         <div
                           style={{ display: 'flex', fontSize: '16px', fontWeight: 'bold', alignItems: 'center', justifyContent: 'center' }}
                         >
