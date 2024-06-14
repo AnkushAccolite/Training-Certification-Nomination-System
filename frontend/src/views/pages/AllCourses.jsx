@@ -26,6 +26,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import './allcourses.css';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import toast from 'react-hot-toast';
+import Pagination from '@mui/material/Pagination';
 
 const AllCourses = () => {
   const navigate = useNavigate();
@@ -45,6 +46,8 @@ const AllCourses = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [isActivateButtonEnabled, setIsActivateButtonEnabled] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(4);
 
   const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
   const statuses = ['All', 'Active', 'Inactive'];
@@ -203,19 +206,24 @@ const AllCourses = () => {
       return true;
     } else if (selectedDomain === 'All') {
       const bands = course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands;
-      if (bands == null && selectedStatus) return false;
-      if (bands == null && !selectedStatus) return true;
-      bands?.includes(selectedBand) === (selectedStatus === 'Active');
+      if (selectedStatus === 'All') {
+        return true;
+      } else if (selectedStatus === 'Active') {
+        return bands && bands.includes(selectedBand);
+      } else {
+        return !bands || !bands.includes(selectedBand);
+      }
     } else if (selectedStatus === 'All') {
       return course?.domain === selectedDomain;
     } else {
-      return (
-        course?.domain === selectedDomain &&
-        course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands?.includes(selectedBand) ===
-          (selectedStatus === 'Active')
-      );
+      const bands = course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands;
+      if (selectedStatus === 'Active') {
+        return course?.domain === selectedDomain && bands && bands.includes(selectedBand);
+      } else {
+        return course?.domain === selectedDomain && (!bands || !bands.includes(selectedBand));
+      }
     }
-  });
+  }).slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   const allSelectedActive = selectedRows.every((courseId) =>
     sortedCourses
@@ -258,9 +266,13 @@ const AllCourses = () => {
     return monthIndex < currentMonthIndex;
   };
 
+  const indexOfLastRow = page * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = sortedCourses.slice(indexOfFirstRow, indexOfLastRow);
+
   return (
     <div>
-      <h2 style={{ textAlign: 'center' }}>All Courses</h2>
+      <h2 style={{ textAlign: 'center', marginTop: '-5px' }}>All Courses</h2>
 
       {/* Filters */}
       <div className="filters">
@@ -337,7 +349,7 @@ const AllCourses = () => {
       {/* Table */}
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
         <div style={{ flex: '1', overflow: 'hidden' }}>
-          <div style={{ height: 'calc(100vh - 280px)', overflowY: 'auto' }}>
+          <div style={{ height: 'calc(109vh - 347px)', overflowY: 'auto' }}>
             {filteredCourses.length === 0 ? (
               <div
                 style={{
@@ -438,6 +450,7 @@ const AllCourses = () => {
                         tabIndex={-1}
                         selected={isSelected(course?.courseId)}
                         style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
+
                       >
                         {!isPastMonth(monthFilter) && (
                           <TableCell padding="checkbox">
@@ -455,7 +468,7 @@ const AllCourses = () => {
                               onChange={(event) => handleEditFieldChange(event, 'courseName')}
                             />
                           ) : (
-                            <div style={{ maxWidth: '20em' }}>{course?.courseName}</div>
+                            <div style={{ maxWidth: '15rem' }}>{course?.courseName}</div>
                           )}
                         </TableCell>
                         <TableCell style={{ textAlign: 'center' }}>
@@ -505,10 +518,10 @@ const AllCourses = () => {
                           <TableCell style={{ textAlign: 'center' }}>
                             {editingCourseId === course?.courseId ? (
                               <>
-                                <Button variant="contained" onClick={saveEditedCourse} style={{ marginBottom: '10px' }}>
+                                <Button variant="contained" onClick={saveEditedCourse} style={{ marginBottom: '5px' }}>
                                   Save
                                 </Button>
-                                <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '10px' }}>
+                                <Button variant="contained" onClick={cancelEditing} style={{ marginLeft: '5px' }}>
                                   Cancel
                                 </Button>
                               </>
@@ -517,14 +530,14 @@ const AllCourses = () => {
                                 <Button
                                   variant="contained"
                                   onClick={() => handleEditCourse(course?.courseId)}
-                                  style={{ marginBottom: '10px' }}
+                                  style={{ marginBottom: '5px' }}
                                 >
                                   Edit
                                 </Button>
                                 <Button
                                   variant="contained"
                                   onClick={() => deleteCourse(course?.courseId)}
-                                  style={{ marginLeft: '10px', marginBottom: '10px' }}
+                                  style={{ marginLeft: '10px', marginBottom: '5px' }}
                                 >
                                   Delete
                                 </Button>
@@ -540,6 +553,21 @@ const AllCourses = () => {
             )}
           </div>
         </div>
+      </div>
+      <div>
+
+        <Pagination
+          count={Math.ceil(sortedCourses.length / rowsPerPage)}
+          page={page}
+          onChange={(event, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onChangeRowsPerPage={(event) => {
+            const newRowsPerPage = parseInt(event.target.value, 10);
+            setRowsPerPage(newRowsPerPage);
+            setPage(1);
+          }}
+        />
+
       </div>
 
       {/* Course Details Dialog */}
