@@ -130,10 +130,10 @@ public class CertificationControllerTest {
 
     @Test
     public void testCancelNomination() {
-        doNothing().when(certificationService).cancelNomination(anyString(), anyString());
+        doNothing().when(certificationService).cancelNomination(anyString(), anyString(), anyString());
 
-        certificationController.cancelNomination("emp1", "cert1");
+        certificationController.cancelNomination("emp1", "emp1", "cert1");
 
-        verify(certificationService, times(1)).cancelNomination("emp1", "cert1");
+        verify(certificationService, times(1)).cancelNomination("emp2", "emp1", "cert1");
     }
 }

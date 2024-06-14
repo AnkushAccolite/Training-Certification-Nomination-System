@@ -174,7 +174,9 @@ function Certifications() {
 
   const cancelNomination = async (certificationId) => {
     try {
-      const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
+      const res = await axios.get(
+        `/certifications/cancel?loggedInUser=${auth?.user?.empId}&empId=${empId}&certificationId=${certificationId}`
+      );
       toast.success('Nomination cancelled successfully');
       fetchData();
       // navigate(0);

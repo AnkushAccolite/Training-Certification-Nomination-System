@@ -28,6 +28,8 @@ public class NominationService {
     @Autowired
     private EmailService emailService;
 
+    private final String baseUrl = "http://localhost:8080";
+
     public Nomination getNomination(String nominationId) {
         return this.nominationRepository.findById(nominationId)
                 .orElseThrow(() -> new IllegalArgumentException("Course not found"));
@@ -75,7 +77,7 @@ public class NominationService {
                 .filter(nominatedCourse -> !this.employeeService.isPendingCoursePresent(nominatedCourse.getCourseId(),
                         employee.getEmpId())
                         && !this.employeeService.isApprovedCoursePresent(nominatedCourse.getCourseId(),
-                                employee.getEmpId()))
+                        employee.getEmpId()))
                 .map(nominatedCourse -> {
                     NominatedCourseStatus newNominatedCourse = new NominatedCourseStatus();
                     newNominatedCourse.setCourseId(nominatedCourse.getCourseId());
@@ -94,11 +96,28 @@ public class NominationService {
         }
 
         nomination.setNominatedCourses(nominatedCourses);
+        Nomination newNomination = this.nominationRepository.save(nomination);
         this.employeeService.setCoursesNominatedByEmployee(nomination.getEmpId(), nominatedCourses, month);
 
+        String nomonationId = newNomination.getNominationId();
+
         String courseList = nominatedCourses.stream()
-                .map(course -> this.courseService.getCourseById(course.getCourseId()).getCourseName())
-                .collect(Collectors.joining("\n\t"));
+                .map(course -> {
+                    String courseId = course.getCourseId();
+                    String courseLine = "\t" + this.courseService.getCourseById(courseId).getCourseName();
+
+                    String approveButton = String.format("<a href='%s/nomination/email/approve?nominationId=%s&courseId=%s&month=%s' " +
+                                    "style='background-color: green; color: white; padding: 10px; text-decoration: none; margin-right: 10px;'>Approve</a>",
+                            baseUrl, nomonationId, courseId, month);
+
+                    String rejectButton = String.format("<a href='%s/nomination/email/reject?nominationId=%s&courseId=%s&month=%s' " +
+                                    "style='background-color: red; color: white; padding: 10px; text-decoration: none;'>Reject</a></p>",
+                            baseUrl, nomonationId, courseId, month);
+
+                    courseLine += "\t" + approveButton + rejectButton;
+                    return courseLine;
+                })
+                .collect(Collectors.joining("\n\n\n"));
         Employee manager = this.employeeService.getEmployee(nomination.getManagerId());
         String body = this.emailService.createPendingRequestEmailBody(manager.getEmpName(), employee.getEmpId(),
                 employee.getEmpName(), courseList, "Courses");
@@ -106,7 +125,7 @@ public class NominationService {
 
         this.emailService.sendEmailAsync(manager.getEmail(), subject, body);
 
-        return this.nominationRepository.save(nomination);
+        return newNomination;
     }
 
     public Nomination updateNomination(String nominationId, Nomination updatedNomination) {
@@ -126,7 +145,7 @@ public class NominationService {
         this.nominationRepository.deleteById(nominationId);
     }
 
-    public void takeActionOnPendingRequest(String nominationId, String courseId, String action, Month month) {
+    public String takeActionOnPendingRequest(String nominationId, String courseId, String action, Month month) {
         Nomination nomination = this.getNomination(nominationId);
         Employee employee = this.employeeService.getEmployee(nomination.getEmpId());
         String courseName = this.courseService.getCourseById(courseId).getCourseName();
@@ -164,7 +183,9 @@ public class NominationService {
 
         if (updated) {
             this.nominationRepository.save(nomination);
+            return "updated";
         }
+        return "invalid";
     }
 
 }

@@ -68,4 +68,56 @@ public class NominationController {
         this.nominationService.takeActionOnPendingRequest(nominationId, courseId, action, month);
     }
 
+    @GetMapping("/email/{approveOrRejectAction}")
+    @ResponseBody
+    public String approvePendingRequestFromEmail(@PathVariable("approveOrRejectAction") String action,
+                                                 @RequestParam String nominationId,
+                                                 @RequestParam String courseId,
+                                                 @RequestParam Month month) {
+        String result = this.nominationService.takeActionOnPendingRequest(nominationId, courseId, action, month);
+
+        if (result.equals("updated"))
+            return "<!DOCTYPE html>"
+                    + "<html>"
+                    + "<head>"
+                    + "    <title>Email Action</title>"
+                    + "    <script>"
+                    + "        function closeCurrentTab() {"
+                    + "            window.close();"
+                    + "        }"
+                    + "    </script>"
+                    + "</head>"
+                    + "<body style='text-align:center;'>"
+                    + "    <p>Action has been taken for the course.</p>"
+                    + "    <button onclick='closeCurrentTab()'>You can close this tab</button>"
+                    + "    <script>"
+                    + "        setTimeout(function() {"
+                    + "            document.querySelector('button').click();"
+                    + "        }, 5000);"
+                    + "    </script>"
+                    + "</body>"
+                    + "</html>";
+
+        return "<!DOCTYPE html>"
+                + "<html>"
+                + "<head>"
+                + "    <title>Email Action</title>"
+                + "    <script>"
+                + "        function closeCurrentTab() {"
+                + "            window.close();"
+                + "        }"
+                + "    </script>"
+                + "</head>"
+                + "<body style='text-align:center;'>"
+                + "    <p>You have already taken the action for this course.</p>"
+                + "    <button onclick='closeCurrentTab()'>You can close this tab</button>"
+                + "    <script>"
+                + "        setTimeout(function() {"
+                + "            document.querySelector('button').click();"
+                + "        }, 5000);"
+                + "    </script>"
+                + "</body>"
+                + "</html>";
+    }
+
 }
