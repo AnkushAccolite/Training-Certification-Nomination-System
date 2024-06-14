@@ -88,6 +88,16 @@ public class CertificationService {
 
     }
 
+    public List<Certification> getAllCertifications() {
+        List<Certification> temp = this.certificationRepository.findAll();
+
+        List<Certification> filteredList = temp.stream()
+                .filter(obj -> !obj.getIsDeleted())
+                .collect(Collectors.toList());
+        ;
+        return filteredList;
+    }
+
     public void deleteCertification(String certificationId) {
         Optional<Certification> certification = this.certificationRepository.findById(certificationId);
         certification.ifPresent(cert -> cert.setIsDeleted(true));

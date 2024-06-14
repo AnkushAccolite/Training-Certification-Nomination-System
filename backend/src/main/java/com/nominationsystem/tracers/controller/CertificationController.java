@@ -28,7 +28,8 @@ public class CertificationController {
 
     @GetMapping
     public ResponseEntity<?> getAllCertifications() {
-        return ResponseEntity.ok(this.certificationRepository.findAll());
+        List<Certification> res = this.certificationService.getAllCertifications();
+        return ResponseEntity.ok(res);
     }
 
     @PostMapping
