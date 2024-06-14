@@ -16,7 +16,7 @@ const AddCertification = ({ onCourseAdd }) => {
   const [formData, setFormData] = useState({
     certificationname: '',
     duration: '',
-    category: '',
+    domain: '',
     description: ''
   });
   const handleChange = (e) => {
@@ -32,7 +32,7 @@ const AddCertification = ({ onCourseAdd }) => {
       const newCourse = {
         name: formData.certificationname,
         duration: formData.duration,
-        category: formData.domain,
+        domain: formData.domain,
         description: formData.description
       };
 
@@ -40,7 +40,7 @@ const AddCertification = ({ onCourseAdd }) => {
       setFormData({
         certificationname: '',
         duration: '',
-        category: '',
+        domain: '',
         description: ''
       });
       toast.success('Certification added successfully');
