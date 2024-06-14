@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'; // Import the PDF icon
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import toast from 'react-hot-toast';
+import Pagination from '@mui/material/Pagination';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -51,6 +52,8 @@ function Certifications() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [courses, setCourses] = useState([]);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(4);
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
@@ -58,20 +61,36 @@ function Certifications() {
   const empId = useSelector((state) => state?.auth?.user?.empId);
 
   const getStatus = (pendingCertifications, certifications, certificationId) => {
+    // Check if the certification is pending approval
     if (pendingCertifications.includes(certificationId)) {
       return 'Pending for Approval';
     }
-    const certificationEntries = certifications.filter((cert) => cert.certificationId === certificationId);
-    if (certificationEntries.length > 0) {
-      const latestAttempt = certificationEntries.reduce(
-        (latest, current) => (current.attempt > latest.attempt ? current : latest),
-        certificationEntries[0]
-      );
 
-      return latestAttempt.status === 'inProgress' ? 'Approved' : latestAttempt.status === 'completed' ? 'Completed' : 'Not Opted';
+    // Filter certification entries by certificationId
+    const certificationEntries = certifications.filter((cert) => cert.certificationId === certificationId);
+
+    // If there are no certification entries, the status is "Not Opted"
+    if (certificationEntries.length === 0) {
+      return 'Not Opted';
     }
-    return 'Not Opted';
+
+    // Find the latest attempt
+    const latestAttempt = certificationEntries.reduce(
+      (latest, current) => (current.attempt > latest.attempt ? current : latest),
+      certificationEntries[0]
+    );
+
+    // Determine status based on latest attempt
+    switch (latestAttempt.status) {
+      case 'inProgress':
+        return 'Approved';
+      case 'completed':
+        return 'Completed';
+      default:
+        return 'Not Opted';
+    }
   };
+
 
   const fetchData = async () => {
     try {
@@ -201,9 +220,14 @@ function Certifications() {
     }
   };
 
+
+  const indexOfLastRow = page * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = sortedCourses.filter(filterCourses).slice(indexOfFirstRow, indexOfLastRow);
+
   return (
     <div>
-      <h2 style={{ textAlign: 'center' }}>Available Certifications</h2>
+      <h2 style={{ textAlign: 'center', marginTop: '-5px' }}>Available Certifications</h2>
       <div className="filters">
         <FormControl style={{ marginRight: '10px', marginLeft: '10px', marginTop: '10px' }}>
           <Select
@@ -304,7 +328,7 @@ function Certifications() {
 
       <div style={{ paddingTop: '2%', marginTop: '-20px' }}>
         <div style={{ flex: '1', overflow: 'hidden' }}>
-          <div style={{ height: 'calc(100vh - 280px)', overflowY: 'auto' }}>
+          <div style={{ height: 'calc(110vh - 350px)', overflowY: 'auto' }}>
             {sortedCourses.length === 0 ? (
               <div
                 style={{
@@ -345,7 +369,7 @@ function Certifications() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {sortedCourses.filter(filterCourses).map((row, index) => (
+                    {currentRows.map((row, index) => (
                       <TableRow
                         key={row?.certificationId}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -396,6 +420,16 @@ function Certifications() {
             )}
           </div>
         </div>
+        <Pagination
+          count={Math.ceil(sortedCourses.filter(filterCourses).length / rowsPerPage)}
+          page={page}
+          onChange={(event, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onChangeRowsPerPage={(event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(1);
+          }}
+        />
         <Dialog open={showDetails} onClose={handleCloseDetails}>
           <DialogTitle style={{ fontSize: '17px', textAlign: 'center' }}>Certificate Details</DialogTitle>
           <DialogContent>
