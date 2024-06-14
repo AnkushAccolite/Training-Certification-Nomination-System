@@ -54,6 +54,7 @@ function Certifications() {
   const [courses, setCourses] = useState([]);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(4);
+  const [selectedCertificationToDelete, setSelectedCertificationToDelete] = useState(null);
 
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
@@ -61,26 +62,22 @@ function Certifications() {
   const empId = useSelector((state) => state?.auth?.user?.empId);
 
   const getStatus = (pendingCertifications, certifications, certificationId) => {
-    // Check if the certification is pending approval
+
     if (pendingCertifications.includes(certificationId)) {
       return 'Pending for Approval';
     }
 
-    // Filter certification entries by certificationId
     const certificationEntries = certifications.filter((cert) => cert.certificationId === certificationId);
 
-    // If there are no certification entries, the status is "Not Opted"
     if (certificationEntries.length === 0) {
       return 'Not Opted';
     }
 
-    // Find the latest attempt
     const latestAttempt = certificationEntries.reduce(
       (latest, current) => (current.attempt > latest.attempt ? current : latest),
       certificationEntries[0]
     );
 
-    // Determine status based on latest attempt
     switch (latestAttempt.status) {
       case 'inProgress':
         return 'Approved';
@@ -224,6 +221,25 @@ function Certifications() {
     }
   };
 
+  const handleDeleteClick = (certification) => {
+    setSelectedCertificationToDelete(certification);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const res = await axios.patch(`/certifications/${selectedCertificationToDelete.certificationId}`);
+      toast.success(`Certification "${selectedCertificationToDelete.name}" deleted successfully.`);
+      handleCloseConfirmationDialog();
+      fetchData();
+    } catch (error) {
+      console.error('Error deleting certification:', error);
+      toast.error('Error deleting certification');
+    }
+  };
+
+  const handleCloseConfirmationDialog = () => {
+    setSelectedCertificationToDelete(null);
+  };
 
   const indexOfLastRow = page * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
@@ -407,6 +423,15 @@ function Certifications() {
                           <Button variant="contained" onClick={() => handleViewDetails(row)}>
                             View Details
                           </Button>
+                          {auth?.isAuthenticated && auth?.user?.role === 'ADMIN' && (
+                            <Button
+                              variant="outlined"
+                              onClick={() => handleDeleteClick(row)}
+                              style={{ marginLeft: '8px' }}
+                            >
+                              Delete
+                            </Button>
+                          )}
                           <Button
                             variant="outlined"
                             onClick={() => cancelNomination(row?.certificationId)}
@@ -448,7 +473,8 @@ function Certifications() {
             <Button onClick={handleCloseDetails}>Close</Button>
           </DialogActions>
         </Dialog>
-        {/* Confirmation Dialog */}
+
+        {/* Confirmation Reimbursement Policy */}
         <Dialog open={showConfirmation} onClose={closeConfirmationDialog}>
           <DialogTitle className="confirmation-title" style={{ fontSize: '20px', textAlign: 'center' }}>
             <b>Confirmation</b>
@@ -483,6 +509,7 @@ function Certifications() {
           </DialogActions>
         </Dialog>
 
+        {/* Reimbursement Policy*/}
         <Dialog open={showPDF} onClose={handleClosePDF} maxWidth="lg" fullWidth>
           <DialogTitle>Certificate Reimbursement Policy</DialogTitle>
           <DialogContent>
@@ -492,6 +519,28 @@ function Certifications() {
             <Button onClick={handleClosePDF}>Close</Button>
           </DialogActions>
         </Dialog>
+
+        {/* Confirmation Dialog for delete */}
+        <Dialog open={!!selectedCertificationToDelete} onClose={handleCloseConfirmationDialog}>
+          <DialogTitle style={{ fontSize: '15px', textAlign: 'center', padding: '40px' }}>
+            <span style={{ color: 'black' }}>
+              {`Are you sure you want to delete the certification: `}
+            </span>
+            <br />
+            <span style={{ color: 'black', fontSize: '15px' }}>
+              <b>{selectedCertificationToDelete?.name}</b>?
+            </span>
+          </DialogTitle>
+          <DialogActions style={{ justifyContent: 'center', marginTop: '-30px' }}>
+            <Button onClick={handleCloseConfirmationDialog} style={{ backgroundColor: '#2196f3', color: 'white', marginBottom: '20px' }}>
+              No
+            </Button>
+            <Button onClick={handleConfirmDelete} style={{ backgroundColor: '#db3312', color: 'white', marginBottom: '20px' }}>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+
       </div>
     </div>
   );
