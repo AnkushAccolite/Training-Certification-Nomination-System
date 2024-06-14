@@ -3,11 +3,15 @@ package com.nominationsystem.tracers.service;
 import com.nominationsystem.tracers.models.*;
 import com.nominationsystem.tracers.repository.CertificationFeedbackRepository;
 import com.nominationsystem.tracers.repository.CertificationRepository;
+import com.nominationsystem.tracers.repository.TCApprovalRecordsRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ua_parser.Client;
+import ua_parser.Parser;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,7 +32,56 @@ public class CertificationService {
     private CertificationFeedbackRepository certificationFeedbackRepository;
 
     @Autowired
+    private TCApprovalRecordsRepository tcApprovalRecordsRepository;
+
+    @Autowired
     private EmailService emailService;
+
+
+    private String getClientIp(HttpServletRequest request) {
+        String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null) {
+            return getIPv4Address(request.getRemoteAddr());
+        }
+
+        // X-Forwarded-For can contain multiple IP addresses, the first one is the client's IP
+        String[] ipAddresses = xfHeader.split(",");
+        for (String ip : ipAddresses) {
+            String ipv4 = getIPv4Address(ip.trim());
+            if (ipv4 != null) {
+                return ipv4;
+            }
+        }
+
+        // Fall back to remote address if no valid IPv4 address found in X-Forwarded-For header
+        return getIPv4Address(request.getRemoteAddr());
+    }
+
+    private String getIPv4Address(String ipAddress) {
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            return null;
+        }
+        if (ipAddress.contains(":")) {
+            // If the address contains ":", it's an IPv6 address, return null
+            return null;
+        }
+        return ipAddress;
+    }
+
+    public void getDeviceInfo(String userAgent, HttpServletRequest request,String empId,ArrayList<String> certificationId){
+
+        Parser uaParser = new Parser();
+        Client client = uaParser.parse(userAgent);
+        String clientIp = request.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.isEmpty()) {
+            clientIp = request.getRemoteAddr();
+        }
+
+        TC_Approval_Records data = new TC_Approval_Records(empId,certificationId,client.os.family,client.device.family,client.os.major,client.userAgent.family,client.userAgent.major,clientIp);
+
+        tcApprovalRecordsRepository.save(data);
+
+    }
 
     public void deleteCertification(String certificationId) {
         Optional<Certification> certification = this.certificationRepository.findById(certificationId);
