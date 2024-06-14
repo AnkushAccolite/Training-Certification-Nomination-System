@@ -109,6 +109,7 @@ function Certifications() {
       toast.error('Error fetching certifications');
     }
   };
+
   useEffect(() => {
     fetchData();
   }, [empId]);
@@ -159,6 +160,7 @@ function Certifications() {
   const nominateCertifications = async () => {
     try {
       const res = await axios.post(`/certifications/nominateCertification?empId=${empId}`, selectedCourseIds);
+      const tc = await axios.post(`/certifications/agreeTC?empId=${empId}`, selectedCourseIds);
       setSelectedCourseIds([]);
       closeConfirmationDialog();
       toast.success('Certifications nominated');

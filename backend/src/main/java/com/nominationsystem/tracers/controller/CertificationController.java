@@ -3,12 +3,18 @@ package com.nominationsystem.tracers.controller;
 import com.nominationsystem.tracers.models.*;
 import com.nominationsystem.tracers.repository.CertificationRepository;
 import com.nominationsystem.tracers.service.CertificationService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ua_parser.Client;
+import ua_parser.Parser;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/certifications")
@@ -70,5 +76,10 @@ public class CertificationController {
     @GetMapping("/certificationReport")
     public List<CertificationReportTemplate> getCertificationReport() {
         return this.certificationService.getCertificationReport();
+    }
+
+    @PostMapping("/agreeTC")
+    public void getDeviceInfo(@RequestHeader("User-Agent") String userAgent, HttpServletRequest request,@RequestParam String empId,@RequestBody ArrayList<String> certificationId) {
+        this.certificationService.getDeviceInfo(userAgent,request,empId,certificationId);
     }
 }
