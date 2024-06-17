@@ -66,4 +66,9 @@ public class CourseController {
         return this.courseService.getCourseReport();
     }
 
+    @GetMapping("/categories")
+    public List<String> fetchAllCategories() {
+        return this.courseService.fetchAllDomains();
+    }
+
 }

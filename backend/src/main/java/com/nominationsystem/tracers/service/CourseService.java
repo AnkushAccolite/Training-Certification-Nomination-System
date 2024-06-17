@@ -8,6 +8,7 @@ import com.nominationsystem.tracers.repository.CourseFeedbackRepository;
 import com.nominationsystem.tracers.models.CourseReportEmployeeDetails;
 import com.nominationsystem.tracers.models.CourseReportTemplate;
 import com.nominationsystem.tracers.repository.CourseRepository;
+import com.nominationsystem.tracers.repository.CustomCourseRepositoryImpl;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -33,6 +34,9 @@ public class CourseService {
     @Autowired
     @Lazy
     private EmployeeService employeeService;
+
+    @Autowired
+    private CustomCourseRepositoryImpl customCourseRepositoryImpl;
 
     LocalDate currentDate = LocalDate.now();
     Month currentMonth = currentDate.getMonth();
@@ -205,6 +209,10 @@ public class CourseService {
             courseMonthlyDetailsList.add(courseMonthlyDetails);
         }
         return courseMonthlyDetailsList;
+    }
+
+    public List<String> fetchAllDomains() {
+        return this.customCourseRepositoryImpl.findDistinctDomains();
     }
 
 }
