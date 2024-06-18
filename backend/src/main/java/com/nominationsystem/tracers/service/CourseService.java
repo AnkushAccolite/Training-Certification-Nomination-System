@@ -36,7 +36,7 @@ public class CourseService {
     private EmployeeService employeeService;
 
     @Autowired
-    private CustomCourseRepositoryImpl customCourseRepositoryImpl;
+    private CustomCourseRepositoryImpl customCourseRepository;
 
     LocalDate currentDate = LocalDate.now();
     Month currentMonth = currentDate.getMonth();
@@ -212,7 +212,7 @@ public class CourseService {
     }
 
     public List<String> fetchAllDomains() {
-        return this.customCourseRepositoryImpl.findDistinctDomains();
+        return this.customCourseRepository.findDistinctDomains();
     }
 
 }

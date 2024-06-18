@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box, FormControl, InputLabel, OutlinedInput, Button, Select, MenuItem } from '@mui/material';
+import { Box, FormControl, InputLabel, OutlinedInput, Button, Autocomplete, TextField } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
 import toast from 'react-hot-toast';
-import { Category } from '@mui/icons-material';
+import getAllCertCategories from 'utils/getAllCertCategories';
 
 const AddCertification = ({ onCourseAdd }) => {
   const auth = useSelector((state) => state.auth);
@@ -19,6 +19,17 @@ const AddCertification = ({ onCourseAdd }) => {
     domain: '',
     description: ''
   });
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const allCertCategories = await getAllCertCategories();
+      setCategories(allCertCategories);
+    };
+    fetchCategories();
+  }, [categories]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -26,17 +37,32 @@ const AddCertification = ({ onCourseAdd }) => {
       [name]: value
     }));
   };
+
+  const handleCategoryChange = (event, newValue) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      domain: newValue || ''
+    }));
+  };
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      let domain = formData.domain;
+      domain = domain.charAt(0).toUpperCase() + domain.slice(1).toLowerCase();
       const newCourse = {
         name: formData.certificationname,
         duration: formData.duration,
-        domain: formData.domain,
+        domain: domain,
         description: formData.description
       };
 
       const res = await axios.post('/certifications', newCourse);
+
+      if (!categories.includes(newCourse.domain)) {
+        setCategories((prevCategories) => [...prevCategories, newCourse.domain]);
+      }
+
       setFormData({
         certificationname: '',
         duration: '',
@@ -67,7 +93,7 @@ const AddCertification = ({ onCourseAdd }) => {
     >
       <h2 style={{ textAlign: 'center', marginTop: 0 }}>ADD CERTIFICATION</h2>
       <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-        <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
+        <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }} required>
           <InputLabel htmlFor="certificationname">Certification Name</InputLabel>
           <OutlinedInput
             id="certificationname"
@@ -79,7 +105,7 @@ const AddCertification = ({ onCourseAdd }) => {
             required
           />
         </FormControl>
-        <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
+        <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }} required>
           <InputLabel htmlFor="duration">Duration</InputLabel>
           <OutlinedInput
             id="duration"
@@ -92,15 +118,24 @@ const AddCertification = ({ onCourseAdd }) => {
           />
         </FormControl>
         <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
-          <InputLabel htmlFor="domain">Category</InputLabel>
-          <Select id="domain" name="domain" value={formData.domain} onChange={handleChange} label="Domain" required>
-            <MenuItem value="Technical">Technical</MenuItem>
-            <MenuItem value="Domain">Domain</MenuItem>
-            <MenuItem value="Power">Power</MenuItem>
-            <MenuItem value="Process">Process</MenuItem>
-          </Select>
+          <Autocomplete
+            id="domain"
+            name="domain"
+            value={formData.domain}
+            onChange={handleCategoryChange}
+            inputValue={formData.domain}
+            onInputChange={(event, newInputValue) => {
+              setFormData((prevState) => ({
+                ...prevState,
+                domain: newInputValue || ''
+              }));
+            }}
+            options={categories}
+            freeSolo
+            renderInput={(params) => <TextField {...params} label="Category" variant="outlined" required />}
+          />
         </FormControl>
-        <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }}>
+        <FormControl variant="outlined" sx={{ width: '100%', marginBottom: 3 }} required>
           <InputLabel htmlFor="description">Description</InputLabel>
           <OutlinedInput
             id="description"

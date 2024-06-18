@@ -3,6 +3,7 @@ package com.nominationsystem.tracers.service;
 import com.nominationsystem.tracers.models.*;
 import com.nominationsystem.tracers.repository.CertificationFeedbackRepository;
 import com.nominationsystem.tracers.repository.CertificationRepository;
+import com.nominationsystem.tracers.repository.CustomCertificationRepositoryImpl;
 import com.nominationsystem.tracers.repository.TCApprovalRecordsRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
@@ -36,6 +37,9 @@ public class CertificationService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private CustomCertificationRepositoryImpl customCertificationRepository;
 
     private final String baseUrl = "http://localhost:8080";
 
@@ -271,6 +275,10 @@ public class CertificationService {
         });
 
         return certificationReport;
+    }
+
+    public List<String> fetchAllDomains() {
+        return this.customCertificationRepository.findDistinctDomains();
     }
 
 }

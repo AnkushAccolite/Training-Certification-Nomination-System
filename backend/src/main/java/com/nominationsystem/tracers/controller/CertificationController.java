@@ -7,14 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ua_parser.Client;
-import ua_parser.Parser;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/certifications")
@@ -136,5 +131,10 @@ public class CertificationController {
                 + "    </script>"
                 + "</body>"
                 + "</html>";
+    }
+
+    @GetMapping("/categories")
+    public List<String> fetchAllCategories() {
+        return this.certificationService.fetchAllDomains();
     }
 }
