@@ -36,7 +36,7 @@ const CoursesCompleted = () => {
               SNo: index + 1,
               CourseName: course?.courseName || '',
               Duration: `${course?.duration}` || '',
-              DateOfCompletion: completedCourse?.month || ''
+              DateOfCompletion: completedCourse?.date || ''
             };
           });
 
@@ -183,7 +183,7 @@ const CoursesCompleted = () => {
                           style={{ textAlign: 'center', cursor: 'pointer', fontSize: '16px', fontWeight: 'bold' }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            Completion Month {renderSortIcon('DateOfCompletion')}
+                            Completion Date {renderSortIcon('DateOfCompletion')}
                           </div>
                         </TableCell>
                       </TableRow>

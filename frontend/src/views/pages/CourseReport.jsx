@@ -54,13 +54,14 @@ const CourseReport = () => {
   };
 
   const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+  const [year, setYear] = useState('2024');
 
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
 
     const fetchData = async () => {
       try {
-        const { data } = await axios.get('course/courseReport');
+        const { data } = await axios.get(`course/courseReport?year=${year}`);
 
         const temp = data
           ?.map((item) => ({
@@ -497,13 +498,12 @@ const CourseReport = () => {
                       },
                       color: '#fff',
                       font: {
-                        weight: 'bold',
-                      },
-                    },
-                  },
+                        weight: 'bold'
+                      }
+                    }
+                  }
                 }}
               />
-
             </div>
           </div>
         </div>

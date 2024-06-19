@@ -55,7 +55,7 @@ public class EmployeeService {
         return this.employeeRepository.findByEmpId(empId);
     }
 
-    public void setCoursesNominatedByEmployee(String empId, List<NominatedCourseStatus> nominatedCourses, Month month) {
+    public void setCoursesNominatedByEmployee(String empId, List<NominatedCourseStatus> nominatedCourses, String date) {
         Employee employee = this.employeeRepository.findByEmpId(empId);
 
         List<EmployeeCourseStatus> approvedCourses = new ArrayList<>();
@@ -63,10 +63,10 @@ public class EmployeeService {
 
         nominatedCourses.forEach(nominatedCourse -> {
             if (nominatedCourse.getApprovalStatus().equals(ApprovalStatus.APPROVED)) {
-                EmployeeCourseStatus temp = new EmployeeCourseStatus(nominatedCourse.getCourseId(), month);
+                EmployeeCourseStatus temp = new EmployeeCourseStatus(nominatedCourse.getCourseId(), date);
                 approvedCourses.add(temp);
             } else if (nominatedCourse.getApprovalStatus().equals(ApprovalStatus.PENDING)) {
-                EmployeeCourseStatus temp1 = new EmployeeCourseStatus(nominatedCourse.getCourseId(), month);
+                EmployeeCourseStatus temp1 = new EmployeeCourseStatus(nominatedCourse.getCourseId(), date);
                 pendingCourses.add(temp1);
             }
         });
@@ -95,12 +95,12 @@ public class EmployeeService {
         return courseList;
     }
 
-    public void updateCoursesNominatedByEmployee(String empId, String courseId, String action, Month month) {
+    public void updateCoursesNominatedByEmployee(String empId, String courseId, String action, String date) {
         Employee employee = this.employeeRepository.findByEmpId(empId);
 
         if ("approve".equals(action)) {
             employee.removePendingCourseById(courseId);
-            employee.getApprovedCourses().add(new EmployeeCourseStatus(courseId, month));
+            employee.getApprovedCourses().add(new EmployeeCourseStatus(courseId, date));
         } else if ("reject".equals(action)) {
             employee.removePendingCourseById(courseId);
         }
@@ -143,7 +143,7 @@ public class EmployeeService {
 
             courseDetails.setCourseName(courseData.getCourseName());
             courseDetails.setDomain(courseData.getDomain());
-            courseDetails.setMonth(course.getMonth());
+            courseDetails.setDate(course.getDate());
             courseDetailsList.add(courseDetails);
         });
         return courseDetailsList;

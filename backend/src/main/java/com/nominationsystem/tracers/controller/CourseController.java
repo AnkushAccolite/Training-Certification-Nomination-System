@@ -62,8 +62,8 @@ public class CourseController {
     }
 
     @GetMapping("/courseReport")
-    public List<CourseReportTemplate> fetchCourseReport() {
-        return this.courseService.getCourseReport();
+    public List<CourseReportTemplate> fetchCourseReport(@RequestParam String year) {
+        return this.courseService.getCourseReport(year);
     }
 
     @GetMapping("/categories")

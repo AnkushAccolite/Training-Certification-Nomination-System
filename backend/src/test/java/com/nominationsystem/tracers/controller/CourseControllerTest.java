@@ -117,9 +117,9 @@ public class CourseControllerTest {
         List<CourseReportTemplate> reports = new ArrayList<>();
         reports.add(new CourseReportTemplate());
 
-        when(courseService.getCourseReport()).thenReturn(reports);
+        when(courseService.getCourseReport("2024")).thenReturn(reports);
 
-        List<CourseReportTemplate> response = courseController.fetchCourseReport();
+        List<CourseReportTemplate> response = courseController.fetchCourseReport("2024");
 
         assertEquals(reports, response);
     }

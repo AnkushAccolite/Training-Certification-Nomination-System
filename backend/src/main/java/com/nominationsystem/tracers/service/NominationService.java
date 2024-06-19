@@ -97,7 +97,7 @@ public class NominationService {
 
         nomination.setNominatedCourses(nominatedCourses);
         Nomination newNomination = this.nominationRepository.save(nomination);
-        this.employeeService.setCoursesNominatedByEmployee(nomination.getEmpId(), nominatedCourses, month);
+        this.employeeService.setCoursesNominatedByEmployee(nomination.getEmpId(), nominatedCourses, newNomination.getNominationDate());
 
         String nomonationId = newNomination.getNominationId();
 
@@ -176,7 +176,7 @@ public class NominationService {
                     this.emailService.sendEmailAsync(employee.getEmail(), subject, emailBody);
 
                     this.employeeService.updateCoursesNominatedByEmployee(nomination.getEmpId(), courseId, action,
-                            nomination.getMonth());
+                            new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
                 })
                 .findAny()
                 .isPresent();

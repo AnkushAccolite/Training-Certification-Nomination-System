@@ -3,8 +3,6 @@ package com.nominationsystem.tracers.models;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Month;
-
 @Getter
 @Setter
 public class EmployeeReportCourseDetails {
@@ -13,6 +11,6 @@ public class EmployeeReportCourseDetails {
 
     private String domain;
 
-    private Month month;
+    private String date;
 
 }
