@@ -51,7 +51,9 @@ const CertificationApplicationRequests = () => {
 
   const handleReject = async (empId, certificationId) => {
     try {
-      const res = await axios.get(`/certifications/cancel?empId=${empId}&certificationId=${certificationId}`);
+      const res = await axios.get(
+        `/certifications/cancel?loggedInUser=${auth?.user?.empId}&empId=${empId}&certificationId=${certificationId}`
+      );
       fetchData();
       toast.success('Certification Rejected');
     } catch (error) {
@@ -68,7 +70,9 @@ const CertificationApplicationRequests = () => {
         </div>
       ) : (
         <>
-          <h2 style={{ paddingBottom: '20px', fontSize: '22px' ,textAlign:'center', marginBottom:'3px'}}>Pending Certification Requests</h2>
+          <h2 style={{ paddingBottom: '20px', fontSize: '22px', textAlign: 'center', marginBottom: '3px' }}>
+            Pending Certification Requests
+          </h2>
           {requests?.map((card) => (
             <CertificationCard
               key={card?.certificationId}

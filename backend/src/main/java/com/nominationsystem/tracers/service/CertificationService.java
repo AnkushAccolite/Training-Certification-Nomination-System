@@ -3,11 +3,16 @@ package com.nominationsystem.tracers.service;
 import com.nominationsystem.tracers.models.*;
 import com.nominationsystem.tracers.repository.CertificationFeedbackRepository;
 import com.nominationsystem.tracers.repository.CertificationRepository;
+import com.nominationsystem.tracers.repository.CustomCertificationRepositoryImpl;
+import com.nominationsystem.tracers.repository.TCApprovalRecordsRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ua_parser.Client;
+import ua_parser.Parser;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,7 +33,74 @@ public class CertificationService {
     private CertificationFeedbackRepository certificationFeedbackRepository;
 
     @Autowired
+    private TCApprovalRecordsRepository tcApprovalRecordsRepository;
+
+    @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private CustomCertificationRepositoryImpl customCertificationRepository;
+
+    private final String baseUrl = "http://localhost:8080";
+
+    private String getClientIp(HttpServletRequest request) {
+        String xfHeader = request.getHeader("X-Forwarded-For");
+        if (xfHeader == null) {
+            return getIPv4Address(request.getRemoteAddr());
+        }
+
+        // X-Forwarded-For can contain multiple IP addresses, the first one is the
+        // client's IP
+        String[] ipAddresses = xfHeader.split(",");
+        for (String ip : ipAddresses) {
+            String ipv4 = getIPv4Address(ip.trim());
+            if (ipv4 != null) {
+                return ipv4;
+            }
+        }
+
+        // Fall back to remote address if no valid IPv4 address found in X-Forwarded-For
+        // header
+        return getIPv4Address(request.getRemoteAddr());
+    }
+
+    private String getIPv4Address(String ipAddress) {
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            return null;
+        }
+        if (ipAddress.contains(":")) {
+            // If the address contains ":", it's an IPv6 address, return null
+            return null;
+        }
+        return ipAddress;
+    }
+
+    public void getDeviceInfo(String userAgent, HttpServletRequest request, String empId,
+            ArrayList<String> certificationId) {
+
+        Parser uaParser = new Parser();
+        Client client = uaParser.parse(userAgent);
+        String clientIp = request.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.isEmpty()) {
+            clientIp = request.getRemoteAddr();
+        }
+
+        TC_Approval_Records data = new TC_Approval_Records(empId, certificationId, client.os.family,
+                client.device.family, client.os.major, client.userAgent.family, client.userAgent.major, clientIp);
+
+        tcApprovalRecordsRepository.save(data);
+
+    }
+
+    public List<Certification> getAllCertifications() {
+        List<Certification> temp = this.certificationRepository.findAll();
+
+        List<Certification> filteredList = temp.stream()
+                .filter(obj -> !obj.getIsDeleted())
+                .collect(Collectors.toList());
+        ;
+        return filteredList;
+    }
 
     public void deleteCertification(String certificationId) {
         Optional<Certification> certification = this.certificationRepository.findById(certificationId);
@@ -49,9 +121,24 @@ public class CertificationService {
         employee.setPendingCertifications(pendingCertifications);
 
         String certificationList = pendingCertifications.stream()
-                .map(cert -> Objects.requireNonNull(this.certificationRepository.findById(cert).orElse(null))
-                        .getName())
-                .collect(Collectors.joining("\n\t"));
+                .map(cert -> {
+                    String certificationLine = "\t" + Objects.requireNonNull(this.certificationRepository.findById(cert)
+                            .orElse(null)).getName();
+
+                    String approveButton = String.format(
+                            "<a href='%s/certifications/email/approveCertification?empId=%s&certificationId=%s' " +
+                                    "style='background-color: green; color: white; padding: 10px; text-decoration: none; margin-right: 10px;'>Approve</a>",
+                            baseUrl, empId, cert);
+
+                    String rejectButton = String.format(
+                            "<a href='%s/certifications/email/cancel?loggedInUser=%s&empId=%s&certificationId=%s' " +
+                                    "style='background-color: red; color: white; padding: 10px; text-decoration: none;'>Reject</a></p>",
+                            baseUrl, employee.getManagerId(), empId, cert);
+
+                    certificationLine += "\t" + approveButton + rejectButton;
+                    return certificationLine;
+                })
+                .collect(Collectors.joining("\n\n\n"));
         Employee manager = this.employeeService.getEmployee(employee.getManagerId());
         String body = this.emailService.createPendingRequestEmailBody(manager.getEmpName(), empId,
                 employee.getEmpName(), certificationList, "Certifications");
@@ -102,7 +189,7 @@ public class CertificationService {
     }
 
     public void certificationCompleted(String empId, String certificationId, String url,
-                                       CertificationFeedback certificationFeedback) {
+            CertificationFeedback certificationFeedback) {
         this.certificationFeedbackRepository.save(certificationFeedback);
         Employee employee = this.employeeService.getEmployeeRepository().findByEmpId(empId);
 
@@ -135,20 +222,22 @@ public class CertificationService {
         this.employeeService.getEmployeeRepository().save(employee);
     }
 
-    public void cancelNomination(String empId, String certificationId) {
+    public void cancelNomination(String loggedInUser, String empId, String certificationId) {
         Employee employee = this.employeeService.getEmployeeRepository().findByEmpId(empId);
 
         ArrayList<String> temp = employee.getPendingCertifications();
         temp.remove(certificationId);
         employee.setPendingCertifications(temp);
 
-        String certificationName = Objects.requireNonNull(this.certificationRepository.findById(certificationId)
-                .orElse(null)).getName();
-        String rejectedBody = this.emailService.createRejectionEmailBody(employee.getEmpName(),
-                certificationName, "Certification");
-        String subject = "Nomination request rejected for certification " + certificationName;
+        if (!loggedInUser.equals(empId)) {
+            String certificationName = Objects.requireNonNull(this.certificationRepository.findById(certificationId)
+                    .orElse(null)).getName();
+            String rejectedBody = this.emailService.createRejectionEmailBody(employee.getEmpName(),
+                    certificationName, "Certification");
+            String subject = "Nomination request rejected for certification " + certificationName;
 
-        this.emailService.sendEmailAsync(employee.getEmail(), subject, rejectedBody);
+            this.emailService.sendEmailAsync(employee.getEmail(), subject, rejectedBody);
+        }
 
         this.employeeService.getEmployeeRepository().save(employee);
     }
@@ -186,6 +275,10 @@ public class CertificationService {
         });
 
         return certificationReport;
+    }
+
+    public List<String> fetchAllDomains() {
+        return this.customCertificationRepository.findDistinctDomains();
     }
 
 }

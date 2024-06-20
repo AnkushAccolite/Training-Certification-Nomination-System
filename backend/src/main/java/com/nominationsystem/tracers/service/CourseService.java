@@ -8,14 +8,16 @@ import com.nominationsystem.tracers.repository.CourseFeedbackRepository;
 import com.nominationsystem.tracers.models.CourseReportEmployeeDetails;
 import com.nominationsystem.tracers.models.CourseReportTemplate;
 import com.nominationsystem.tracers.repository.CourseRepository;
+import com.nominationsystem.tracers.repository.CustomCourseRepositoryImpl;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.text.SimpleDateFormat;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -34,8 +36,8 @@ public class CourseService {
     @Lazy
     private EmployeeService employeeService;
 
-    LocalDate currentDate = LocalDate.now();
-    Month currentMonth = currentDate.getMonth();
+    @Autowired
+    private CustomCourseRepositoryImpl customCourseRepository;
 
     public Course getCourse(String courseName) {
         return this.courseRepository.findByCourseName(courseName);
@@ -128,8 +130,8 @@ public class CourseService {
                             if (bands == null) {
                                 bands = new ArrayList<>();
                                 status.setBands(bands);
-                            }else if (!currentActivationStatus) {
-                                    bands.add(band);
+                            } else if (!currentActivationStatus) {
+                                bands.add(band);
                             } else {
                                 bands.remove(band);
                             }
@@ -145,14 +147,15 @@ public class CourseService {
         Employee employee = this.employeeService.getEmployeeRepository().findByEmpId(empId);
 
         if (employee != null) {
-            employee.getCompletedCourses().add(new EmployeeCourseStatus(courseId, currentMonth));
+            String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+            employee.getCompletedCourses().add(new EmployeeCourseStatus(courseId, currentDate));
             employee.removeAssignedCourseById(courseId);
             this.employeeService.getEmployeeRepository().save(employee);
         }
         this.courseFeedbackRepository.save(courseFeedback);
     }
 
-    public List<CourseReportTemplate> getCourseReport() {
+    public List<CourseReportTemplate> getCourseReport(String year) {
         List<Course> courses = this.getAllCourses();
         List<CourseReportTemplate> courseReport = new ArrayList<>();
 
@@ -161,13 +164,13 @@ public class CourseService {
             report.setCourseId(course.getCourseId());
             report.setCourseName(course.getCourseName());
             report.setDomain(course.getDomain());
-            report.setMonthlyDetails(this.getMonthlyDetailsOfSingleCourse(course.getCourseId()));
+            report.setMonthlyDetails(this.getMonthlyDetailsOfSingleCourse(course.getCourseId(), year));
             courseReport.add(report);
         });
         return courseReport;
     }
 
-    public List<CourseReportEmployeeDetails> getMonthlyDetailsOfSingleCourse(String courseId) {
+    public List<CourseReportEmployeeDetails> getMonthlyDetailsOfSingleCourse(String courseId, String year) {
         List<Employee> employeeList = this.employeeService.getAllEmployees();
         List<CourseReportEmployeeDetails> courseMonthlyDetailsList = new ArrayList<>();
 
@@ -180,14 +183,14 @@ public class CourseService {
             employeeList.forEach(employee -> {
                 approvedCoursesCount.addAndGet((int) employee.getApprovedCourses().stream()
                         .filter(course -> course.getCourseId().equals(courseId))
-                        .filter(course -> course.getMonth().equals(month))
+                        .filter(course -> course.getDate().substring(6).equals(year))
+                        .filter(course -> Integer.parseInt(course.getDate().substring(3, 5)) == month.getValue())
                         .count());
-            });
 
-            employeeList.forEach(employee -> {
                 completedCoursesCount.addAndGet((int) employee.getCompletedCourses().stream()
                         .filter(course -> course.getCourseId().equals(courseId))
-                        .filter(course -> course.getMonth().equals(month))
+                        .filter(course -> course.getDate().substring(6).equals(year))
+                        .filter(course -> Integer.parseInt(course.getDate().substring(3, 5)) == month.getValue())
                         .count());
             });
 
@@ -205,6 +208,10 @@ public class CourseService {
             courseMonthlyDetailsList.add(courseMonthlyDetails);
         }
         return courseMonthlyDetailsList;
+    }
+
+    public List<String> fetchAllDomains() {
+        return this.customCourseRepository.findDistinctDomains();
     }
 
 }

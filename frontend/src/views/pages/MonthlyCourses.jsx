@@ -54,16 +54,6 @@ const MonthlyCourses = () => {
   const names = ['All', 'Technical', 'Domain', 'Power', 'Process'];
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
-  // const removeCourse = async (id) => {
-  //   try {
-  //     await axios.post(`/course/change-status?month=${monthFilter}`, [id]);
-  //     toast.success('Course removed successfully');
-  //     fetchCourses();
-  //   } catch (error) {
-  //     toast.error('Something went wrong');
-  //   }
-  // };
-
   const handleViewDetails = (course) => {
     setSelectedCourse(course);
     setShowDetails(true);
