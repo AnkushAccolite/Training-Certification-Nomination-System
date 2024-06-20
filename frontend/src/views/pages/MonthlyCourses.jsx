@@ -257,20 +257,32 @@ const MonthlyCourses = () => {
         </div>
       </div>
 
-      <Dialog open={showDetails} onClose={handleCloseDetails}>
-        <DialogTitle>Course Details</DialogTitle>
-        <DialogContent>
-          {selectedCourse && (
-            <div>
-              <h3>{selectedCourse?.courseName}</h3>
-              <p>{selectedCourse?.description}</p>
-            </div>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetails}>Close</Button>
-        </DialogActions>
-      </Dialog>
+      <Dialog 
+        open={showDetails} 
+        onClose={handleCloseDetails} 
+        sx={{
+          '& .MuiDialog-paper': {
+            width: '500px',
+            display: 'flex',
+            flexDirection: 'column',
+            paddingTop:'0.7%',
+            justifyContent: 'space-between', 
+          },
+        }}
+      >
+      <DialogTitle variant="h3"style={{ fontSize: '19px', textAlign: 'center',paddingBottom:'0.6% '  }}>Course Details</DialogTitle>
+      <DialogContent sx={{ flex: 1, overflowY: 'auto' ,paddingBottom:'0% ' }}>
+        {selectedCourse && (
+          <div>
+            <h3 style={{textAlign:'center',paddingBottom:'0% ' }}>{selectedCourse?.courseName}</h3>
+            <p style={{textAlign:'center'}}>{selectedCourse?.description}</p>
+          </div>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseDetails} variant='outlined'>Close</Button>
+      </DialogActions>
+    </Dialog>
     </div>
   );
 };
