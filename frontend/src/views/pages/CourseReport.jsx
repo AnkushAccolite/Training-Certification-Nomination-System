@@ -54,7 +54,12 @@ const CourseReport = () => {
   };
 
   const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
-  const [year, setYear] = useState('2024');
+  const [year, setYear] = useState(new Date().getFullYear());
+
+  const handleYear = (event) => {
+    setYear(event.target.value);
+    console.log(event.target.value);
+  };
 
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
@@ -83,7 +88,7 @@ const CourseReport = () => {
       }
     };
     fetchData();
-  }, [auth, navigate]);
+  }, [auth, navigate, year]);
 
   useEffect(() => {
     handleSearch();
@@ -257,6 +262,7 @@ const CourseReport = () => {
       <div style={{ textAlign: 'center' }}>
         <h2>Course Report</h2>
         <div className="employee-report-filters">
+          <TextField label="Year" value={year} onChange={handleYear} style={{ marginRight: '10px' }}></TextField>
           <TextField select label="Filter" value={selectedFilter} onChange={handleFilterChange} style={{ marginRight: '10px' }}>
             <MenuItem value="Monthly">Monthly</MenuItem>
             <MenuItem value="Quarterly">Quarterly</MenuItem>

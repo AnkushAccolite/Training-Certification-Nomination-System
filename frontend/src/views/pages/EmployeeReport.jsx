@@ -81,8 +81,8 @@ const EmployeeReport = () => {
             name: item?.empName,
             category: item?.completedCourses?.map((course) => course?.domain),
             coursesEnrolled: item?.completedCourses?.map((course) => course?.courseName),
-            completionMonth: item?.completedCourses?.map((course) => parseInt(course?.date.substring(3, 5)) + 1),
-            completionYear: item?.completedCourses?.map((course) => parseInt(course?.date.substring(6)))
+            completionMonth: item?.completedCourses?.map((course) => parseInt(course?.date?.substring(3, 5))),
+            completionYear: item?.completedCourses?.map((course) => parseInt(course?.date?.substring(6)))
           }))
           .filter((employee) => employee?.coursesEnrolled?.length !== 0);
 
@@ -480,7 +480,6 @@ const EmployeeReport = () => {
                     let rows = [];
                     matchingCourses.forEach((course, index) => {
                       const completionMonth = course.completionMonth;
-                      console.log(completionMonth);
                       if (index === 0) {
                         rows.push(
                           <TableRow
