@@ -76,7 +76,7 @@ const NotificationSection = () => {
 
   return (
     <>
-      <Tooltip title="Check Status" placement="left">
+      <Tooltip title="Course Status" placement="left">
         <ButtonBase sx={{ borderRadius: '50%' }} onClick={handleToggle}>
           <Avatar
             variant="rounded"
