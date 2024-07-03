@@ -1,54 +1,89 @@
 .courses-completed-container {
-    display: flex;
-  }
-  
+  display: flex;
+  flex-wrap: wrap; /* Allow flex items to wrap to the next line on smaller screens */
+}
+
+.left-panel {
+  flex: 0 0 70%;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.right-panel {
+  flex: 0 0 30%;
+  position: sticky;
+  top: 20px;
+}
+
+.course-filters {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: rgb(247, 247, 247);
+  border-radius: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+}
+
+.course-filters .MuiFormControl-root.date-picker {
+  min-width: 120px;
+}
+
+.course-filters .date-separator {
+  width: auto;
+  padding: 0 10px;
+}
+
+.course-filters .MuiOutlinedInput-notchedOutline {
+  border: none;
+}
+
+.course-filters .MuiSelect-root:focus {
+  background-color: transparent;
+}
+
+.course-filters .MuiInputBase-input {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 600px) {
   .left-panel {
-    flex: 0 0 70%;
-    overflow-y: auto;
-    height: 100vh;
+    flex: 0 0 100%;
+    height: auto; /* Adjust height for better scrolling on mobile */
   }
-  
+
   .right-panel {
-    flex: 0 0 30%;
-    position: sticky;
-    top: 20px;
+    flex: 0 0 100%;
+    position: relative; /* Remove sticky positioning for mobile */
+    top: 0;
+    margin-top: 20px; /* Add some margin for spacing */
   }
-  
-  .course-filters{
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+
+  .course-filters {
+    flex-direction: column; /* Stack filter items vertically on mobile */
+    align-items: stretch; /* Make items take full width */
     padding: 10px;
-    background-color: rgb(247, 247, 247);
-    border-radius: 30px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   .course-filters .MuiFormControl-root.date-picker {
-    min-width: 120px;
+    min-width: 100%; /* Full width on mobile */
+    margin-bottom: 10px;
   }
-  
+
   .course-filters .date-separator {
-    width: auto;
-    padding: 0 10px;
+    display: none; /* Hide separator on mobile */
   }
-  
-  .course-filters .MuiOutlinedInput-notchedOutline {
-    border: none;
-  }
-  
-  .course-filters.MuiSelect-root:focus {
-    background-color: transparent;
-  }
-  
+
   .course-filters .MuiInputBase-input {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 10px 15px; /* Adjust padding for better touch interaction */
   }
- 
+}
