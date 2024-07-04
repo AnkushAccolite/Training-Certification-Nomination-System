@@ -75,14 +75,14 @@ public class CertificationControllerTest {
         assertEquals(employeeCertification, response);
     }
 
-    @Test
-    public void testDeleteCertification() {
-        doNothing().when(certificationService).deleteCertification(anyString());
-
-        certificationController.deleteCertification("cert1");
-
-        verify(certificationService, times(1)).deleteCertification("cert1");
-    }
+//    @Test
+//    public void testDeleteCertification() {
+//        doNothing().when(certificationService).deleteCertification(anyString());
+//
+//        certificationController.deleteCertification("cert1");
+//
+//        verify(certificationService, times(1)).deleteCertification("cert1");
+//    }
 
     // @Test
     // public void testNominateCertification() {

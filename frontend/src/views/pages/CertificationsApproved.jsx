@@ -43,7 +43,7 @@ function CertificationsApproved() {
 
   const fetchData = async () => {
     const { data } = await axios.get(`/certifications/employee/${auth?.user?.empId}`);
-    const res = await axios.get('/certifications');
+    const res = await axios.get('/certifications/all');
     const allCertifications = res.data;
 
     const approvedCertifications = data?.certifications?.map((item) => ({
@@ -429,8 +429,8 @@ function CertificationsApproved() {
           </Typography>
           <div style={{ marginBottom: '18px', textAlign: 'center' }}>
             <Typography variant="subtitle1" gutterBottom style={{ fontSize: '15px' }}>
-            <b>Congratulations on passing the exam!  </b>
-            Please rate the relevance of the courses provided for this certification.
+              <b>Congratulations on passing the exam! </b>
+              Please rate the relevance of the courses provided for this certification.
             </Typography>
             <div style={{ display: 'inline-block' }}>
               <Rating
