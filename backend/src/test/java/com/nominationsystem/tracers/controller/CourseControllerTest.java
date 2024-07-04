@@ -14,9 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -92,24 +93,27 @@ public class CourseControllerTest {
         verify(courseService, times(1)).deleteCourse("course1");
     }
 
-//    @Test
-//    public void testChangeMonthlyCourseStatus() {
-//        doNothing().when(courseService).changeMonthlyCourseStatus(anyList(), anyString());
-//
-//        List<String> courseIds = new ArrayList<>();
-//        courseIds.add("course1");
-//        courseController.changeMonthlyCourseStatus("January", courseIds);
-//
-//        verify(courseService, times(1)).changeMonthlyCourseStatus(courseIds, "January");
-//    }
+    @Test
+    public void testChangeMonthlyCourseStatus() {
+        doNothing().when(courseService).changeMonthlyCourseStatus(anyList(), anyString(), anyString());
+
+        List<String> courseIds = new ArrayList<>();
+        courseIds.add("course1");
+        courseController.changeMonthlyCourseStatus("January", "BandA", courseIds);
+
+        verify(courseService, times(1)).changeMonthlyCourseStatus(courseIds, "BandA", "January");
+    }
 
     @Test
     public void testCompleteCourse() {
         doNothing().when(courseService).completeCourse(anyString(), anyString(), any(CourseFeedback.class));
 
-        courseController.completeCourse("emp1", "course1", courseFeedback);
+        CourseFeedback feedback = new CourseFeedback();
+        feedback.setFeedback("Great course!");
 
-        verify(courseService, times(1)).completeCourse("emp1", "course1", courseFeedback);
+        courseController.completeCourse("emp1", "course1", feedback);
+
+        verify(courseService, times(1)).completeCourse("emp1", "course1", feedback);
     }
 
     @Test
@@ -122,5 +126,36 @@ public class CourseControllerTest {
         List<CourseReportTemplate> response = courseController.fetchCourseReport("2024");
 
         assertEquals(reports, response);
+    }
+
+    @Test
+    public void testFetchAllCategories() {
+        List<String> expectedCategories = Arrays.asList("Category1", "Category2");
+
+        when(courseService.fetchAllDomains()).thenReturn(expectedCategories);
+
+        List<String> actualCategories = courseController.fetchAllCategories();
+
+        assertEquals(expectedCategories.size(), actualCategories.size());
+        assertEquals(expectedCategories, actualCategories);
+    }
+
+    @Test
+    public void testFetchAllCategories_EmptyList() {
+        when(courseService.fetchAllDomains()).thenReturn(new ArrayList<>());
+
+        List<String> actualCategories = courseController.fetchAllCategories();
+
+        assertNotNull(actualCategories);
+        assertTrue(actualCategories.isEmpty());
+    }
+
+    @Test
+    public void testFetchAllCategories_NullResult() {
+        when(courseService.fetchAllDomains()).thenReturn(null);
+
+        List<String> actualCategories = courseController.fetchAllCategories();
+
+        assertNull(actualCategories);
     }
 }
