@@ -22,6 +22,12 @@ public class CertificationController {
     private CertificationService certificationService;
 
     @GetMapping
+    public ResponseEntity<?> getCertifications() {
+        List<Certification> res = this.certificationService.getCertifications();
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<?> getAllCertifications() {
         List<Certification> res = this.certificationService.getAllCertifications();
         return ResponseEntity.ok(res);
@@ -37,9 +43,9 @@ public class CertificationController {
         return this.certificationService.getEmployeeCertification(empId);
     }
 
-    @PatchMapping("/{certificationId}")
-    public void deleteCertification(@PathVariable("certificationId") String certificationId) {
-        this.certificationService.deleteCertification(certificationId);
+    @PatchMapping("/{certificationId}/{employeeId}")
+    public void deleteCertification(@PathVariable("certificationId") String certificationId, @PathVariable("employeeId") String empId) {
+        this.certificationService.deleteCertification(certificationId,empId);
     }
 
     @PostMapping("/nominateCertification")

@@ -1,10 +1,7 @@
 package com.nominationsystem.tracers.service;
 
 import com.nominationsystem.tracers.models.*;
-import com.nominationsystem.tracers.repository.CertificationFeedbackRepository;
-import com.nominationsystem.tracers.repository.CertificationRepository;
-import com.nominationsystem.tracers.repository.CustomCertificationRepositoryImpl;
-import com.nominationsystem.tracers.repository.TCApprovalRecordsRepository;
+import com.nominationsystem.tracers.repository.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,9 @@ public class CertificationService {
     @Getter
     @Autowired
     private CertificationRepository certificationRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     @Autowired
     @Lazy
@@ -92,7 +92,7 @@ public class CertificationService {
 
     }
 
-    public List<Certification> getAllCertifications() {
+    public List<Certification> getCertifications() {
         List<Certification> temp = this.certificationRepository.findAll();
 
         List<Certification> filteredList = temp.stream()
@@ -102,7 +102,12 @@ public class CertificationService {
         return filteredList;
     }
 
-    public void deleteCertification(String certificationId) {
+    public List<Certification> getAllCertifications() {
+        List<Certification> temp = this.certificationRepository.findAll();
+        return temp;
+    }
+
+    public void deleteCertification(String certificationId,String empId) {
         Optional<Certification> certification = this.certificationRepository.findById(certificationId);
         certification.ifPresent(cert -> cert.setIsDeleted(true));
         this.certificationRepository.save(certification.get());

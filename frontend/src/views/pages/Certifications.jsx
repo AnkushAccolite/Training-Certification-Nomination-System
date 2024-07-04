@@ -225,7 +225,7 @@ function Certifications() {
 
   const handleConfirmDelete = async () => {
     try {
-      const res = await axios.patch(`/certifications/${selectedCertificationToDelete.certificationId}`);
+      const res = await axios.patch(`/certifications/${selectedCertificationToDelete.certificationId}/${empId}`);
       toast.success(`Certification "${selectedCertificationToDelete.name}" deleted successfully.`);
       handleCloseConfirmationDialog();
       fetchData();

@@ -9,7 +9,7 @@ import './CoursesCompleted.css';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import getEmployee from '../../utils/getEmployee';
-import getAllCertifications from '../../utils/getAllCertifications';
+import axios from '../../api/axios';
 
 dayjs.extend(customParseFormat);
 
@@ -24,6 +24,14 @@ const CertificationsCompleted = () => {
   useEffect(() => {
     if (!auth?.isAuthenticated) navigate('/login');
 
+    const getAllCertifications = async () => {
+      try {
+        const { data } = await axios.get(`/certifications/all`);
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
+    };
     const fetchData = async () => {
       try {
         const allCertifications = await getAllCertifications();
@@ -63,10 +71,9 @@ const CertificationsCompleted = () => {
 
       if (sortConfig.key === 'CertificationName') {
         return aValue?.localeCompare(bValue) * (sortConfig.direction === 'asc' ? 1 : -1);
-      }
-      else if (sortConfig.key === 'DateOfCompletion') {
+      } else if (sortConfig.key === 'DateOfCompletion') {
         return (dayjs(aValue, 'DD-MM-YYYY').isAfter(dayjs(bValue, 'DD-MM-YYYY')) ? 1 : -1) * (sortConfig.direction === 'asc' ? 1 : -1);
-      } 
+      }
       return (parseInt(aValue) - parseInt(bValue)) * (sortConfig.direction === 'asc' ? 1 : -1);
     }
 

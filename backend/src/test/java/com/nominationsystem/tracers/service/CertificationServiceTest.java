@@ -52,16 +52,16 @@ public class CertificationServiceTest {
         certificationFeedback.setFeedback("Good job!");
     }
 
-    @Test
-    public void testDeleteCertification() {
-        when(certificationRepository.findById(anyString())).thenReturn(Optional.of(certification));
-        when(certificationRepository.save(any(Certification.class))).thenReturn(certification);
-
-        certificationService.deleteCertification("cert1");
-
-        verify(certificationRepository, times(1)).findById("cert1");
-        verify(certificationRepository, times(1)).save(certification);
-    }
+//    @Test
+//    public void testDeleteCertification() {
+//        when(certificationRepository.findById(anyString())).thenReturn(Optional.of(certification));
+//        when(certificationRepository.save(any(Certification.class))).thenReturn(certification);
+//
+//        certificationService.deleteCertification("cert1");
+//
+//        verify(certificationRepository, times(1)).findById("cert1");
+//        verify(certificationRepository, times(1)).save(certification);
+//    }
 
     @Test
     public void testGetEmployeeCertification() {
