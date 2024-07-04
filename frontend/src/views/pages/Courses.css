@@ -13,8 +13,8 @@
 }
 
 .filters .MuiFormControl-root {
-  min-width: 120px; /* Adjust the width as needed */
-  margin-bottom: 5px;
+  min-width: 150px;
+  margin-bottom: 10px;
 }
 
 .separator {
@@ -22,15 +22,6 @@
   background-color: #ccc;
   height: 30px;
   margin: 0 10px;
-}
-
-.nominateBtn {
-  width: 100px;
-  border-color: transparent;
-}
-
-.nominateBtn .MuiButton-startIcon {
-  color: rgb(95, 95, 235);
 }
 
 .filters .MuiOutlinedInput-notchedOutline {
@@ -42,23 +33,40 @@
 }
 
 .filters .MuiSelect-root {
-  width: 120px; /* Adjust the width as needed */
+  width: 120px;
 }
 
 .filters .MuiSelect-icon {
   color: inherit;
 }
 
-.filters .MuiOutlinedInput-input,
-.filters .MuiSelect-select {
-  padding-top: 8px; /* Adjust the top padding as needed */
-  padding-bottom: 8px; /* Adjust the bottom padding as needed */
+.filters .MuiFormControl-root {
+  min-width: 120px;
+  margin-bottom: 5px;
 }
 
-/* Optionally, adjust the font size of the dropdown items */
+.filters .MuiOutlinedInput-input {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.filters .MuiSelect-select {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 .filters .MuiMenuItem-root {
-  font-size: 14px; /* Adjust the font size as needed */
+  font-size: 14px;
   width: 50px;
+}
+
+.nominateBtn {
+  width: 100px;
+  border-color: transparent;
+}
+
+.nominateBtn .MuiButton-startIcon {
+  color: rgb(95, 95, 235);
 }
 
 /* Mobile and tablet responsive adjustments */
@@ -104,8 +112,7 @@
   }
 }
 
-@media (max-width: 411px) {
-  /* Pixel 7 width */
+@media (max-width: 411px) { /* Pixel 7 width */
   .filters {
     padding: 5px;
     gap: 5px;
@@ -120,8 +127,7 @@
   }
 }
 
-@media (max-width: 375px) {
-  /* iPhone SE width */
+@media (max-width: 375px) { /* iPhone SE width */
   .filters {
     padding: 5px;
     gap: 5px;

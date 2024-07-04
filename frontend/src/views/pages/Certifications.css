@@ -100,7 +100,7 @@
 }
 
 /* Mobile responsive adjustments */
-@media (max-width: 600px) {
+@media (max-width: 1180px) {
   .filters {
     flex-direction: column; /* Stack items vertically */
     align-items: stretch; /* Stretch items to full width */

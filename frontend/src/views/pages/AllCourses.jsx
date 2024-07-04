@@ -201,29 +201,31 @@ const AllCourses = () => {
     return 0;
   });
 
-  const filteredCourses = sortedCourses.filter((course) => {
-    if (selectedDomain === 'All' && selectedStatus === 'All') {
-      return true;
-    } else if (selectedDomain === 'All') {
-      const bands = course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands;
-      if (selectedStatus === 'All') {
+  const filteredCourses = sortedCourses
+    .filter((course) => {
+      if (selectedDomain === 'All' && selectedStatus === 'All') {
         return true;
-      } else if (selectedStatus === 'Active') {
-        return bands && bands.includes(selectedBand);
+      } else if (selectedDomain === 'All') {
+        const bands = course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands;
+        if (selectedStatus === 'All') {
+          return true;
+        } else if (selectedStatus === 'Active') {
+          return bands && bands.includes(selectedBand);
+        } else {
+          return !bands || !bands.includes(selectedBand);
+        }
+      } else if (selectedStatus === 'All') {
+        return course?.domain === selectedDomain;
       } else {
-        return !bands || !bands.includes(selectedBand);
+        const bands = course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands;
+        if (selectedStatus === 'Active') {
+          return course?.domain === selectedDomain && bands && bands.includes(selectedBand);
+        } else {
+          return course?.domain === selectedDomain && (!bands || !bands.includes(selectedBand));
+        }
       }
-    } else if (selectedStatus === 'All') {
-      return course?.domain === selectedDomain;
-    } else {
-      const bands = course?.monthlyStatus?.find((monthStatus) => monthStatus?.month === selectedMonth)?.bands;
-      if (selectedStatus === 'Active') {
-        return course?.domain === selectedDomain && bands && bands.includes(selectedBand);
-      } else {
-        return course?.domain === selectedDomain && (!bands || !bands.includes(selectedBand));
-      }
-    }
-  }).slice((page - 1) * rowsPerPage, page * rowsPerPage);
+    })
+    .slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
   const allSelectedActive = selectedRows.every((courseId) =>
     sortedCourses
@@ -242,7 +244,6 @@ const AllCourses = () => {
   let buttonStyle = {
     backgroundColor: 'blue',
     color: 'white',
-    marginRight: '30px',
     width: '100px'
   };
 
@@ -275,7 +276,7 @@ const AllCourses = () => {
       <h2 style={{ textAlign: 'center', marginTop: '-5px' }}>All Courses</h2>
 
       {/* Filters */}
-      <div className="filters">
+      <div className="filter">
         <FormControl style={{ marginRight: '10px', marginTop: '10px' }}>
           <Select value={selectedBand} onChange={handleBandFilterChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
             {['Band', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7'].map((band) => (
@@ -285,8 +286,8 @@ const AllCourses = () => {
             ))}
           </Select>
         </FormControl>
-        <div className="separator"></div>
-        <FormControl style={{ marginLeft: '-15px', marginTop: '10px' }}>
+        <div className="separators"></div>
+        <FormControl style={{ marginTop: '10px' }}>
           <Select value={selectedMonth} onChange={handleMonthFilterChange} displayEmpty inputProps={{ 'aria-label': 'Without label' }}>
             {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map(
               (month) => (
@@ -297,7 +298,7 @@ const AllCourses = () => {
             )}
           </Select>
         </FormControl>
-        <div className="separator"></div>
+        <div className="separators"></div>
         <FormControl style={{ marginTop: '10px' }}>
           <Select
             displayEmpty
@@ -315,7 +316,7 @@ const AllCourses = () => {
             ))}
           </Select>
         </FormControl>
-        <div className="separator"></div>
+        <div className="separators"></div>
         <FormControl style={{ marginTop: '10px' }}>
           <Select
             displayEmpty
@@ -335,12 +336,18 @@ const AllCourses = () => {
         </FormControl>
 
         {!isPastMonth(monthFilter) && (
-          <Button className="addCourse" variant="outlined" onClick={handleClick} style={{ marginLeft: '100px' }}>
+          <Button className="addCourse" variant="outlined" onClick={handleClick}>
             Add Course
           </Button>
         )}
         {!isPastMonth(monthFilter) && (
-          <Button variant="contained" disabled={!isActivateButtonEnabled} onClick={handleActivateButtonClick} style={buttonStyle}>
+          <Button
+            className="activateButton"
+            variant="contained"
+            disabled={!isActivateButtonEnabled}
+            onClick={handleActivateButtonClick}
+            style={buttonStyle}
+          >
             {buttonText}
           </Button>
         )}
@@ -450,7 +457,6 @@ const AllCourses = () => {
                         tabIndex={-1}
                         selected={isSelected(course?.courseId)}
                         style={{ backgroundColor: index % 2 === 0 ? '#f2f2f2' : 'white' }}
-
                       >
                         {!isPastMonth(monthFilter) && (
                           <TableCell padding="checkbox">
@@ -555,7 +561,6 @@ const AllCourses = () => {
         </div>
       </div>
       <div>
-
         <Pagination
           count={Math.ceil(sortedCourses.length / rowsPerPage)}
           page={page}
@@ -567,36 +572,39 @@ const AllCourses = () => {
             setPage(1);
           }}
         />
-
       </div>
 
-    {/* Course Details Dialog */}
-     <Dialog 
-        open={showDetails} 
-        onClose={handleCloseDetails} 
+      {/* Course Details Dialog */}
+      <Dialog
+        open={showDetails}
+        onClose={handleCloseDetails}
         sx={{
           '& .MuiDialog-paper': {
             width: '500px',
             display: 'flex',
             flexDirection: 'column',
-            paddingTop:'0.7%',
-            justifyContent: 'space-between', 
-          },
+            paddingTop: '0.7%',
+            justifyContent: 'space-between'
+          }
         }}
-     >
-      <DialogTitle variant="h3"style={{ fontSize: '19px', textAlign: 'center',paddingBottom:'0.6% '  }}>Course Details</DialogTitle>
-      <DialogContent sx={{ flex: 1, overflowY: 'auto' ,paddingBottom:'0% ' }}>
-        {selectedCourse && (
-          <div>
-            <h3 style={{textAlign:'center',paddingBottom:'0% ' }}>{selectedCourse?.courseName}</h3>
-            <p style={{textAlign:'center'}}>{selectedCourse?.description}</p>
-          </div>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseDetails} variant='outlined'>Close</Button>
-      </DialogActions>
-    </Dialog>
+      >
+        <DialogTitle variant="h3" style={{ fontSize: '19px', textAlign: 'center', paddingBottom: '0.6% ' }}>
+          Course Details
+        </DialogTitle>
+        <DialogContent sx={{ flex: 1, overflowY: 'auto', paddingBottom: '0% ' }}>
+          {selectedCourse && (
+            <div>
+              <h3 style={{ textAlign: 'center', paddingBottom: '0% ' }}>{selectedCourse?.courseName}</h3>
+              <p style={{ textAlign: 'center' }}>{selectedCourse?.description}</p>
+            </div>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDetails} variant="outlined">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

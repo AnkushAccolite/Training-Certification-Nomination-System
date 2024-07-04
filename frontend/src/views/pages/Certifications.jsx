@@ -18,7 +18,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import './Courses.css';
+import './Certifications.css';
 import axios from '../../api/axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -62,7 +62,6 @@ function Certifications() {
   const empId = useSelector((state) => state?.auth?.user?.empId);
 
   const getStatus = (pendingCertifications, certifications, certificationId) => {
-
     if (pendingCertifications.includes(certificationId)) {
       return 'Pending for Approval';
     }
@@ -87,7 +86,6 @@ function Certifications() {
         return 'Not Opted';
     }
   };
-
 
   const fetchData = async () => {
     try {
@@ -424,11 +422,7 @@ function Certifications() {
                             View Details
                           </Button>
                           {auth?.isAuthenticated && auth?.user?.role === 'ADMIN' && (
-                            <Button
-                              variant="outlined"
-                              onClick={() => handleDeleteClick(row)}
-                              style={{ marginLeft: '8px' }}
-                            >
+                            <Button variant="outlined" onClick={() => handleDeleteClick(row)} style={{ marginLeft: '8px' }}>
                               Delete
                             </Button>
                           )}
@@ -459,31 +453,35 @@ function Certifications() {
             setPage(1);
           }}
         />
-        
-        <Dialog 
-          open={showDetails} 
-          onClose={handleCloseDetails} 
+
+        <Dialog
+          open={showDetails}
+          onClose={handleCloseDetails}
           sx={{
             '& .MuiDialog-paper': {
               width: '400px',
               display: 'flex',
               flexDirection: 'column',
-              paddingTop:'0.7%',
-              justifyContent: 'space-between', 
-            },
+              paddingTop: '0.7%',
+              justifyContent: 'space-between'
+            }
           }}
         >
-          <DialogTitle variant="h3"style={{ fontSize: '19px', textAlign: 'center',paddingBottom:'0.6% ' }}>Certificate Details</DialogTitle>
-          <DialogContent sx={{ flex: 1, overflowY: 'auto' ,paddingBottom:'0% ' }}>
+          <DialogTitle variant="h3" style={{ fontSize: '19px', textAlign: 'center', paddingBottom: '0.6% ' }}>
+            Certificate Details
+          </DialogTitle>
+          <DialogContent sx={{ flex: 1, overflowY: 'auto', paddingBottom: '0% ' }}>
             {selectedCourse && (
               <div>
-                <h3 style={{ textAlign: 'center',paddingBottom:'0% '}}>{selectedCourse?.name}</h3>
-                <p style={{textAlign:'center'}}>{selectedCourse.description}</p>
+                <h3 style={{ textAlign: 'center', paddingBottom: '0% ' }}>{selectedCourse?.name}</h3>
+                <p style={{ textAlign: 'center' }}>{selectedCourse.description}</p>
               </div>
             )}
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseDetails} variant='outlined'>Close</Button>
+            <Button onClick={handleCloseDetails} variant="outlined">
+              Close
+            </Button>
           </DialogActions>
         </Dialog>
 
@@ -536,9 +534,7 @@ function Certifications() {
         {/* Confirmation Dialog for delete */}
         <Dialog open={!!selectedCertificationToDelete} onClose={handleCloseConfirmationDialog}>
           <DialogTitle style={{ fontSize: '15px', textAlign: 'center', padding: '40px' }}>
-            <span style={{ color: 'black' }}>
-              {`Are you sure you want to delete the certification: `}
-            </span>
+            <span style={{ color: 'black' }}>{`Are you sure you want to delete the certification: `}</span>
             <br />
             <span style={{ color: 'black', fontSize: '15px' }}>
               <b>{selectedCertificationToDelete?.name}</b>?
@@ -553,7 +549,6 @@ function Certifications() {
             </Button>
           </DialogActions>
         </Dialog>
-
       </div>
     </div>
   );
