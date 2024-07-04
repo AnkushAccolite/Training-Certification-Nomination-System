@@ -501,7 +501,7 @@ function Certifications() {
               style={{
                 backgroundColor: '#4caf50',
                 color: 'white',
-                marginRight: '20px'
+                marginRight: '10px'
               }}
             >
               Yes
@@ -512,7 +512,7 @@ function Certifications() {
               style={{
                 backgroundColor: '#f44336',
                 color: 'white',
-                marginRight: '210px'
+                marginRight: '10px'
               }}
             >
               No
