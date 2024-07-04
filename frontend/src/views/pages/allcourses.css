@@ -1,65 +1,151 @@
-  .filters {
-    position: relative;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-top: 20px;
-      margin-bottom: 20px;
-      padding: 10px;
-      background-color: rgb(247, 247, 247);
-      border-radius: 30px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+.filter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: rgb(247, 247, 247);
+  border-radius: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter .MuiFormControl-root {
+  min-width: 150px;
+  margin-bottom: 10px;
+}
+
+.separators {
+  width: 1px;
+  background-color: #ccc;
+  height: 30px;
+  margin: 0 10px;
+}
+.filter .MuiOutlinedInput-notchedOutline {
+  border: none;
+}
+
+.filter .MuiSelect-root:focus {
+  background-color: transparent;
+}
+.filter .MuiSelect-root {
+  width: 120px;
+}
+
+.filter .MuiSelect-icon {
+  color: inherit;
+}
+.filter .MuiFormControl-root {
+  min-width: 120px;
+  margin-bottom: 5px;
+}
+
+.filter .MuiOutlinedInput-input {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.filter .MuiSelect-select {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.filter .MuiMenuItem-root {
+  font-size: 14px;
+  width: 50px;
+}
+.addCourse {
+  width: 180px;
+  border-color: transparent;
+}
+/* .activateButton {
   
-    .filters .MuiFormControl-root {
-        min-width: 150px;
-        margin-bottom: 10px;
-      }
-      
-      .separator {
-        width: 1px;
-        background-color: #ccc;
-        height: 30px;
-        margin: 0 10px;
-      }
-      .filters .MuiOutlinedInput-notchedOutline {
-        border: none;
-      }
-      
-      .filters .MuiSelect-root:focus {
-        background-color: transparent;
-        
-      }
-      .filters .MuiSelect-root {
-        width: 120px;
-      }
-      
-      
-      .filters .MuiSelect-icon {
-        color: inherit;
-      }
-      .filters .MuiFormControl-root {
-        min-width: 120px;
-        margin-bottom:5px;
-      }
-      
-      
-      .filters .MuiOutlinedInput-input {
-        padding-top: 8px;
-        padding-bottom: 8px;
-      }
-      
-      .filters .MuiSelect-select {
-        padding-top: 8px; 
-        padding-bottom: 8px; 
-      }
-      
-      .filters .MuiMenuItem-root {
-        font-size: 14px;
-        width: 50px; 
-      }
-      .addCourse{
-        width: 180px;
-        border-color: transparent;
-      }
-     
+} */
+@media (min-width: 1271px) {
+  .activateButton {
+    position: absolute;
+    right: 30px;
+  }
+  .addCourse {
+    position: absolute;
+    right: 130px;
+  }
+}
+/* Mobile and tablet responsive adjustments */
+@media (max-width: 1270px) {
+  .filter {
+    flex-direction: column;
+    align-items: stretch; /* Align items to stretch full width */
+    padding: 10px;
+  }
+
+  .filter .MuiFormControl-root {
+    min-width: 100%; /* Full width on mobile */
+    margin-bottom: 10px;
+  }
+
+  .filter .MuiSelect-root {
+    width: 100%; /* Full width on mobile */
+  }
+
+  .addCourse {
+    width: 100%; /* Full width on mobile */
+    margin-top: 10px;
+  }
+  .activateButton {
+    width: 100% !important;
+  }
+
+  .separators {
+    display: none; /* Hide separator on mobile */
+  }
+}
+
+/* Additional adjustments for very small screens */
+@media (max-width: 600px) {
+  .filter {
+    padding: 5px;
+    gap: 5px;
+  }
+
+  .filter .MuiFormControl-root {
+    margin-bottom: 5px;
+  }
+
+  .addCourse {
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 411px) {
+  /* Pixel 7 width */
+  .filter {
+    padding: 5px;
+    gap: 5px;
+  }
+
+  .filter .MuiFormControl-root {
+    margin-bottom: 5px;
+  }
+
+  .addCourse {
+    margin-top: 5px;
+  }
+}
+
+@media (max-width: 375px) {
+  /* iPhone SE width */
+  .filter {
+    padding: 5px;
+    gap: 5px;
+  }
+
+  .filter .MuiFormControl-root {
+    margin-bottom: 5px;
+  }
+
+  .addCourse {
+    margin-top: 5px;
+  }
+}
