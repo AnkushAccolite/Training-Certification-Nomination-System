@@ -41,8 +41,15 @@ const ApprovedCourses = () => {
   const fetchData = async () => {
     try {
       const nominationCourses = await getNominationCourses(auth?.user?.empId);
-      const approvedCourseIds = nominationCourses?.approvedCourses?.map((course) => course.courseId);
-      const completedCourseIds = nominationCourses?.completedCourses?.map((course) => course.courseId);
+      const currentMonth = new Date().getMonth() + 1;
+
+      const approvedCourseIds = nominationCourses?.approvedCourses
+        ?.filter((course) => parseInt(course.date.split('-')[1]) === currentMonth)
+        .map((course) => course.courseId);
+
+      const completedCourseIds = nominationCourses?.completedCourses
+        ?.filter((course) => parseInt(course.date.split('-')[1]) === currentMonth)
+        .map((course) => course.courseId);
 
       const allCourses = await getAllCourses();
 
