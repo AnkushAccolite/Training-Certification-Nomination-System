@@ -1,6 +1,8 @@
 package com.nominationsystem.tracers.controller;
 
+import com.nominationsystem.tracers.models.Employee;
 import com.nominationsystem.tracers.models.Nomination;
+import com.nominationsystem.tracers.service.EmployeeService;
 import com.nominationsystem.tracers.service.NominationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,6 +27,12 @@ public class NominationControllerTest {
 
     @Mock
     private NominationService nominationService;
+
+    @Mock
+    private EmployeeService employeeService;
+
+    @InjectMocks
+    private EmployeeController employeeController;
 
     @InjectMocks
     private NominationController nominationController;
@@ -37,6 +46,24 @@ public class NominationControllerTest {
         nomination.setCourseId("course1");
         nomination.setEmployeeId("emp1");
     }
+
+    @Test
+    public void testGetEmployees_Success() {
+        // Mocking the service method
+        List<Employee> mockEmployees = Arrays.asList(
+                new Employee(),
+                new Employee()
+        );
+        when(employeeService.getAllEmployees()).thenReturn(mockEmployees);
+
+        // Calling the controller method
+        ResponseEntity<?> response = employeeController.getEmployees();
+
+        // Assertions
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockEmployees, response.getBody());
+    }
+
 
     @Test
     public void testGetNomination() {
@@ -116,10 +143,72 @@ public class NominationControllerTest {
 
     @Test
     public void testApprovePendingRequest() {
-        doNothing().when(nominationService).takeActionOnPendingRequest(anyString(), anyString(), anyString(), any(Month.class));
+        // Mock the behavior of takeActionOnPendingRequest()
+        when(nominationService.takeActionOnPendingRequest(anyString(), anyString(), anyString(), any(Month.class)))
+                .thenReturn("updated");
 
+        // Call the controller method
         nominationController.approvePendingRequest("approve", "nom1", "course1", Month.JANUARY);
 
+        // Verify that the service method was called with the correct parameters
         verify(nominationService, times(1)).takeActionOnPendingRequest("nom1", "course1", "approve", Month.JANUARY);
+    }
+
+    @Test
+    public void testApprovePendingRequestFromEmail() {
+        when(nominationService.takeActionOnPendingRequest(anyString(), anyString(), anyString(), any(Month.class)))
+                .thenReturn("updated");
+
+        String response = nominationController.approvePendingRequestFromEmail("approve", "nom1", "course1", Month.JANUARY);
+
+        assertEquals("<!DOCTYPE html>"
+                + "<html>"
+                + "<head>"
+                + "    <title>Email Action</title>"
+                + "    <script>"
+                + "        function closeCurrentTab() {"
+                + "            window.close();"
+                + "        }"
+                + "    </script>"
+                + "</head>"
+                + "<body style='text-align:center;'>"
+                + "    <p>Action has been taken for the course.</p>"
+                + "    <button onclick='closeCurrentTab()'>You can close this tab</button>"
+                + "    <script>"
+                + "        setTimeout(function() {"
+                + "            document.querySelector('button').click();"
+                + "        }, 5000);"
+                + "    </script>"
+                + "</body>"
+                + "</html>", response);
+    }
+
+    @Test
+    public void testApprovePendingRequestFromEmailAlreadyTaken() {
+        when(nominationService.takeActionOnPendingRequest(anyString(), anyString(), anyString(), any(Month.class)))
+                .thenReturn("already_taken");
+
+        String response = nominationController.approvePendingRequestFromEmail("approve", "nom1", "course1", Month.JANUARY);
+
+        assertEquals("<!DOCTYPE html>"
+                + "<html>"
+                + "<head>"
+                + "    <title>Email Action</title>"
+                + "    <script>"
+                + "        function closeCurrentTab() {"
+                + "            window.close();"
+                + "        }"
+                + "    </script>"
+                + "</head>"
+                + "<body style='text-align:center;'>"
+                + "    <p>You have already taken the action for this course.</p>"
+                + "    <button onclick='closeCurrentTab()'>You can close this tab</button>"
+                + "    <script>"
+                + "        setTimeout(function() {"
+                + "            document.querySelector('button').click();"
+                + "        }, 5000);"
+                + "    </script>"
+                + "</body>"
+                + "</html>", response);
     }
 }

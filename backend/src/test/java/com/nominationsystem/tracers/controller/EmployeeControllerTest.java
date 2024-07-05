@@ -1,21 +1,25 @@
 package com.nominationsystem.tracers.controller;
 
-import com.nominationsystem.tracers.models.CourseFeedback;
-import com.nominationsystem.tracers.models.EmployeeCourseStatus;
-import com.nominationsystem.tracers.models.EmployeeReportTemplate;
+import com.nominationsystem.tracers.models.*;
 import com.nominationsystem.tracers.service.EmployeeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import com.nominationsystem.tracers.models.Employee;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeeControllerTest {
@@ -29,6 +33,12 @@ public class EmployeeControllerTest {
     private CourseFeedback courseFeedback;
     private Map<String, String> requestBody;
 
+
+    private Employee employee;
+    private Employee testEmployee;
+    private EmployeeCourseStatus courseStatus1;
+    private EmployeeCourseStatus courseStatus2;
+
     @BeforeEach
     public void setUp() {
         courseFeedback = new CourseFeedback();
@@ -36,71 +46,32 @@ public class EmployeeControllerTest {
 
         requestBody = new HashMap<>();
         requestBody.put("email", "test@example.com");
+
+        employee = new Employee();
+        employee.setId("emp1");
+
+        testEmployee = new Employee();
+        testEmployee.setId("emp1");
+        testEmployee.setEmpName("John Doe");
+        testEmployee.setEmail("john.doe@example.com");
+        testEmployee.setPassword("password");
+        testEmployee.setRole("ROLE_USER");
+
+        courseStatus1 = new EmployeeCourseStatus("course1", "2024-07-10");
+        courseStatus2 = new EmployeeCourseStatus("course2", "2024-07-11");
     }
-
-    // @Test
-    // public void testGetEmployees() {
-    // List<Object> employees = new ArrayList<>();
-    // employees.add(new Object()); // Replace with actual Employee objects as
-    // needed
-    //
-    // when(employeeService.getAllEmployees()).thenReturn(employees);
-    //
-    // ResponseEntity<?> response = employeeController.getEmployees();
-    //
-    // assertEquals(HttpStatus.OK, response.getStatusCode());
-    // assertEquals(employees, response.getBody());
-    // }
-
-    // @Test
-    // public void testGetEmployeeByEmail() {
-    // ResponseEntity<?> expectedResponse = new ResponseEntity<>(HttpStatus.OK);
-    //
-    // when(employeeService.getEmpByEmail(any(Map.class).toString())).thenReturn(expectedResponse);
-    //
-    // ResponseEntity<?> response =
-    // employeeController.getEmployeeByEmail(requestBody.toString());
-    //
-    // assertEquals(expectedResponse, response);
-    // }
-
-    // @Test
-    // public void testSetRole() {
-    // ResponseEntity<?> expectedResponse = new ResponseEntity<>(HttpStatus.OK);
-    //
-    // when(employeeService.setRole(anyString(),
-    // anyString())).thenReturn(expectedResponse);
-    //
-    // ResponseEntity<?> response = employeeController.setRole("test@example.com",
-    // "Admin");
-    //
-    // assertEquals(expectedResponse, response);
-    // }
 
     @Test
-    public void testGetCoursesNominatedByEmployee() {
-        Map<String, List<EmployeeCourseStatus>> courses = new HashMap<>();
-        courses.put("test@example.com", new ArrayList<>());
+    public void testSetRole() {
+        String email = "test@example.com";
+        String role = "Admin";
 
-        when(employeeService.getCoursesNominatedByEmployee(anyString())).thenReturn(courses);
+        when(employeeService.setRole(anyString(), anyString())).thenReturn(ResponseEntity.ok().build());
 
-        Map<String, List<EmployeeCourseStatus>> response = employeeController.getCoursesNominatedByEmployee("emp1");
+        ResponseEntity<?> response = employeeController.setRole(email, role);
 
-        assertEquals(courses, response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
-
-    // @Test
-    // public void testCourseCompleted() {
-    // ResponseEntity<?> expectedResponse = new ResponseEntity<>(HttpStatus.OK);
-    //
-    // when(employeeService.courseCompleted(anyString(), anyString(),
-    // any(CourseFeedback.class))).thenReturn(expectedResponse);
-    //
-    // ResponseEntity<?> response = employeeController.courseCompleted("course1",
-    // "emp1", courseFeedback);
-    //
-    // assertEquals(expectedResponse, response);
-    // }
 
     @Test
     public void testGetEmployeeReport() {
@@ -113,4 +84,45 @@ public class EmployeeControllerTest {
 
         assertEquals(reports, response);
     }
+
+    @Test
+    public void testGetCertificationRequests() {
+        List<CertificationRequestsTemplate> certificationRequests = new ArrayList<>();
+        certificationRequests.add(new CertificationRequestsTemplate()); // Replace with actual CertificationRequestsTemplate objects as needed
+
+        when(employeeService.getCertificationRequests(anyString())).thenReturn(certificationRequests);
+
+        List<CertificationRequestsTemplate> response = employeeController.getCertificationRequests("manager1");
+
+        assertEquals(certificationRequests, response);
+    }
+
+    @Test
+    public void testGetCoursesNominatedByEmployee() {
+        String empId = "emp1";
+
+        // Prepare mock data
+        List<EmployeeCourseStatus> approvedCourses = new ArrayList<>();
+        approvedCourses.add(courseStatus1);
+        approvedCourses.add(courseStatus2);
+
+        Map<String, List<EmployeeCourseStatus>> mockCourseMap = new HashMap<>();
+        mockCourseMap.put("approvedCourses", approvedCourses);
+        mockCourseMap.put("pendingCourses", new ArrayList<>());
+        mockCourseMap.put("completedCourses", new ArrayList<>());
+
+        // Mock behavior of EmployeeService.getCoursesNominatedByEmployee
+        when(employeeService.getCoursesNominatedByEmployee(anyString())).thenReturn(mockCourseMap);
+
+        // Call the controller method
+        Map<String, List<EmployeeCourseStatus>> response = employeeController.getCoursesNominatedByEmployee(empId);
+
+        // Assertions
+        assertEquals(2, response.get("approvedCourses").size());
+        assertEquals(courseStatus1, response.get("approvedCourses").get(0));
+        assertEquals(courseStatus2, response.get("approvedCourses").get(1));
+        assertEquals(0, response.get("pendingCourses").size());
+        assertEquals(0, response.get("completedCourses").size());
+    }
+
 }
