@@ -39,7 +39,7 @@ public class EmployeeControllerTest {
     @BeforeEach
     public void setUp() {
         courseFeedback = new CourseFeedback();
-        courseFeedback.setFeedback("Great course!");
+        courseFeedback.setComment("Great course!");
 
         requestBody = new HashMap<>();
         requestBody.put("email", "test@example.com");
@@ -97,7 +97,7 @@ public class EmployeeControllerTest {
     @Test
     public void testGetEmployeeReport() {
         List<EmployeeReportTemplate> reports = new ArrayList<>();
-        reports.add(new EmployeeReportTemplate()); // Replace with actual EmployeeReportTemplate objects as needed
+        reports.add(new EmployeeReportTemplate());
 
         when(employeeService.getEmployeeReport()).thenReturn(reports);
 
@@ -109,7 +109,7 @@ public class EmployeeControllerTest {
     @Test
     public void testGetCertificationRequests() {
         List<CertificationRequestsTemplate> certificationRequests = new ArrayList<>();
-        certificationRequests.add(new CertificationRequestsTemplate()); // Replace with actual CertificationRequestsTemplate objects as needed
+        certificationRequests.add(new CertificationRequestsTemplate());
 
         when(employeeService.getCertificationRequests(anyString())).thenReturn(certificationRequests);
 

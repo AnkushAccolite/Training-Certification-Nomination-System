@@ -42,9 +42,7 @@ public class NominationControllerTest {
     @BeforeEach
     public void setUp() {
         nomination = new Nomination();
-        nomination.setId("nom1");
-        nomination.setCourseId("course1");
-        nomination.setEmployeeId("emp1");
+        nomination.setNominationId("nom1");
     }
 
     @Test

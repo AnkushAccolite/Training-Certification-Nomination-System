@@ -39,7 +39,7 @@ public class TC_Approval_Records {
     private String Browser;
     private String BrowserVersion;
     private String ClientIP;
-    private String Date_Time= LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    private String Date_Time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     public TC_Approval_Records(String empId, ArrayList<String> certificationId, String OS, String device, String OSVersion, String browser, String browserVersion, String clientIP) {
         this.empId = empId;

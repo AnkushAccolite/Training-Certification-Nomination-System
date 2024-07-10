@@ -1,6 +1,7 @@
 package com.nominationsystem.tracers.models;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,6 +14,7 @@ import java.util.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Document(collection = "employees")
 public class Employee {
 
@@ -68,9 +70,6 @@ public class Employee {
     public boolean isCertificationPresent(String certificationId) {
         return this.certifications.stream()
                 .anyMatch(certification -> certification.getCertificationId().equals(certificationId));
-    }
-
-    public void setAssignedCourses(ArrayList<Object> objects) {
     }
 
 }

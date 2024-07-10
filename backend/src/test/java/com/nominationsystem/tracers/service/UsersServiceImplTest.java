@@ -4,17 +4,22 @@ import com.nominationsystem.tracers.models.Employee;
 import com.nominationsystem.tracers.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class UsersServiceImplTest {
+
+    @InjectMocks
+    private UsersServiceImpl usersService;
 
     @Mock
     private EmployeeService employeeService;
@@ -22,81 +27,56 @@ public class UsersServiceImplTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
-    @InjectMocks
-    private UsersServiceImpl usersService;
-
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
     }
 
     @Test
     public void testGetUserByUsername() {
-        // Given
-        String username = "testuser";
+        String username = "testUser";
         Employee employee = new Employee();
-        employee.setId("1");
         employee.setUsername(username);
-
-        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
         when(employeeRepository.findByUsername(username)).thenReturn(Optional.of(employee));
 
-        // When
-        Employee retrievedUser = usersService.getUserByUsername(username);
+        Employee result = usersService.getUserByUsername(username);
+        assertNotNull(result);
+        assertEquals(username, result.getUsername());
+    }
 
-        // Then
-        assertEquals(username, retrievedUser.getUsername());
+    @Test
+    public void testGetUserByUsername_NotFound() {
+        String username = "testUser";
+        when(employeeRepository.findByUsername(username)).thenReturn(Optional.empty());
 
-        verify(employeeRepository, times(1)).findByUsername(username);
+        assertThrows(NoSuchElementException.class, () -> usersService.getUserByUsername(username));
     }
 
     @Test
     public void testSaveUser() {
-        // Given
-        Employee userToSave = new Employee();
-        userToSave.setUsername("testuser");
+        Employee employee = new Employee();
+        when(employeeRepository.save(employee)).thenReturn(employee);
 
-        Employee savedUser = new Employee();
-        savedUser.setId("1");
-        savedUser.setUsername("testuser");
-
-        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
-        when(employeeRepository.save(userToSave)).thenReturn(savedUser);
-
-        // When
-        Employee returnedUser = usersService.saveUser(userToSave);
-
-        // Then
-        assertEquals(savedUser, returnedUser);
-
-        verify(employeeRepository, times(1)).save(userToSave);
+        Employee result = usersService.saveUser(employee);
+        assertNotNull(result);
+        verify(employeeRepository, times(1)).save(employee);
     }
 
     @Test
     public void testIsUsernameExists() {
-        // Given
-        String username = "existinguser";
-
-        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
+        String username = "testUser";
         when(employeeRepository.existsByUsername(username)).thenReturn(true);
 
-        // Then
-        assertTrue(usersService.isUsernameExists(username));
-
-        verify(employeeRepository, times(1)).existsByUsername(username);
+        boolean result = usersService.isUsernameExists(username);
+        assertTrue(result);
     }
 
     @Test
     public void testIsEmailExists() {
-        // Given
-        String email = "existing@example.com";
-
-        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
+        String email = "test@example.com";
         when(employeeRepository.existsByEmail(email)).thenReturn(true);
 
-        // Then
-        assertTrue(usersService.isEmailExists(email));
-
-        verify(employeeRepository, times(1)).existsByEmail(email);
+        boolean result = usersService.isEmailExists(email);
+        assertTrue(result);
     }
 }

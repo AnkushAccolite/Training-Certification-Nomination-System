@@ -1,5 +1,6 @@
 package com.nominationsystem.tracers.payload.request;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.validation.ConstraintViolation;
@@ -21,19 +22,18 @@ public class SignupRequestTest {
         validator = factory.getValidator();
     }
 
-    // @Test
-    // public void testGettersAndSetters() {
-    // SignupRequest signupRequest = new SignupRequest();
-    // signupRequest.setUsername("testUser");
-    // signupRequest.setEmail("test@example.com");
-    // signupRequest.setPassword("testPass123");
-    // signupRequest.setRole("USER");
-    //
-    // assertEquals("testUser", signupRequest.getUsername());
-    // assertEquals("test@example.com", signupRequest.getEmail());
-    // assertEquals("testPass123", signupRequest.getPassword());
-    // assertEquals("USER", signupRequest.getRole());
-    // }
+     @Test
+     public void testGettersAndSetters() {
+     SignupRequest signupRequest = new SignupRequest();
+     signupRequest.setUsername("test@example.com");
+     signupRequest.setPassword("testPass123");
+     signupRequest.setRole("USER");
+
+     assertEquals("test@example.com", signupRequest.getUsername());
+     assertEquals("test@example.com", signupRequest.getEmail());
+     assertEquals("testPass123", signupRequest.getPassword());
+     assertEquals("USER", signupRequest.getRole());
+     }
 
     @Test
     public void testUsernameNotBlank() {

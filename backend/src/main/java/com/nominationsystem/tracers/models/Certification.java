@@ -23,6 +23,4 @@ public class Certification {
 
     private Boolean isDeleted = false;
 
-    public void setId(String cert1) {
-    }
 }

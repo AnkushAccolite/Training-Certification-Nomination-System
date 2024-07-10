@@ -4,7 +4,6 @@ import com.nominationsystem.tracers.models.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,11 +18,11 @@ public class UsersServiceImpl implements UsersService {
         return opt.get();
     }
 
-    @Override
-    public Employee getUserByEmail(String email) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//    @Override
+//    public Employee getUserByEmail(String email) {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 
     @Override
     public Employee saveUser(Employee user) {
@@ -31,11 +30,11 @@ public class UsersServiceImpl implements UsersService {
         return this.employeeService.getEmployeeRepository().save(user);
     }
 
-    @Override
-    public List<Employee> getUsersWithRoles(String role) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//    @Override
+//    public List<Employee> getUsersWithRoles(String role) {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
 
     @Override
     public boolean isUsernameExists(String username) {

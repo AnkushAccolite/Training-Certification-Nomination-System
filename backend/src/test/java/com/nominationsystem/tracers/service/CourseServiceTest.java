@@ -62,11 +62,10 @@ public class CourseServiceTest {
         employee = new Employee();
         employee.setEmpId("emp1");
         employee.setCompletedCourses(new ArrayList<>());
-        employee.setAssignedCourses(new ArrayList<>());
 
         courseFeedback = new CourseFeedback();
-        courseFeedback.setId("feedback1");
-        courseFeedback.setFeedback("Good course!");
+        courseFeedback.setFeedbackId("feedback1");
+        courseFeedback.setComment("Good course!");
 
         monthlyCourseStatus = new MonthlyCourseStatus();
         monthlyCourseStatus.setMonth(Month.JANUARY);

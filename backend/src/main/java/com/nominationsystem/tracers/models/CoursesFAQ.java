@@ -19,9 +19,9 @@ public class CoursesFAQ {
 
     private String question;
 
-    private  String answer;
+    private String answer;
 
-    private Boolean isDeleted=false;
+    private Boolean isDeleted = false;
 
     public CoursesFAQ(String question, String answer) {
         this.question = question;

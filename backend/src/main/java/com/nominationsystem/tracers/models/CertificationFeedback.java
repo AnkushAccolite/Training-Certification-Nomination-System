@@ -27,10 +27,4 @@ public class CertificationFeedback {
 
     private String comment;
 
-    public void setId(String feedback1) {
-    }
-
-    public void setFeedback(String s) {
-    }
-
 }

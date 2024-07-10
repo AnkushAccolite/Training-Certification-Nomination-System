@@ -35,13 +35,4 @@ public class Nomination {
 
     private String courseSuggestions;
 
-    public void setId(String nom1) {
-    }
-
-    public void setCourseId(String course1) {
-    }
-
-    public void setEmployeeId(String emp1) {
-    }
-
 }

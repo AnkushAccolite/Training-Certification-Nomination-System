@@ -50,10 +50,4 @@ public class Course {
 
     private String publishedDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 
-    public void setId(String course1) {
-    }
-
-    public void setName(String javaCourse) {
-    }
-
 }

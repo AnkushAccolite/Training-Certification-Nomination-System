@@ -41,7 +41,7 @@ public class CertificationControllerTest {
     @BeforeEach
     public void setUp() {
         certification = new Certification();
-        certification.setId("cert1");
+        certification.setCertificationId("cert1");
         certification.setName("Java Certification");
     }
 
@@ -193,7 +193,6 @@ public class CertificationControllerTest {
         // Verify the service method is called
         verify(certificationService, times(1)).approveCertification(empId, certificationId);
 
-        // Additional assertions on HTML content can be added if necessary
         assertNotNull(result);
     }
 
@@ -212,7 +211,6 @@ public class CertificationControllerTest {
         // Verify the service method is called
         verify(certificationService, times(1)).cancelNomination(loggedInUser, empId, certificationId);
 
-        // Additional assertions on HTML content can be added if necessary
         assertNotNull(result);
     }
 

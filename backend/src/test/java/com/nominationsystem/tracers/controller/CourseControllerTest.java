@@ -36,11 +36,11 @@ public class CourseControllerTest {
     @BeforeEach
     public void setUp() {
         course = new Course();
-        course.setId("course1");
-        course.setName("Java Course");
+        course.setCourseId("course1");
+        course.setCourseName("Java Course");
 
         courseFeedback = new CourseFeedback();
-        courseFeedback.setFeedback("Great course!");
+        courseFeedback.setComment("Great course!");
     }
 
     @Test
@@ -109,7 +109,7 @@ public class CourseControllerTest {
         doNothing().when(courseService).completeCourse(anyString(), anyString(), any(CourseFeedback.class));
 
         CourseFeedback feedback = new CourseFeedback();
-        feedback.setFeedback("Great course!");
+        feedback.setComment("Great course!");
 
         courseController.completeCourse("emp1", "course1", feedback);
 
