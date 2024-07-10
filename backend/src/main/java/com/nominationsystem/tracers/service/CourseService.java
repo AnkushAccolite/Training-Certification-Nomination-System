@@ -91,31 +91,6 @@ public class CourseService {
         this.courseRepository.save(existingCourse);
     }
 
-//    public void changeMonthlyCourseStatus(List<String> courseIds,String band, String month) {
-//
-//        Month monthEnum = Month.valueOf(month.toUpperCase());
-//        courseIds.forEach(courseId -> {
-//            Course course = this.courseRepository.findByCourseId(courseId);
-//            if (course != null) {
-//                course.getMonthlyStatus().stream()
-//                        .filter(status -> status.getMonth() == monthEnum)
-//                        .findFirst()
-//                        .ifPresent(status -> {
-//                            Boolean currentActivationStatus = status.isActivationStatus();
-//                            if (currentActivationStatus == null) {
-//                                status.setActivationStatus(true);
-//                            } else {
-//                                status.setActivationStatus(!currentActivationStatus);
-//                            }
-//
-//                            status.setBand(band);
-//                            this.courseRepository.save(course);
-//                        });
-//
-//            }
-//        });
-//    }
-
     public void changeMonthlyCourseStatus(List<String> courseIds, String band, String month) {
         Month monthEnum = Month.valueOf(month.toUpperCase());
         courseIds.forEach(courseId -> {
@@ -126,11 +101,12 @@ public class CourseService {
                         .findFirst()
                         .ifPresent(status -> {
                             ArrayList<String> bands = status.getBands();
-                            Boolean currentActivationStatus = bands.contains(band);
                             if (bands == null) {
                                 bands = new ArrayList<>();
                                 status.setBands(bands);
-                            } else if (!currentActivationStatus) {
+                            }
+                            boolean currentActivationStatus = bands.contains(band);
+                            if (!currentActivationStatus) {
                                 bands.add(band);
                             } else {
                                 bands.remove(band);

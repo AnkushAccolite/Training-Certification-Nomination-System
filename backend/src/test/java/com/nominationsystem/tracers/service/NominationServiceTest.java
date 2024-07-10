@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +34,9 @@ public class NominationServiceTest {
     @Mock
     private CourseService courseService;
 
+    @Mock
+    private EmailService emailService;
+
     @InjectMocks
     private NominationService nominationService;
 
@@ -55,6 +59,11 @@ public class NominationServiceTest {
         course = new Course();
         course.setCourseId("course1");
         course.setIsApprovalReq(true);
+    }
+
+    @Test
+    void testGetNominationRepository() {
+        assertEquals(nominationRepository, nominationService.getNominationRepository());
     }
 
     @Test
@@ -85,30 +94,58 @@ public class NominationServiceTest {
         assertEquals(Arrays.asList(nomination), result);
     }
 
-//    @Test
-//    void testCreateNomination() {
-//        when(employeeService.getEmployee("emp1")).thenReturn(employee);
-//        when(courseService.getCourseById(anyString())).thenReturn(course);
-//        when(employeeService.isPendingCoursePresent(anyString(), anyString())).thenReturn(false);
-//        when(employeeService.isApprovedCoursePresent(anyString(), anyString())).thenReturn(false);
-//
-//        Nomination result = nominationService.createNomination(nomination, Month.JANUARY);
-//
-//        assertNotNull(result);
-//        assertEquals(nomination.getNominationId(), result.getNominationId());
-//    }
+    @Test
+    void testRemoveCourseFromAllNominations() {
+        NominatedCourseStatus nominatedCourseStatus = new NominatedCourseStatus();
+        nominatedCourseStatus.setCourseId("course1");
 
-//    @Test
-//    void testCreateNomination_NoAvailableCourses() {
-//        when(employeeService.getEmployee("emp1")).thenReturn(employee);
-//        when(courseService.getCourseById(anyString())).thenReturn(course);
-//        when(employeeService.isPendingCoursePresent(anyString(), anyString())).thenReturn(true);
-//        when(employeeService.isApprovedCoursePresent(anyString(), anyString())).thenReturn(true);
-//
-//        Nomination result = nominationService.createNomination(nomination, Month.JANUARY);
-//
-//        assertNull(result);
-//    }
+        nomination.getNominatedCourses().add(nominatedCourseStatus);
+
+        when(nominationRepository.findAll()).thenReturn(Arrays.asList(nomination));
+        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
+        when(employeeRepository.findByEmpId("emp1")).thenReturn(employee);
+
+        nominationService.removeCourseFromAllNominations("emp1", "course1");
+
+        assertTrue(nomination.getNominatedCourses().isEmpty());
+        verify(nominationRepository, times(1)).deleteById("nomination1");
+        verify(employeeRepository, times(1)).save(employee);
+    }
+
+    @Test
+    void testCreateNomination() {
+        NominatedCourseStatus nominatedCourseStatus = new NominatedCourseStatus();
+        nominatedCourseStatus.setCourseId(course.getCourseId());
+        nomination.getNominatedCourses().add(nominatedCourseStatus);
+        Employee manager = new Employee();
+        manager.setEmpId("manager1");
+        manager.setEmpName("Manager 1");
+        employee.setEmpName("Employee 1");
+
+        when(employeeService.getEmployee("emp1")).thenReturn(employee);
+        when(employeeService.getEmployee("manager1")).thenReturn(manager);
+        when(courseService.getCourseById(anyString())).thenReturn(course);
+        when(employeeService.isPendingCoursePresent(anyString(), anyString())).thenReturn(false);
+        when(employeeService.isApprovedCoursePresent(anyString(), anyString())).thenReturn(false);
+        when(nominationRepository.save(any())).thenReturn(nomination);
+        when(emailService.createPendingRequestEmailBody(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("body");
+
+        Nomination result = nominationService.createNomination(nomination, Month.JANUARY);
+
+        assertNotNull(result);
+        assertEquals(nomination.getNominationId(), result.getNominationId());
+        assertFalse(result.getNominatedCourses().isEmpty());
+        assertEquals(ApprovalStatus.PENDING, result.getNominatedCourses().get(0).getApprovalStatus());
+    }
+
+    @Test
+    void testCreateNomination_NoAvailableCourses() {
+        when(employeeService.getEmployee("emp1")).thenReturn(employee);
+
+        Nomination result = nominationService.createNomination(nomination, Month.JANUARY);
+
+        assertNull(result);
+    }
 
     @Test
     void testUpdateNomination() {
@@ -133,16 +170,39 @@ public class NominationServiceTest {
         verify(nominationRepository, times(1)).deleteById("nomination1");
     }
 
-//    @Test
-//    void testTakeActionOnPendingRequest_Approve() {
-//        nomination.getNominatedCourses().add(new NominatedCourseStatus("course1", ApprovalStatus.PENDING));
-//        when(nominationRepository.findById("nomination1")).thenReturn(java.util.Optional.of(nomination));
-//        when(employeeService.updateCoursesNominatedByEmployee(anyString(), anyString(), anyString(), any(Month.class))).thenReturn(true);
-//
-//        nominationService.takeActionOnPendingRequest("nomination1", "course1", "approve", Month.JANUARY);
-//
-//        assertEquals(ApprovalStatus.APPROVED, nomination.getNominatedCourses().get(0).getApprovalStatus());
-//    }
+    @Test
+    void testTakeActionOnPendingRequest_Approve() {
+        NominatedCourseStatus nominatedCourseStatus = new NominatedCourseStatus();
+        nominatedCourseStatus.setCourseId("course1");
+        nominatedCourseStatus.setApprovalStatus(ApprovalStatus.PENDING);
 
-    // Write similar tests for other methods...
+        nomination.getNominatedCourses().add(nominatedCourseStatus);
+
+        when(nominationRepository.findById("nomination1")).thenReturn(java.util.Optional.of(nomination));
+        when(employeeService.getEmployee("emp1")).thenReturn(employee);
+        when(courseService.getCourseById("course1")).thenReturn(course);
+
+        nominationService.takeActionOnPendingRequest("nomination1", "course1", "approve", Month.JANUARY);
+
+        assertEquals(ApprovalStatus.APPROVED, nomination.getNominatedCourses().get(0).getApprovalStatus());
+        verify(nominationRepository, times(1)).save(nomination);
+    }
+
+    @Test
+    void testTakeActionOnPendingRequest_Reject() {
+        NominatedCourseStatus nominatedCourseStatus = new NominatedCourseStatus();
+        nominatedCourseStatus.setCourseId("course1");
+        nominatedCourseStatus.setApprovalStatus(ApprovalStatus.PENDING);
+
+        nomination.getNominatedCourses().add(nominatedCourseStatus);
+
+        when(nominationRepository.findById("nomination1")).thenReturn(java.util.Optional.of(nomination));
+        when(employeeService.getEmployee("emp1")).thenReturn(employee);
+        when(courseService.getCourseById("course1")).thenReturn(course);
+
+        nominationService.takeActionOnPendingRequest("nomination1", "course1", "reject", Month.JANUARY);
+
+        assertEquals(ApprovalStatus.REJECTED, nomination.getNominatedCourses().get(0).getApprovalStatus());
+        verify(nominationRepository, times(1)).save(nomination);
+    }
 }

@@ -17,6 +17,9 @@ import static org.mockito.Mockito.*;
 public class UsersServiceImplTest {
 
     @Mock
+    private EmployeeService employeeService;
+
+    @Mock
     private EmployeeRepository employeeRepository;
 
     @InjectMocks
@@ -35,6 +38,7 @@ public class UsersServiceImplTest {
         employee.setId("1");
         employee.setUsername(username);
 
+        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
         when(employeeRepository.findByUsername(username)).thenReturn(Optional.of(employee));
 
         // When
@@ -56,6 +60,7 @@ public class UsersServiceImplTest {
         savedUser.setId("1");
         savedUser.setUsername("testuser");
 
+        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
         when(employeeRepository.save(userToSave)).thenReturn(savedUser);
 
         // When
@@ -72,6 +77,7 @@ public class UsersServiceImplTest {
         // Given
         String username = "existinguser";
 
+        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
         when(employeeRepository.existsByUsername(username)).thenReturn(true);
 
         // Then
@@ -85,6 +91,7 @@ public class UsersServiceImplTest {
         // Given
         String email = "existing@example.com";
 
+        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
         when(employeeRepository.existsByEmail(email)).thenReturn(true);
 
         // Then

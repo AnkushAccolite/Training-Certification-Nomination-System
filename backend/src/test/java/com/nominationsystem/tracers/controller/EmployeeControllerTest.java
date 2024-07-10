@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +14,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 import com.nominationsystem.tracers.models.Employee;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +56,30 @@ public class EmployeeControllerTest {
 
         courseStatus1 = new EmployeeCourseStatus("course1", "2024-07-10");
         courseStatus2 = new EmployeeCourseStatus("course2", "2024-07-11");
+    }
+
+    @Test
+    public void testGetEmployees() {
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+        employees.add(testEmployee);
+
+        when(employeeService.getAllEmployees()).thenReturn(employees);
+
+        ResponseEntity<?> response = employeeController.getEmployees();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void testGetEmployeeByEmail() {
+        String email = "test@accolitedigital.com";
+
+        when(employeeService.getEmpByEmail(anyString())).thenReturn(ResponseEntity.ok().build());
+
+        ResponseEntity<?> response = employeeController.getEmployeeByEmail(email);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test

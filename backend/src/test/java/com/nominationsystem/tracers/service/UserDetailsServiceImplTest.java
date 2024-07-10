@@ -19,6 +19,9 @@ import static org.mockito.Mockito.*;
 public class UserDetailsServiceImplTest {
 
     @Mock
+    private EmployeeService employeeService;
+
+    @Mock
     private EmployeeRepository employeeRepository;
 
     @InjectMocks
@@ -43,6 +46,7 @@ public class UserDetailsServiceImplTest {
         employee.setManagerId("managerId");
         employee.setEmpName("empName");
 
+        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
         when(employeeRepository.findByUsername(username)).thenReturn(Optional.of(employee));
 
         // When
@@ -61,6 +65,7 @@ public class UserDetailsServiceImplTest {
         // Given
         String username = "nonexistentuser";
 
+        when(employeeService.getEmployeeRepository()).thenReturn(employeeRepository);
         when(employeeRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         // Then

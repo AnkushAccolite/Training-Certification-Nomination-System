@@ -43,7 +43,7 @@ public class CertificationService {
 
     private final String baseUrl = "http://localhost:8080";
 
-    private String getClientIp(HttpServletRequest request) {
+    public String getClientIp(HttpServletRequest request) {
         String xfHeader = request.getHeader("X-Forwarded-For");
         if (xfHeader == null) {
             return getIPv4Address(request.getRemoteAddr());
@@ -64,7 +64,7 @@ public class CertificationService {
         return getIPv4Address(request.getRemoteAddr());
     }
 
-    private String getIPv4Address(String ipAddress) {
+    public String getIPv4Address(String ipAddress) {
         if (ipAddress == null || ipAddress.isEmpty()) {
             return null;
         }
@@ -76,7 +76,7 @@ public class CertificationService {
     }
 
     public void getDeviceInfo(String userAgent, HttpServletRequest request, String empId,
-            ArrayList<String> certificationId) {
+                              ArrayList<String> certificationId) {
 
         Parser uaParser = new Parser();
         Client client = uaParser.parse(userAgent);
@@ -107,7 +107,7 @@ public class CertificationService {
         return temp;
     }
 
-    public void deleteCertification(String certificationId,String empId) {
+    public void deleteCertification(String certificationId, String empId) {
         Optional<Certification> certification = this.certificationRepository.findById(certificationId);
         certification.ifPresent(cert -> cert.setIsDeleted(true));
         this.certificationRepository.save(certification.get());
@@ -194,7 +194,7 @@ public class CertificationService {
     }
 
     public void certificationCompleted(String empId, String certificationId, String url,
-            CertificationFeedback certificationFeedback) {
+                                       CertificationFeedback certificationFeedback) {
         this.certificationFeedbackRepository.save(certificationFeedback);
         Employee employee = this.employeeService.getEmployeeRepository().findByEmpId(empId);
 

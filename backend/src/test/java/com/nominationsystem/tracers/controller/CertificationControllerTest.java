@@ -46,6 +46,18 @@ public class CertificationControllerTest {
     }
 
     @Test
+    public void testGetCertifications() {
+        List<Certification> certifications = new ArrayList<>();
+        certifications.add(certification);
+
+        when(certificationService.getCertifications()).thenReturn(certifications);
+
+        ResponseEntity<?> response = certificationController.getCertifications();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
     public void testGetAllCertifications() {
         List<Certification> certifications = new ArrayList<>();
         certifications.add(certification);
@@ -77,18 +89,17 @@ public class CertificationControllerTest {
         assertEquals(employeeCertification, response);
     }
 
-//    @Test
-//    public void testDeleteCertification() {
-//        doNothing().when(certificationService).deleteCertification(anyString());
-//
-//        certificationController.deleteCertification("cert1");
-//
-//        verify(certificationService, times(1)).deleteCertification("cert1");
-//    }
+    @Test
+    public void testDeleteCertification() {
+        doNothing().when(certificationService).deleteCertification(anyString(), anyString());
+
+        certificationController.deleteCertification("cert1", "emp1");
+
+        verify(certificationService, times(1)).deleteCertification("cert1", "emp1");
+    }
 
     @Test
     public void testNominateCertification() {
-        ArrayList<String> dummyList = new ArrayList<>();
         doNothing().when(certificationService).nominateCertification(anyString(), any());
 
         ArrayList<String> certificationIds = new ArrayList<>();
@@ -166,6 +177,24 @@ public class CertificationControllerTest {
 
         // Verify the service method is called with the correct parameters using matchers
         verify(certificationService, times(1)).getDeviceInfo(eq(userAgent), any(HttpServletRequest.class), eq(empId), eq(certificationIds));
+    }
+
+    @Test
+    public void testAssignCertificationFromEmail() {
+        String empId = "emp1";
+        String certificationId = "cert1";
+
+        // Mock the service method
+        when(certificationService.approveCertification(empId, certificationId)).thenReturn(ResponseEntity.ok().build());
+
+        // Call the controller method
+        String result = certificationController.assignCertificationFromEmail(empId, certificationId);
+
+        // Verify the service method is called
+        verify(certificationService, times(1)).approveCertification(empId, certificationId);
+
+        // Additional assertions on HTML content can be added if necessary
+        assertNotNull(result);
     }
 
     @Test
