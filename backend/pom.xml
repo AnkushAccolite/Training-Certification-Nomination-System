@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>17</java.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -114,6 +115,7 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 			<version>3.2.5</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.github.ua-parser</groupId>
 			<artifactId>uap-java</artifactId>

@@ -26,4 +26,8 @@ public class CertificationStatus {
 
     private String uploadedCertificate;
 
+    public CertificationStatus(String certificationId, String status) {
+        this.setCertificationId(certificationId);
+        this.setStatus(status);
+    }
 }

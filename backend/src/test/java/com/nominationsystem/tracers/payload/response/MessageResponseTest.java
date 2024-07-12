@@ -1,13 +1,21 @@
 package com.nominationsystem.tracers.payload.response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
 public class MessageResponseTest {
 
     @Test
-    public void testConstructorAndGetMessage() {
+    public void testNoArgsConstructor() {
+        MessageResponse messageResponse = new MessageResponse();
+
+        assertNull(messageResponse.getMessage());
+    }
+
+    @Test
+    public void testAllArgsConstructor() {
         // Given
         String messageContent = "Test message";
 

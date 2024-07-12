@@ -56,4 +56,34 @@ public class JwtResponseTest {
         JwtResponse jwtResponse = new JwtResponse("testToken", roles);
         Assertions.assertEquals("testToken", jwtResponse.getToken());
     }
+
+    @Test
+    public void testAllArgsConstructor() {
+        // Given
+        String token = "testToken";
+        String type = "Bearer";
+        String id = "testId";
+        String email = "test@example.com";
+        String username = "testUser";
+        List<String> roles = List.of("ROLE_USER", "ROLE_ADMIN");
+        String empName = "John Doe";
+        String empId = "E123";
+        String managerId = "M456";
+        String band = "A1";
+
+        // When
+        JwtResponse jwtResponse = new JwtResponse(token, type, id, email, username, roles, empName, empId, managerId, band);
+
+        // Then
+        Assertions.assertEquals(token, jwtResponse.getToken());
+        Assertions.assertEquals(type, jwtResponse.getType());
+        Assertions.assertEquals(id, jwtResponse.getId());
+        Assertions.assertEquals(email, jwtResponse.getEmail());
+        Assertions.assertEquals(username, jwtResponse.getUsername());
+        Assertions.assertEquals(roles, jwtResponse.getRoles());
+        Assertions.assertEquals(empName, jwtResponse.getEmpName());
+        Assertions.assertEquals(empId, jwtResponse.getEmpId());
+        Assertions.assertEquals(managerId, jwtResponse.getManagerId());
+        Assertions.assertEquals(band, jwtResponse.getBand());
+    }
 }
