@@ -98,7 +98,7 @@ public class CertificationService {
         List<Certification> filteredList = temp.stream()
                 .filter(obj -> !obj.getIsDeleted())
                 .collect(Collectors.toList());
-        ;
+
         return filteredList;
     }
 
